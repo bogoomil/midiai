@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="hu.boga.midiai.gui.MainController">
+    <top>
+        <MenuBar fx:id="menuBar">
+            <menus>
+                <Menu text="File">
+                    <items>
+                        <MenuItem onAction="#newProject" text="New" />
+                        <MenuItem text="Open" />
+                        <MenuItem text="Save" />
+                        <MenuItem text="Save As" />
+                        <SeparatorMenuItem />
+                        <MenuItem text="Exit" />
+                    </items>
+                </Menu>
+                <Menu text="Edit">
+                    <items>
+                        <MenuItem text="Copy" />
+                        <MenuItem text="Cut" />
+                        <MenuItem text="Paste" />
+                    </items>
+                </Menu>
+                <Menu text="Help">
+                    <items>
+                        <MenuItem disable="true" text="Search" />
+                        <MenuItem text="Online Manual" visible="false" />
+                        <SeparatorMenuItem />
+                        <MenuItem text="About" />
+                    </items>
+                </Menu>
+            </menus>
+        </MenuBar>
+    </top>
+    <center>
+        <TabPane fx:id="mainTab" style="-fx-border-color: black; -fx-border-width: 5;" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+            <tabs>
+            </tabs>
+        </TabPane>
+    </center>
+   <left>
+      <Label fx:id="propertyText" text="Label" BorderPane.alignment="CENTER" />
+   </left>
+</BorderPane>

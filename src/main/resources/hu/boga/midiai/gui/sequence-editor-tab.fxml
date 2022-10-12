@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<Tab fx:id="tab" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1"
+     fx:controller="hu.boga.midiai.gui.SequenceTabController">
+    <BorderPane>
+        <BorderPane layoutX="-1.0" prefHeight="400.0" prefWidth="600.0"/>
+        <top>
+            <ButtonBar prefHeight="40.0" prefWidth="200.0">
+                <buttons>
+                    <TextField fx:id="tfFileName"/>
+                    <Button mnemonicParsing="false" onAction="#saveSequence" text="Save"/>
+                    <Separator minWidth="18.0" orientation="VERTICAL" prefWidth="10.0"/>
+                    <Button mnemonicParsing="false" onAction="#onPlayCurrentSec" text="Play"/>
+                    <Button mnemonicParsing="false" onAction="#stopPlayback" text="Stop"/>
+                </buttons>
+            </ButtonBar>
+        </top>
+        <center>
+            <Accordion fx:id="accordion" BorderPane.alignment="CENTER">
+                <panes>
+                    <TitledPane text="Properties" textFill="#028d00">
+                        <VBox>
+                            <children>
+                                <Label fx:id="division"/>
+                                <Label fx:id="resolution"/>
+                                <Label fx:id="tickLength"/>
+                                <Label fx:id="ticksPerMeasure"/>
+                                <Label fx:id="ticksIn32nd"/>
+                            </children>
+                        </VBox>
+                    </TitledPane>
+                    <TitledPane animated="true" text="Channel mapping" textFill="#d00404">
+                        <VBox fx:id="channelsWrapper">
+                        </VBox>
+                    </TitledPane>
+                </panes>
+            </Accordion>
+        </center>
+    </BorderPane>
+</Tab>
