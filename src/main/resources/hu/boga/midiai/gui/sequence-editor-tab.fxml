@@ -23,16 +23,14 @@
                 <panes>
                     <TitledPane text="Properties" textFill="#028d00">
                         <VBox>
-                            <children>
-                                <Label fx:id="division"/>
-                                <Label fx:id="resolution"/>
-                                <Label fx:id="tickLength"/>
-                                <Label fx:id="ticksPerMeasure"/>
-                                <Label fx:id="ticksIn32nd"/>
-                            </children>
+                            <Label fx:id="division"/>
+                            <Label fx:id="resolution"/>
+                            <Label fx:id="tickLength"/>
+                            <Label fx:id="ticksPerMeasure"/>
+                            <Label fx:id="ticksIn32nds"/>
                         </VBox>
                     </TitledPane>
-                    <TitledPane animated="true" text="Channel mapping" textFill="#d00404">
+                    <TitledPane text="Channel mapping" textFill="#d00404">
                         <VBox fx:id="channelsWrapper">
                         </VBox>
                     </TitledPane>
