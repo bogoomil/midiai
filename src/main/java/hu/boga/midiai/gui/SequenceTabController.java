@@ -34,9 +34,11 @@ public class SequenceTabController implements SequenceBoundaryOut {
     }
 
     public void onPlayCurrentSec(ActionEvent actionEvent) {
+        this.boundaryIn.playSequence();
     }
 
     public void stopPlayback(ActionEvent actionEvent) {
+        this.boundaryIn.stopPlayBack();
     }
 
     @Override

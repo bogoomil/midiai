@@ -89,6 +89,7 @@ public class SequenceGatewayImpl implements SequenceGateway
 
     private AISequence convertSequenceToAISequence(Sequence sequence, String name) throws InvalidMidiDataException {
         AISequence retVal = new AISequence();
+        retVal.setSequence(sequence);
         retVal.setDivision(sequence.getDivisionType());
         retVal.setName(name);
         retVal.setResolution(sequence.getResolution());

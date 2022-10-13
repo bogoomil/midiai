@@ -7,11 +7,13 @@ import hu.boga.midiai.core.midigateway.SequenceGateway;
 import hu.boga.midiai.core.modell.AISequence;
 
 import javax.inject.Inject;
+import javax.sound.midi.*;
 import java.io.File;
 
 public class SequenceInteractor implements SequenceBoundaryIn {
     private final SequenceBoundaryOut boundaryOut;
     private final SequenceGateway sequenceGateway;
+    private Sequencer sequencer;
 
     @Inject
     public SequenceInteractor(SequenceBoundaryOut boundaryOut, SequenceGateway sequenceGateway) {
@@ -22,6 +24,7 @@ public class SequenceInteractor implements SequenceBoundaryIn {
     @Override
     public void initNewSequence() {
         AISequence sequence = this.sequenceGateway.initNewSequence();
+        initSequencer(sequence.getSequence());
         this.boundaryOut.displaySequence(convertSequenceToDto(sequence));
     }
 
@@ -29,9 +32,35 @@ public class SequenceInteractor implements SequenceBoundaryIn {
     public void openFile(File file) {
         System.out.println("Opening file: " + file.getAbsolutePath());
         AISequence sequence = this.sequenceGateway.openFile(file.getAbsolutePath());
+        initSequencer(sequence.getSequence());
         SequenceDto dto = convertSequenceToDto(sequence);
         this.boundaryOut.displaySequence(dto);
     }
+
+    @Override
+    public void playSequence() {
+        sequencer.setTickPosition(0);
+        sequencer.start();
+
+    }
+
+    @Override
+    public void stopPlayBack() {
+        sequencer.stop();
+    }
+
+    private void initSequencer(Sequence sequence) {
+        try {
+            this.sequencer = MidiSystem.getSequencer();
+            this.sequencer.open();
+            this.sequencer.setSequence(sequence);
+        } catch (MidiUnavailableException e) {
+            e.printStackTrace();
+        } catch (InvalidMidiDataException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     private SequenceDto convertSequenceToDto(AISequence sequence) {
         SequenceDto dto = new SequenceDto();

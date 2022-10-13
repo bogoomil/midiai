@@ -1,12 +1,23 @@
 package hu.boga.midiai.core.modell;
 
+import javax.sound.midi.Sequence;
+
 public class AISequence {
+    private Sequence sequence;
     private String name;
     private int resolution;
     private float division;
     private long tickLength;
     private int ticksPerMeasure;
     private int ticksIn32nds;
+
+    public Sequence getSequence() {
+        return sequence;
+    }
+
+    public void setSequence(Sequence sequence) {
+        this.sequence = sequence;
+    }
 
     public String getName() {
         return name;
