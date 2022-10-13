@@ -1,28 +1,28 @@
 package hu.boga.midiai.gui;
 
-import hu.boga.midiai.core.boundaries.PropertiesBoundaryIn;
-import hu.boga.midiai.core.boundaries.PropertiesBoundaryOut;
+import hu.boga.midiai.core.boundaries.MainBoundaryIn;
+import hu.boga.midiai.core.boundaries.MainBoundaryOut;
 import hu.boga.midiai.guice.GuiceModule;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.util.Callback;
+import javafx.stage.FileChooser;
 
 import javax.inject.Inject;
+import java.io.File;
 import java.io.IOException;
 
-public class MainController implements PropertiesBoundaryOut {
+public class MainController implements MainBoundaryOut {
 
     @FXML
     public TabPane mainTab;
 
-    private final PropertiesBoundaryIn boundaryIn;
+    private final MainBoundaryIn boundaryIn;
 
     @Inject
-    public MainController(PropertiesBoundaryIn boundaryIn) {
+    public MainController(MainBoundaryIn boundaryIn) {
         this.boundaryIn = boundaryIn;
     }
 
@@ -31,12 +31,34 @@ public class MainController implements PropertiesBoundaryOut {
     }
 
     public void newProject(ActionEvent actionEvent) throws IOException {
+        createNewTab();
+    }
 
+    public void openFile(ActionEvent actionEvent) throws IOException {
+        FileChooser fileChooser = new FileChooser();
+        File file = fileChooser.showOpenDialog(null).getAbsoluteFile();
+        if(file != null){
+            openFile(file);
+        }
+    }
+
+    private void openFile(File file) throws IOException {
+        SequenceTabController sequenceTabController = getSequenceTabController();
+        sequenceTabController.initSequence(file);
+
+    }
+
+    private void createNewTab() throws IOException {
+        SequenceTabController sequenceTabController = getSequenceTabController();
+        sequenceTabController.initSequence();
+    }
+
+    private SequenceTabController getSequenceTabController() throws IOException {
         FXMLLoader loader = new FXMLLoader(SequenceTabController.class.getResource("sequence-editor-tab.fxml"));
         loader.setControllerFactory(GuiceModule.INJECTOR::getInstance);
         Tab sequenceEditorTab =  loader.load();
-
+        SequenceTabController sequenceTabController = loader.getController();
         mainTab.getTabs().add(sequenceEditorTab);
+        return sequenceTabController;
     }
-
 }

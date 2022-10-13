@@ -6,10 +6,12 @@ import com.google.inject.Injector;
 import hu.boga.midiai.core.boundaries.SequenceBoundaryIn;
 import hu.boga.midiai.core.boundaries.SequenceBoundaryOut;
 import hu.boga.midiai.core.interactor.SequenceInteractor;
+import hu.boga.midiai.core.midigateway.SequenceGateway;
+import hu.boga.midiai.gateway.SequenceGatewayImpl;
 import hu.boga.midiai.gui.MainController;
-import hu.boga.midiai.core.boundaries.PropertiesBoundaryIn;
-import hu.boga.midiai.core.boundaries.PropertiesBoundaryOut;
-import hu.boga.midiai.core.interactor.PropertiesInteractor;
+import hu.boga.midiai.core.boundaries.MainBoundaryIn;
+import hu.boga.midiai.core.boundaries.MainBoundaryOut;
+import hu.boga.midiai.core.interactor.MainInteractor;
 import hu.boga.midiai.gui.SequenceTabController;
 
 public class GuiceModule extends AbstractModule {
@@ -19,11 +21,13 @@ public class GuiceModule extends AbstractModule {
     @Override
     protected void configure() {
 
-        bind(PropertiesBoundaryIn.class).to(PropertiesInteractor.class);
-        bind(PropertiesBoundaryOut.class).to(MainController.class);
+        bind(MainBoundaryIn.class).to(MainInteractor.class);
+        bind(MainBoundaryOut.class).to(MainController.class);
 
         bind(SequenceBoundaryIn.class).to(SequenceInteractor.class);
         bind(SequenceBoundaryOut.class).to(SequenceTabController.class);
+
+        bind(SequenceGateway.class).to(SequenceGatewayImpl.class);
 
     }
 

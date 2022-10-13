@@ -9,6 +9,7 @@ import javafx.scene.control.Tab;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
+import java.io.File;
 
 public class SequenceTabController implements SequenceBoundaryOut {
 
@@ -27,7 +28,6 @@ public class SequenceTabController implements SequenceBoundaryOut {
     }
 
     public void initialize(){
-        this.boundaryIn.initNewSequence();
     }
 
     public void saveSequence(ActionEvent actionEvent) {
@@ -42,10 +42,19 @@ public class SequenceTabController implements SequenceBoundaryOut {
     @Override
     public void displaySequence(SequenceDto sequenceDto) {
         this.tab.setText(sequenceDto.name);
-        this.division.setText(sequenceDto.division + "");
-        this.resolution.setText(sequenceDto.resolution + "");
-        this.tickLength.setText(sequenceDto.tickLength + "");
-        this.ticksPerMeasure.setText(sequenceDto.ticksPerMeasure + "");
-        this.ticksIn32nds.setText(sequenceDto.ticksIn32nds + "");
+
+        this.division.setText("division: " + sequenceDto.division + "");
+        this.resolution.setText("resolution: " + sequenceDto.resolution + "");
+        this.tickLength.setText("tick length: " + sequenceDto.tickLength + "");
+        this.ticksPerMeasure.setText("ticks / measure: " + sequenceDto.ticksPerMeasure + "");
+        this.ticksIn32nds.setText("ticks in 32nds: " + sequenceDto.ticksIn32nds + "");
+    }
+
+    public void initSequence() {
+        this.boundaryIn.initNewSequence();
+    }
+
+    public void initSequence(File file) {
+        this.boundaryIn.openFile(file);
     }
 }
