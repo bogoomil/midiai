@@ -16,4 +16,5 @@ module hu.boga.midiai {
     requires com.google.guice;
     requires javax.inject;
     requires java.desktop;
+    requires com.google.common;
 }

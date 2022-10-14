@@ -7,4 +7,5 @@ public class SequenceDto {
     public long tickLength;
     public int ticksPerMeasure;
     public int ticksIn32nds;
+    public String id;
 }

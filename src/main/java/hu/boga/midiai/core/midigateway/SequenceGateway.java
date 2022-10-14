@@ -1,8 +1,8 @@
 package hu.boga.midiai.core.midigateway;
 
-import hu.boga.midiai.core.modell.AISequence;
+import hu.boga.midiai.core.modell.MidiProject;
 
 public interface SequenceGateway {
-    AISequence initNewSequence();
-    AISequence openFile(String path);
+    MidiProject initNewSequence();
+    MidiProject openFile(String path);
 }

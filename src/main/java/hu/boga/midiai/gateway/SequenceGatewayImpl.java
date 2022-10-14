@@ -2,7 +2,7 @@ package hu.boga.midiai.gateway;
 
 import hu.boga.midiai.core.exceptions.AimidiException;
 import hu.boga.midiai.core.midigateway.SequenceGateway;
-import hu.boga.midiai.core.modell.AISequence;
+import hu.boga.midiai.core.modell.MidiProject;
 import javafx.event.ActionEvent;
 
 import javax.inject.Inject;
@@ -31,10 +31,6 @@ public class SequenceGatewayImpl implements SequenceGateway
 //            }
 //
 //        });
-//        this.trackAdapters = new ArrayList<>();
-//        initSequencer(sequence);
-//
-//        Arrays.stream(sequence.getTracks()).forEach(track -> trackAdapters.add(new TrackAdapter(track, sequence.getResolution())));
     }
 
     public Map<Integer, Integer> getChannelMapping(){
@@ -64,50 +60,28 @@ public class SequenceGatewayImpl implements SequenceGateway
 //        MidiSystem.write(this.sequenceAdapter.sequence, 1, file);
     }
 
-    private void initSequencer(Sequence sequence) {
-        try {
-            this.sequencer = MidiSystem.getSequencer();
-            this.sequencer.open();
-            this.sequencer.setSequence(sequence);
-        } catch (MidiUnavailableException e) {
-            e.printStackTrace();
-        } catch (InvalidMidiDataException e) {
-            e.printStackTrace();
-        }
-    }
-
     @Override
-    public AISequence initNewSequence() {
+    public MidiProject initNewSequence() {
         try {
             Sequence sequence = new Sequence(Sequence.PPQ, 8);
-            return convertSequenceToAISequence(sequence,DEFAULT_NAME);
+            MidiProject midiProject = new MidiProject(sequence);
+            midiProject.setName(DEFAULT_NAME);
+            return midiProject;
+
         } catch (InvalidMidiDataException e) {
             e.printStackTrace();
             throw new AimidiException("Sequence creation failed: " + e.getMessage());
         }
     }
 
-    private AISequence convertSequenceToAISequence(Sequence sequence, String name) throws InvalidMidiDataException {
-        AISequence retVal = new AISequence();
-        retVal.setSequence(sequence);
-        retVal.setDivision(sequence.getDivisionType());
-        retVal.setName(name);
-        retVal.setResolution(sequence.getResolution());
-        retVal.setTickLength(sequence.getTickLength());
-
-        int tckpm = 4 * sequence.getResolution();
-        retVal.setTicksPerMeasure(tckpm);
-        retVal.setTicksIn32nds(tckpm / 32);
-
-        return retVal;
-    }
-
     @Override
-    public AISequence openFile(String path) {
+    public MidiProject openFile(String path) {
         try {
             File file = new File(path);
             Sequence sequence = MidiSystem.getSequence(file);
-            return convertSequenceToAISequence(sequence, file.getName());
+            MidiProject midiProject = new MidiProject(sequence);
+            midiProject.setName(file.getName());
+            return midiProject;
         } catch (InvalidMidiDataException | IOException e) {
             throw new AimidiException(e.getMessage());
         }

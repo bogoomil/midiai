@@ -20,6 +20,8 @@ public class SequenceTabController implements SequenceBoundaryOut {
     public Label ticksIn32nds;
     public Tab tab;
 
+    private String midiProjectId;
+
     private final SequenceBoundaryIn boundaryIn;
 
     @Inject
@@ -34,11 +36,11 @@ public class SequenceTabController implements SequenceBoundaryOut {
     }
 
     public void onPlayCurrentSec(ActionEvent actionEvent) {
-        this.boundaryIn.playSequence();
+        this.boundaryIn.playSequence(midiProjectId, 0);
     }
 
     public void stopPlayback(ActionEvent actionEvent) {
-        this.boundaryIn.stopPlayBack();
+        this.boundaryIn.stopPlayBack(midiProjectId);
     }
 
     @Override
@@ -50,6 +52,8 @@ public class SequenceTabController implements SequenceBoundaryOut {
         this.tickLength.setText("tick length: " + sequenceDto.tickLength + "");
         this.ticksPerMeasure.setText("ticks / measure: " + sequenceDto.ticksPerMeasure + "");
         this.ticksIn32nds.setText("ticks in 32nds: " + sequenceDto.ticksIn32nds + "");
+
+        this.midiProjectId = sequenceDto.id;
     }
 
     public void initSequence() {
