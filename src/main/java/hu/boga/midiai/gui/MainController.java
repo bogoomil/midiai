@@ -19,11 +19,8 @@ public class MainController implements MainBoundaryOut {
     @FXML
     public TabPane mainTab;
 
-    private final MainBoundaryIn boundaryIn;
-
     @Inject
     public MainController(MainBoundaryIn boundaryIn) {
-        this.boundaryIn = boundaryIn;
     }
 
     @Override
@@ -37,20 +34,15 @@ public class MainController implements MainBoundaryOut {
     public void openFile(ActionEvent actionEvent) throws IOException {
         FileChooser fileChooser = new FileChooser();
         File file = fileChooser.showOpenDialog(null).getAbsoluteFile();
-        if(file != null){
-            openFile(file);
-        }
+        openFile(file);
     }
 
     private void openFile(File file) throws IOException {
-        SequenceTabController sequenceTabController = getSequenceTabController();
-        sequenceTabController.initSequence(file);
-
+        getSequenceTabController().initSequence(file);
     }
 
     private void createNewTab() throws IOException {
-        SequenceTabController sequenceTabController = getSequenceTabController();
-        sequenceTabController.initSequence();
+        getSequenceTabController().initSequence();
     }
 
     private SequenceTabController getSequenceTabController() throws IOException {

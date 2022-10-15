@@ -1,19 +1,25 @@
 package hu.boga.midiai.gui;
 
+import com.google.common.eventbus.Subscribe;
+import hu.boga.midiai.MidiAiApplication;
 import hu.boga.midiai.core.boundaries.SequenceBoundaryIn;
 import hu.boga.midiai.core.boundaries.SequenceBoundaryOut;
 import hu.boga.midiai.core.boundaries.SequenceDto;
+import hu.boga.midiai.gui.events.ChannelMappingChangeEvent;
+import hu.boga.midiai.guice.GuiceModule;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
-import javax.inject.Provider;
 import java.io.File;
+import java.io.IOException;
 
 public class SequenceTabController implements SequenceBoundaryOut {
 
@@ -38,12 +44,16 @@ public class SequenceTabController implements SequenceBoundaryOut {
 
     private String midiProjectId;
 
+    private ChannelToInstrumentMappingPanel channelToInstrumentMappingPanel;
+
     @Inject
     public SequenceTabController(SequenceBoundaryIn boundaryInProvider) {
         this.boundaryIn = boundaryInProvider;
+        MidiAiApplication.EVENT_BUS.register(this);
     }
 
-    public void initialize(){
+    public void initialize() throws IOException {
+        createChannelMappingsPanel();
     }
 
     public void saveSequence(ActionEvent actionEvent) {
@@ -61,7 +71,6 @@ public class SequenceTabController implements SequenceBoundaryOut {
     public void displaySequence(SequenceDto sequenceDto) {
         this.tab.setText(sequenceDto.name);
         this.tfFilename.setText(sequenceDto.name);
-
         this.division.setText("division: " + sequenceDto.division + "");
         this.resolution.setText("resolution: " + sequenceDto.resolution + "");
         this.tickLength.setText("tick length: " + sequenceDto.tickLength + "");
@@ -71,6 +80,7 @@ public class SequenceTabController implements SequenceBoundaryOut {
         this.tickSize.setText("tick size: " + sequenceDto.tickSize + " (1 / ticks per second)");
         this.tempo.setText("tempo: " + sequenceDto.tempo);
         this.midiProjectId = sequenceDto.id;
+        this.channelToInstrumentMappingPanel.setChannelMapping(sequenceDto.channelMapping);
 
     }
 
@@ -81,4 +91,18 @@ public class SequenceTabController implements SequenceBoundaryOut {
     public void initSequence(File file) {
         this.boundaryIn.openFile(file);
     }
+
+    private void createChannelMappingsPanel() throws IOException {
+        FXMLLoader loader = new FXMLLoader(ChannelToInstrumentMappingPanel.class.getResource("channel-to-instrument-mapping-panel.fxml"));
+        loader.setControllerFactory(GuiceModule.INJECTOR::getInstance);
+        BorderPane channelMappingPanel =  loader.load();
+        channelToInstrumentMappingPanel = loader.getController();
+        channelsWrapper.getChildren().add(channelMappingPanel);
+    }
+
+    @Subscribe
+    void handleChannelMappingChangeEvent(ChannelMappingChangeEvent event){
+        System.out.println("" + event);
+    }
+
 }

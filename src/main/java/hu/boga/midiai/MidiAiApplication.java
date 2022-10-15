@@ -1,5 +1,6 @@
 package hu.boga.midiai;
 
+import com.google.common.eventbus.EventBus;
 import hu.boga.midiai.gui.MainController;
 import hu.boga.midiai.guice.GuiceModule;
 import javafx.application.Application;
@@ -9,10 +10,14 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
-import javax.inject.Inject;
 import java.io.IOException;
 
+import static java.lang.System.exit;
+
 public class MidiAiApplication extends Application {
+
+    public static final EventBus EVENT_BUS = new EventBus();
+
     @Override
     public void start(Stage stage) throws IOException {
 
@@ -21,12 +26,7 @@ public class MidiAiApplication extends Application {
         Scene scene = new Scene(fxmlLoader.load(), 800, 600);
         stage.setTitle("midiai");
         stage.setScene(scene);
-        stage.addEventHandler(WindowEvent.WINDOW_CLOSE_REQUEST, new EventHandler<WindowEvent>() {
-            @Override
-            public void handle(WindowEvent event) {
-                System.exit(0);
-            }
-        });
+        stage.addEventHandler(WindowEvent.WINDOW_CLOSE_REQUEST, event -> exit(0));
         stage.show();
     }
 

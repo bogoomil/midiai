@@ -11,17 +11,16 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-public class SequenceGatewayImpl implements SequenceGateway
-{
+public class SequenceGatewayImpl implements SequenceGateway {
+
     private static final String DEFAULT_NAME = "new_midi.mid";
-    private Sequencer sequencer;
-    public List<TrackGatewayImpl> trackAdapters;
+    public List<TrackGatewayImpl> trackAdapters = new ArrayList<>();
 
     @Inject
     public SequenceGatewayImpl() {
     }
 
-    public Map<Integer, Integer> getChannelMapping(){
+    public Map<Integer, Integer> getChannelMapping() {
         Map<Integer, Integer> retVal = new HashMap<>();
         trackAdapters.forEach(trackAdapter -> {
             List<ShortMessage> programChanges = trackAdapter.getShortMessagesByCommand(ShortMessage.PROGRAM_CHANGE);
@@ -30,14 +29,6 @@ public class SequenceGatewayImpl implements SequenceGateway
         return retVal;
     }
 
-    public void onPlayCurrentSec(ActionEvent actionEvent)  {
-        sequencer.setTickPosition(0);
-        sequencer.start();
-    }
-
-    public void stopPlayback(ActionEvent actionEvent)  {
-        sequencer.stop();
-    }
 
     public void saveSequence(ActionEvent actionEvent) {
         throw new UnsupportedOperationException("Még nincs kész, de már majdnem elkezdtem...");
@@ -65,8 +56,12 @@ public class SequenceGatewayImpl implements SequenceGateway
         try {
             File file = new File(path);
             Sequence sequence = MidiSystem.getSequence(file);
+
+            Arrays.stream(sequence.getTracks()).forEach(track -> trackAdapters.add(new TrackGatewayImpl(track, sequence.getResolution())));
+
             MidiProject midiProject = new MidiProject(sequence);
             midiProject.setName(file.getName());
+            midiProject.setChannelMapping(getChannelMapping());
             return midiProject;
         } catch (InvalidMidiDataException | IOException e) {
             throw new AimidiException(e.getMessage());

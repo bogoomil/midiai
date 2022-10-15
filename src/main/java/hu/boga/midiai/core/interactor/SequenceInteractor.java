@@ -71,6 +71,7 @@ public class SequenceInteractor implements SequenceBoundaryIn {
         dto.tempo = midiProject.getTempo();
         dto.name = midiProject.getName();
         dto.id = midiProject.getId();
+        dto.channelMapping = midiProject.getChannelMapping();
         return dto;
 
     }

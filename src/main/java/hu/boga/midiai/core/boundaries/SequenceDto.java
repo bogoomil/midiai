@@ -1,5 +1,7 @@
 package hu.boga.midiai.core.boundaries;
 
+import java.util.Map;
+
 public class SequenceDto {
     public String name;
     public int resolution;
@@ -11,4 +13,6 @@ public class SequenceDto {
     public float ticksPerSecond;
     public float tickSize;
     public float tempo;
+    public Map<Integer, Integer> channelMapping;
+
 }

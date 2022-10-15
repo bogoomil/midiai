@@ -4,7 +4,7 @@ import com.google.common.base.Objects;
 import hu.boga.midiai.core.exceptions.AimidiException;
 
 import javax.sound.midi.*;
-import java.util.Arrays;
+import java.util.Map;
 import java.util.UUID;
 
 public class MidiProject {
@@ -12,6 +12,7 @@ public class MidiProject {
     private Sequencer sequencer;
     UUID id = UUID.randomUUID();
     String name;
+    private Map<Integer, Integer> channelMapping;
 
     public MidiProject(Sequence sequence) {
         this.sequence = sequence;
@@ -130,5 +131,13 @@ public class MidiProject {
 
     public void setTempoFactor(float tempoFactor) {
         this.sequencer.setTempoFactor(tempoFactor);
+    }
+
+    public Map<Integer, Integer> getChannelMapping() {
+        return channelMapping;
+    }
+
+    public void setChannelMapping(Map<Integer, Integer> channelMapping) {
+        this.channelMapping = channelMapping;
     }
 }

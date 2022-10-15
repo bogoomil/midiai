@@ -13,7 +13,7 @@ module hu.boga.midiai {
     exports hu.boga.midiai.gui;
     exports hu.boga.midiai.core.midigateway;
     opens hu.boga.midiai to javafx.fxml;
-    opens hu.boga.midiai.gui to javafx.fxml;
+    opens hu.boga.midiai.gui to javafx.fxml, com.google.common;
 
     requires com.google.guice;
     requires javax.inject;

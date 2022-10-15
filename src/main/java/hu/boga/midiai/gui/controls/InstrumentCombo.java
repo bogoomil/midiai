@@ -37,4 +37,9 @@ public class InstrumentCombo extends ComboBox<Instrument> {
     public void selectInstrument(int instrumentsProgram){
         getInstrumentIndex(instrumentsProgram).ifPresent(indx -> getSelectionModel().select(indx));
     }
+
+    public int getSelectedProgram(){
+
+        return this.getSelectionModel().getSelectedItem().getPatch().getProgram();
+    }
 }
