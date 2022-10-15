@@ -29,14 +29,6 @@ public class SequenceGatewayImpl implements SequenceGateway {
         return retVal;
     }
 
-
-    public void saveSequence(ActionEvent actionEvent) {
-        throw new UnsupportedOperationException("Még nincs kész, de már majdnem elkezdtem...");
-//        File file = new File("./" + tfFileName.getText());
-//        System.out.println("file created: " + file.getAbsolutePath());
-//        MidiSystem.write(this.sequenceAdapter.sequence, 1, file);
-    }
-
     @Override
     public MidiProject initNewSequence() {
         try {

@@ -13,4 +13,5 @@ public interface SequenceBoundaryIn {
     void playLoop(String projectId, int fromTick, int toTick);
     void stopPlayBack(String projectId);
 
+    void saveSequence(String projectId, String filePath);
 }

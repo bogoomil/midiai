@@ -59,6 +59,12 @@ public class SequenceInteractor implements SequenceBoundaryIn {
         App.getProjectById(id).ifPresent(MidiProject::stop);
     }
 
+    @Override
+    public void saveSequence(String projectId, String filePath) {
+        App.getProjectById(projectId).ifPresent(midiProject -> midiProject.save(filePath));
+    }
+
+
     private SequenceDto convertSequenceToDto(MidiProject midiProject) {
         SequenceDto dto = new SequenceDto();
         dto.ticksIn32nds = midiProject.getTicksIn32nds();

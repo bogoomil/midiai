@@ -16,6 +16,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -57,6 +58,8 @@ public class SequenceTabController implements SequenceBoundaryOut {
     }
 
     public void saveSequence(ActionEvent actionEvent) {
+        String path = new FileChooser().showSaveDialog(null).getAbsolutePath();
+        this.boundaryIn.saveSequence(midiProjectId, path);
     }
 
     public void onPlayCurrentSec(ActionEvent actionEvent) {

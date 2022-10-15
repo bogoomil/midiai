@@ -4,6 +4,9 @@ import com.google.common.base.Objects;
 import hu.boga.midiai.core.exceptions.AimidiException;
 
 import javax.sound.midi.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -12,7 +15,7 @@ public class MidiProject {
     private Sequencer sequencer;
     UUID id = UUID.randomUUID();
     String name;
-    private Map<Integer, Integer> channelMapping;
+    private Map<Integer, Integer> channelMapping = new HashMap<>();
 
     public MidiProject(Sequence sequence) {
         this.sequence = sequence;
@@ -139,5 +142,16 @@ public class MidiProject {
 
     public void setChannelMapping(Map<Integer, Integer> channelMapping) {
         this.channelMapping = channelMapping;
+    }
+
+    public void save(String filePath) {
+        File file = new File(filePath);
+        System.out.println("file created: " + file.getAbsolutePath());
+        try {
+            MidiSystem.write(sequence, 1, file);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new AimidiException("Saving " + filePath + " failed");
+        }
     }
 }

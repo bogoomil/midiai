@@ -33,8 +33,10 @@ public class MainController implements MainBoundaryOut {
 
     public void openFile(ActionEvent actionEvent) throws IOException {
         FileChooser fileChooser = new FileChooser();
-        File file = fileChooser.showOpenDialog(null).getAbsoluteFile();
-        openFile(file);
+        File file = fileChooser.showOpenDialog(null);
+        if(file != null){
+            openFile(file);
+        }
     }
 
     private void openFile(File file) throws IOException {
