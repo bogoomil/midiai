@@ -8,4 +8,7 @@ public class SequenceDto {
     public int ticksPerMeasure;
     public int ticksIn32nds;
     public String id;
+    public float ticksPerSecond;
+    public float tickSize;
+    public float tempo;
 }

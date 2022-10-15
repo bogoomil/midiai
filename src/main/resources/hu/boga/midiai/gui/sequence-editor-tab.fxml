@@ -10,7 +10,7 @@
         <top>
             <ButtonBar prefHeight="40.0" prefWidth="200.0">
                 <buttons>
-                    <TextField fx:id="tfFileName"/>
+                    <TextField fx:id="tfFilename"/>
                     <Button mnemonicParsing="false" onAction="#saveSequence" text="Save"/>
                     <Separator minWidth="18.0" orientation="VERTICAL" prefWidth="10.0"/>
                     <Button mnemonicParsing="false" onAction="#onPlayCurrentSec" text="Play"/>
@@ -23,11 +23,14 @@
                 <panes>
                     <TitledPane text="Properties" textFill="#028d00">
                         <VBox>
+                            <Label fx:id="tempo"/>
                             <Label fx:id="division"/>
                             <Label fx:id="resolution"/>
                             <Label fx:id="tickLength"/>
                             <Label fx:id="ticksPerMeasure"/>
                             <Label fx:id="ticksIn32nds"/>
+                            <Label fx:id="ticksPerSecond" />
+                            <Label fx:id="tickSize" />
                         </VBox>
                     </TitledPane>
                     <TitledPane text="Channel mapping" textFill="#d00404">

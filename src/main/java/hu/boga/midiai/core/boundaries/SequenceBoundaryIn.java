@@ -10,5 +10,7 @@ public interface SequenceBoundaryIn {
     void playSequence(String projectId, int fromTick, int toTick);
     void playSequence(String projectId, int fromTick);
     void playSequence(String projectId);
+    void playLoop(String projectId, int fromTick, int toTick);
     void stopPlayBack(String projectId);
+
 }

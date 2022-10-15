@@ -36,7 +36,7 @@ public class SequenceInteractor implements SequenceBoundaryIn {
 
     @Override
     public void playSequence(String id, int fromTick, int toTick) {
-        App.getProjectById(id).ifPresent(midiProject -> midiProject.play(fromTick, toTick, 1));
+        App.getProjectById(id).ifPresent(midiProject -> midiProject.play(fromTick, toTick));
     }
 
     @Override
@@ -46,12 +46,17 @@ public class SequenceInteractor implements SequenceBoundaryIn {
 
     @Override
     public void playSequence(String id) {
-        App.getProjectById(id).ifPresent(midiProject -> midiProject.play());
+        App.getProjectById(id).ifPresent(MidiProject::play);
+    }
+
+    @Override
+    public void playLoop(String projectId, int fromTick, int toTick) {
+        App.getProjectById(projectId).ifPresent(midiProject -> midiProject.playLoop(fromTick, toTick));
     }
 
     @Override
     public void stopPlayBack(String id) {
-        App.getProjectById(id).ifPresent(midiProject -> midiProject.stop());
+        App.getProjectById(id).ifPresent(MidiProject::stop);
     }
 
     private SequenceDto convertSequenceToDto(MidiProject midiProject) {
@@ -61,6 +66,9 @@ public class SequenceInteractor implements SequenceBoundaryIn {
         dto.tickLength = midiProject.getTickLength();
         dto.resolution = midiProject.getResolution();
         dto.division = midiProject.getDivision();
+        dto.ticksPerSecond = midiProject.ticksPerSecond();
+        dto.tickSize = midiProject.tickSize();
+        dto.tempo = midiProject.getTempo();
         dto.name = midiProject.getName();
         dto.id = midiProject.getId();
         return dto;

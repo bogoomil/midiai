@@ -1,17 +1,17 @@
 package hu.boga.midiai.core.modell;
 
 import com.google.common.base.Objects;
+import hu.boga.midiai.core.exceptions.AimidiException;
 
 import javax.sound.midi.*;
+import java.util.Arrays;
 import java.util.UUID;
 
 public class MidiProject {
-    private Sequence sequence;
+    private final Sequence sequence;
     private Sequencer sequencer;
-    UUID id  = UUID.randomUUID();
+    UUID id = UUID.randomUUID();
     String name;
-    private int tempo = 120;
-    private int tempoFactor = 1;
 
     public MidiProject(Sequence sequence) {
         this.sequence = sequence;
@@ -59,41 +59,76 @@ public class MidiProject {
         return getTicksPerMeasure() / 32;
     }
 
+    public float ticksPerSecond() {
+        return this.sequence.getResolution() * (sequencer.getTempoInBPM() / 60);
+    }
+
+    public float tickSize(){
+        return 1 / ticksPerSecond();
+    }
+
     private void initSequencer(Sequence sequence) {
         try {
             this.sequencer = MidiSystem.getSequencer();
+            this.sequencer.addControllerEventListener(shortMessage -> System.out.println("tick position: " + sequencer.getTickPosition()), new int[]{ShortMessage.NOTE_ON});
             this.sequencer.open();
-            this.sequencer.setSequence(sequence);
         } catch (MidiUnavailableException e) {
             e.printStackTrace();
-        } catch (InvalidMidiDataException e) {
-            e.printStackTrace();
+            throw new AimidiException("Midi sequencer unavailable: " + e.getMessage());
         }
     }
 
-    public void play(){
+    public void play() {
         play(0);
     }
 
-    public void play(int fromTick){
+    public void play(int fromTick) {
         int toTick = (int) this.sequence.getTickLength();
         play(fromTick, toTick, 1);
     }
 
-    public void play(int fromTick, int toTick, int loopCount){
-        this.sequencer.setTempoInBPM(tempo);
-        this.sequencer.setTempoFactor(tempoFactor);
+    public void play(int fromTick, int toTick) {
+        play(fromTick, toTick, 1);
+    }
+
+    private void play(int fromTick, int toTick, int loopCount) {
+        this.sequencer.stop();
+        this.sequencer.setLoopCount(loopCount);
+        try {
+            this.sequencer.setSequence(sequence);
+        } catch (InvalidMidiDataException e) {
+            e.printStackTrace();
+            throw new AimidiException("Invalid midi exception: " + e.getMessage());
+        }
+        this.sequencer.setTempoFactor(1f);
+        this.sequencer.setTickPosition(fromTick);
         this.sequencer.setLoopStartPoint(fromTick);
         this.sequencer.setLoopEndPoint(toTick);
-        this.sequencer.setLoopCount(loopCount);
         this.sequencer.start();
     }
 
-    public void stop(){
+
+    public void playLoop(int fromTick, int toTick) {
+        play(fromTick, toTick, Sequencer.LOOP_CONTINUOUSLY);
+    }
+
+    public void stop() {
         this.sequencer.stop();
     }
 
-    public String getId(){
+    public String getId() {
         return this.id.toString();
+    }
+
+    public float getTempo(){
+        return this.sequencer.getTempoInBPM();
+    }
+
+    public void setTempo(float tempo) {
+        this.sequencer.setTempoInBPM(tempo);
+    }
+
+    public void setTempoFactor(float tempoFactor) {
+        this.sequencer.setTempoFactor(tempoFactor);
     }
 }

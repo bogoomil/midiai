@@ -19,27 +19,13 @@ public class SequenceGatewayImpl implements SequenceGateway
 
     @Inject
     public SequenceGatewayImpl() {
-//        fileOptional.ifPresentOrElse(file -> {
-//            processFile(fileOptional.get());
-//        }, () -> {
-//            int resolution = 8;
-//            try {
-//                this.sequence = new Sequence(Sequence.PPQ, resolution);
-//            } catch (InvalidMidiDataException e) {
-//                e.printStackTrace();
-//                throw new AimidiException("Sequence creation failed: " + e.getMessage());
-//            }
-//
-//        });
     }
 
     public Map<Integer, Integer> getChannelMapping(){
         Map<Integer, Integer> retVal = new HashMap<>();
         trackAdapters.forEach(trackAdapter -> {
             List<ShortMessage> programChanges = trackAdapter.getShortMessagesByCommand(ShortMessage.PROGRAM_CHANGE);
-            programChanges.forEach(shortMessage -> {
-                retVal.put(shortMessage.getChannel(), shortMessage.getData1());
-            });
+            programChanges.forEach(shortMessage -> retVal.put(shortMessage.getChannel(), shortMessage.getData1()));
         });
         return retVal;
     }
