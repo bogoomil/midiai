@@ -3,12 +3,16 @@ package hu.boga.midiai.core.interactor;
 import hu.boga.midiai.core.boundaries.SequenceBoundaryIn;
 import hu.boga.midiai.core.boundaries.SequenceBoundaryOut;
 import hu.boga.midiai.core.boundaries.SequenceDto;
+import hu.boga.midiai.core.boundaries.TrackDto;
 import hu.boga.midiai.core.midigateway.SequenceGateway;
 import hu.boga.midiai.core.modell.App;
 import hu.boga.midiai.core.modell.MidiProject;
 
 import javax.inject.Inject;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public class SequenceInteractor implements SequenceBoundaryIn {
     private final SequenceBoundaryOut boundaryOut;
@@ -64,6 +68,12 @@ public class SequenceInteractor implements SequenceBoundaryIn {
         App.getProjectById(projectId).ifPresent(midiProject -> midiProject.save(filePath));
     }
 
+    @Override
+    public void updateChnnellMapping(String projetId, int channel, int program) {
+        Optional<MidiProject> opt = App.getProjectById(projetId);
+        opt.ifPresent(midiProject -> midiProject.getChannelMapping().put(channel, program));
+    }
+
 
     private SequenceDto convertSequenceToDto(MidiProject midiProject) {
         SequenceDto dto = new SequenceDto();
@@ -78,8 +88,24 @@ public class SequenceInteractor implements SequenceBoundaryIn {
         dto.name = midiProject.getName();
         dto.id = midiProject.getId();
         dto.channelMapping = midiProject.getChannelMapping();
+
+        dto.tracks = getTracks(midiProject);
+
         return dto;
 
+    }
+
+    private List<TrackDto> getTracks(MidiProject midiProject) {
+        List<TrackDto> retVal = new ArrayList<>();
+       midiProject.getTracks().forEach(midiTrack -> {
+           TrackDto trackDto = new TrackDto();
+           trackDto.trackId = midiTrack.getId();
+           midiTrack.getChannel().ifPresent(ch -> trackDto.channel = ch);
+           midiTrack.getProgram().ifPresent(pr -> trackDto.program = pr);
+           retVal.add(trackDto);
+       });
+
+        return retVal;
     }
 
 

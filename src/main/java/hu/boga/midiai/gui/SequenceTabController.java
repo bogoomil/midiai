@@ -5,15 +5,14 @@ import hu.boga.midiai.MidiAiApplication;
 import hu.boga.midiai.core.boundaries.SequenceBoundaryIn;
 import hu.boga.midiai.core.boundaries.SequenceBoundaryOut;
 import hu.boga.midiai.core.boundaries.SequenceDto;
+import hu.boga.midiai.core.boundaries.TrackDto;
+import hu.boga.midiai.core.modell.MidiTrack;
 import hu.boga.midiai.gui.events.ChannelMappingChangeEvent;
 import hu.boga.midiai.guice.GuiceModule;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.Accordion;
-import javafx.scene.control.Label;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
@@ -43,7 +42,7 @@ public class SequenceTabController implements SequenceBoundaryOut {
     @FXML
     private VBox channelsWrapper;
 
-    private String midiProjectId;
+    private String projectId;
 
     private ChannelToInstrumentMappingPanel channelToInstrumentMappingPanel;
 
@@ -53,21 +52,21 @@ public class SequenceTabController implements SequenceBoundaryOut {
         MidiAiApplication.EVENT_BUS.register(this);
     }
 
-    public void initialize() throws IOException {
-        createChannelMappingsPanel();
+    public void initialize()  {
+//        createChannelMappingsPanel();
     }
 
     public void saveSequence(ActionEvent actionEvent) {
         String path = new FileChooser().showSaveDialog(null).getAbsolutePath();
-        this.boundaryIn.saveSequence(midiProjectId, path);
+        this.boundaryIn.saveSequence(projectId, path);
     }
 
     public void onPlayCurrentSec(ActionEvent actionEvent) {
-        this.boundaryIn.playLoop(midiProjectId, 960, 1920);
+        this.boundaryIn.playLoop(projectId, 960, 1920);
     }
 
     public void stopPlayback(ActionEvent actionEvent) {
-        this.boundaryIn.stopPlayBack(midiProjectId);
+        this.boundaryIn.stopPlayBack(projectId);
     }
 
     @Override
@@ -82,9 +81,22 @@ public class SequenceTabController implements SequenceBoundaryOut {
         this.ticksPerSecond.setText("ticks / sec: " + sequenceDto.ticksPerSecond + " (resolution * (tempo / 60))");
         this.tickSize.setText("tick size: " + sequenceDto.tickSize + " (1 / ticks per second)");
         this.tempo.setText("tempo: " + sequenceDto.tempo);
-        this.midiProjectId = sequenceDto.id;
-        this.channelToInstrumentMappingPanel.setChannelMapping(sequenceDto.channelMapping);
+        this.projectId = sequenceDto.id;
 
+        initChildren(sequenceDto);
+
+    }
+
+    private void initChildren(SequenceDto sequenceDto) {
+        sequenceDto.tracks.forEach(trackDto -> {
+            try {
+                addTrackPanel(trackDto);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+//        this.channelToInstrumentMappingPanel.setProjectId(sequenceDto.id);
+//        this.channelToInstrumentMappingPanel.setChannelMapping(sequenceDto.channelMapping);
     }
 
     public void initSequence() {
@@ -95,17 +107,15 @@ public class SequenceTabController implements SequenceBoundaryOut {
         this.boundaryIn.openFile(file);
     }
 
-    private void createChannelMappingsPanel() throws IOException {
-        FXMLLoader loader = new FXMLLoader(ChannelToInstrumentMappingPanel.class.getResource("channel-to-instrument-mapping-panel.fxml"));
+    private void addTrackPanel(TrackDto trackDto) throws IOException {
+        FXMLLoader loader = new FXMLLoader(ChannelToInstrumentMappingPanel.class.getResource("track-editor-panel.fxml"));
         loader.setControllerFactory(GuiceModule.INJECTOR::getInstance);
-        BorderPane channelMappingPanel =  loader.load();
-        channelToInstrumentMappingPanel = loader.getController();
-        channelsWrapper.getChildren().add(channelMappingPanel);
+        TitledPane trackEditor =  loader.load();
+        trackEditor.setText(trackDto.trackId);
+        TrackEditorPanelController panelController = loader.getController();
+        panelController.setTrackDto(trackDto);
+        accordion.getPanes().add(trackEditor);
     }
 
-    @Subscribe
-    void handleChannelMappingChangeEvent(ChannelMappingChangeEvent event){
-        System.out.println("" + event);
-    }
 
 }

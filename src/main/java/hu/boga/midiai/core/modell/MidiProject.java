@@ -6,9 +6,7 @@ import hu.boga.midiai.core.exceptions.AimidiException;
 import javax.sound.midi.*;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class MidiProject {
     private final Sequence sequence;
@@ -16,10 +14,20 @@ public class MidiProject {
     UUID id = UUID.randomUUID();
     String name;
     private Map<Integer, Integer> channelMapping = new HashMap<>();
+    private List<MidiTrack> tracks;
 
     public MidiProject(Sequence sequence) {
         this.sequence = sequence;
         initSequencer(sequence);
+        initTracks();
+    }
+
+    private void initTracks() {
+        tracks = new ArrayList<>();
+        Arrays.stream(sequence.getTracks()).forEach(track -> {
+            MidiTrack midiTrack = new MidiTrack(track, getResolution());
+            tracks.add(midiTrack);
+        });
     }
 
     @Override
@@ -154,4 +162,14 @@ public class MidiProject {
             throw new AimidiException("Saving " + filePath + " failed");
         }
     }
+
+    public List<MidiTrack> getTracks(){
+        return tracks;
+    }
+
+    public Optional<MidiTrack> getTrackById(String id){
+        UUID uuid = UUID.fromString(id);
+        return tracks.stream().filter(midiTrack -> midiTrack.id.equals(uuid)).findFirst();
+    }
+
 }
