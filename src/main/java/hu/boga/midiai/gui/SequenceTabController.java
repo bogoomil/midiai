@@ -1,12 +1,9 @@
 package hu.boga.midiai.gui;
 
-import com.google.common.eventbus.Subscribe;
 import hu.boga.midiai.MidiAiApplication;
 import hu.boga.midiai.core.boundaries.SequenceBoundaryIn;
 import hu.boga.midiai.core.boundaries.SequenceBoundaryOut;
 import hu.boga.midiai.core.boundaries.dtos.SequenceDto;
-import hu.boga.midiai.core.boundaries.dtos.TrackDto;
-import hu.boga.midiai.gui.events.ChannelMappingChangeEvent;
 import hu.boga.midiai.guice.GuiceModule;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -41,8 +38,6 @@ public class SequenceTabController implements SequenceBoundaryOut {
     private VBox channelsWrapper;
 
     private String projectId;
-
-    private ChannelToInstrumentMappingPanel channelToInstrumentMappingPanel;
 
     @Inject
     public SequenceTabController(SequenceBoundaryIn boundaryInProvider) {
@@ -104,7 +99,7 @@ public class SequenceTabController implements SequenceBoundaryOut {
     }
 
     private void addTrackPanel(String trackId) throws IOException {
-        FXMLLoader loader = new FXMLLoader(ChannelToInstrumentMappingPanel.class.getResource("track-editor-panel.fxml"));
+        FXMLLoader loader = new FXMLLoader(TrackEditorPanelController.class.getResource("track-editor-panel.fxml"));
         loader.setControllerFactory(GuiceModule.INJECTOR::getInstance);
         TitledPane trackEditor =  loader.load();
 

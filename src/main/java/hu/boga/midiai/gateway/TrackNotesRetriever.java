@@ -9,8 +9,8 @@ public class TrackNotesRetriever {
 
     public static ArrayList<Note> getNotesFromTrack(Track track) {
 
-        ArrayList<MidiEvent> midiEvents = new ArrayList<MidiEvent>();
-        ArrayList<Note> notes = new ArrayList<Note>();
+        ArrayList<MidiEvent> midiEvents = new ArrayList<>();
+        ArrayList<Note> notes = new ArrayList<>();
 
         Track tempTrack = cloneTrack(track);
 

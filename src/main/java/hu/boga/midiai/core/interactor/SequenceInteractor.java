@@ -3,15 +3,13 @@ package hu.boga.midiai.core.interactor;
 import hu.boga.midiai.core.boundaries.SequenceBoundaryIn;
 import hu.boga.midiai.core.boundaries.SequenceBoundaryOut;
 import hu.boga.midiai.core.boundaries.dtos.SequenceDto;
-import hu.boga.midiai.core.boundaries.dtos.TrackDto;
 import hu.boga.midiai.core.midigateway.SequenceGateway;
 import hu.boga.midiai.core.modell.App;
 import hu.boga.midiai.core.modell.MidiProject;
+import hu.boga.midiai.core.modell.MidiTrack;
 
 import javax.inject.Inject;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -69,12 +67,6 @@ public class SequenceInteractor implements SequenceBoundaryIn {
         App.getProjectById(projectId).ifPresent(midiProject -> midiProject.save(filePath));
     }
 
-    @Override
-    public void updateChnnellMapping(String projetId, int channel, int program) {
-        Optional<MidiProject> opt = App.getProjectById(projetId);
-        opt.ifPresent(midiProject -> midiProject.getChannelMapping().put(channel, program));
-    }
-
 
     private SequenceDto convertSequenceToDto(MidiProject midiProject) {
         SequenceDto dto = new SequenceDto();
@@ -88,9 +80,8 @@ public class SequenceInteractor implements SequenceBoundaryIn {
         dto.tempo = midiProject.getTempo();
         dto.name = midiProject.getName();
         dto.id = midiProject.getId();
-        dto.channelMapping = midiProject.getChannelMapping();
 
-        dto.tracks = midiProject.getTracks().stream().map(midiTrack -> midiTrack.getId()).collect(Collectors.toList());
+        dto.tracks = midiProject.getTracks().stream().map(MidiTrack::getId).collect(Collectors.toList());
 
         return dto;
 

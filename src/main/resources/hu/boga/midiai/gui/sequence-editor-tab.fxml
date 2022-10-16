@@ -33,10 +33,6 @@
                             <Label fx:id="tickSize" />
                         </VBox>
                     </TitledPane>
-                    <TitledPane text="Channel mapping" textFill="#d00404">
-                        <VBox fx:id="channelsWrapper">
-                        </VBox>
-                    </TitledPane>
                 </panes>
             </Accordion>
         </center>

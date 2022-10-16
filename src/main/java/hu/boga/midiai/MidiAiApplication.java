@@ -4,7 +4,6 @@ import com.google.common.eventbus.EventBus;
 import hu.boga.midiai.gui.MainController;
 import hu.boga.midiai.guice.GuiceModule;
 import javafx.application.Application;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;

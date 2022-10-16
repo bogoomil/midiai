@@ -13,7 +13,6 @@ public class MidiProject {
     private Sequencer sequencer;
     UUID id = UUID.randomUUID();
     String name;
-    private Map<Integer, Integer> channelMapping = new HashMap<>();
     private List<MidiTrack> tracks;
 
     public MidiProject(Sequence sequence) {
@@ -142,14 +141,6 @@ public class MidiProject {
 
     public void setTempoFactor(float tempoFactor) {
         this.sequencer.setTempoFactor(tempoFactor);
-    }
-
-    public Map<Integer, Integer> getChannelMapping() {
-        return channelMapping;
-    }
-
-    public void setChannelMapping(Map<Integer, Integer> channelMapping) {
-        this.channelMapping = channelMapping;
     }
 
     public void save(String filePath) {

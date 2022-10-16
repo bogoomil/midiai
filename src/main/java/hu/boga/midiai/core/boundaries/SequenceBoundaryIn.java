@@ -1,7 +1,5 @@
 package hu.boga.midiai.core.boundaries;
 
-import hu.boga.midiai.core.modell.MidiProject;
-
 import java.io.File;
 
 public interface SequenceBoundaryIn {
@@ -14,6 +12,4 @@ public interface SequenceBoundaryIn {
     void stopPlayBack(String projectId);
 
     void saveSequence(String projectId, String filePath);
-
-    void updateChnnellMapping(String projectId, int channel, int program);
 }
