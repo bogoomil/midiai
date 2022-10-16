@@ -20,7 +20,6 @@ public class TrackInteractor implements TrackBoundaryIn {
     @Override
     public void showTrackProperties(String trackId) {
         App.getTrackById(trackId).ifPresent(midiTrack -> {
-            System.out.println("show track properties: " + trackId);
             boundaryOut.dispayTrack(convertTrackToTrackDto(midiTrack));
         });
     }

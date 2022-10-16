@@ -2,7 +2,7 @@ package hu.boga.midiai.core.modell;
 
 import com.google.common.base.Objects;
 import hu.boga.midiai.core.exceptions.AimidiException;
-import hu.boga.midiai.gateway.TrackNotesRetriever;
+import hu.boga.midiai.core.util.TrackNotesRetriever;
 
 import javax.sound.midi.MidiEvent;
 import javax.sound.midi.MidiMessage;

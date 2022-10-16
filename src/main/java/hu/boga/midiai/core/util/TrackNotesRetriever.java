@@ -1,5 +1,6 @@
-package hu.boga.midiai.gateway;
+package hu.boga.midiai.core.util;
 
+import hu.boga.midiai.core.exceptions.AimidiException;
 import hu.boga.midiai.core.modell.Note;
 
 import javax.sound.midi.*;
@@ -32,14 +33,10 @@ public class TrackNotesRetriever {
                 boolean removeNoteOff = tempTrack.remove(noteOff);
 
                 if (!removeNoteOn) {
-                    System.out.println("Could not remove note on event"
-                            + " in MidiHelper.getNotesFromTrack()");
-                    System.exit(1);
+                    throw new AimidiException("INVALID MIDI DATA");
                 }
                 if (!removeNoteOff) {
-                    System.out.println("Could not remove note off event"
-                            + " in MidiHelper.getNotesFromTrack()");
-                    System.exit(1);
+                    throw new AimidiException("INVALID MIDI DATA");
                 }
 
             }
@@ -47,9 +44,7 @@ public class TrackNotesRetriever {
             // (because we should have removed it when we found it's note
             // on event).
             else if (isNoteOffEvent(event)) {
-                System.out.println("Accidentally got to a note off event"
-                        + " in MidiHelper.getNotesFromTrack()");
-                System.exit(1);
+                throw new AimidiException("INVALID MIDI DATA");
             }
             // since we got to something that is neither a note on or a note off,
             // we have to increase our index and look at the next note.

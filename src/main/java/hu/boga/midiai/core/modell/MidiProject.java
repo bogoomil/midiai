@@ -81,7 +81,7 @@ public class MidiProject {
     private void initSequencer(Sequence sequence) {
         try {
             this.sequencer = MidiSystem.getSequencer();
-            this.sequencer.addControllerEventListener(shortMessage -> System.out.println("tick position: " + sequencer.getTickPosition()), new int[]{ShortMessage.NOTE_ON});
+//            this.sequencer.addControllerEventListener(shortMessage -> System.out.println("tick position: " + sequencer.getTickPosition()), new int[]{ShortMessage.NOTE_ON});
             this.sequencer.open();
         } catch (MidiUnavailableException e) {
             e.printStackTrace();
@@ -145,7 +145,6 @@ public class MidiProject {
 
     public void save(String filePath) {
         File file = new File(filePath);
-        System.out.println("file created: " + file.getAbsolutePath());
         try {
             MidiSystem.write(sequence, 1, file);
         } catch (IOException e) {
