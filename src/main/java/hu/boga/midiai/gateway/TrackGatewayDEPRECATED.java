@@ -2,7 +2,6 @@ package hu.boga.midiai.gateway;
 
 
 import hu.boga.midiai.core.exceptions.AimidiException;
-import hu.boga.midiai.core.modell.Note;
 import hu.boga.midiai.core.modell.ProgramChangeEvent;
 
 import javax.sound.midi.*;
@@ -10,11 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class TrackGatewayImpl {
+public class TrackGatewayDEPRECATED {
     private Track track;
     int resolution;
 
-    public TrackGatewayImpl(Track track, int resolution) {
+    public TrackGatewayDEPRECATED(Track track, int resolution) {
         this.track = track;
         this.resolution = resolution;
     }
