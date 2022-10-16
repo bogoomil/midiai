@@ -2,12 +2,11 @@ package hu.boga.midiai.gui;
 
 import hu.boga.midiai.core.boundaries.TrackBoundaryIn;
 import hu.boga.midiai.core.boundaries.TrackBoundaryOut;
-import hu.boga.midiai.core.boundaries.TrackDto;
+import hu.boga.midiai.core.boundaries.dtos.TrackDto;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 
 import javax.inject.Inject;
-import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 

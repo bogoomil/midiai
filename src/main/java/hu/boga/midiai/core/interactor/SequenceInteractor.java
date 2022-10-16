@@ -2,8 +2,8 @@ package hu.boga.midiai.core.interactor;
 
 import hu.boga.midiai.core.boundaries.SequenceBoundaryIn;
 import hu.boga.midiai.core.boundaries.SequenceBoundaryOut;
-import hu.boga.midiai.core.boundaries.SequenceDto;
-import hu.boga.midiai.core.boundaries.TrackDto;
+import hu.boga.midiai.core.boundaries.dtos.SequenceDto;
+import hu.boga.midiai.core.boundaries.dtos.TrackDto;
 import hu.boga.midiai.core.midigateway.SequenceGateway;
 import hu.boga.midiai.core.modell.App;
 import hu.boga.midiai.core.modell.MidiProject;

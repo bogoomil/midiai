@@ -1,4 +1,4 @@
-package hu.boga.midiai.core.boundaries;
+package hu.boga.midiai.core.boundaries.dtos;
 
 import java.util.List;
 import java.util.Map;

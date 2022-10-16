@@ -1,4 +1,4 @@
-package hu.boga.midiai.core.boundaries;
+package hu.boga.midiai.core.boundaries.dtos;
 
 public class TrackDto {
     public String trackId;

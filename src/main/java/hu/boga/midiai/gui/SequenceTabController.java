@@ -4,16 +4,14 @@ import com.google.common.eventbus.Subscribe;
 import hu.boga.midiai.MidiAiApplication;
 import hu.boga.midiai.core.boundaries.SequenceBoundaryIn;
 import hu.boga.midiai.core.boundaries.SequenceBoundaryOut;
-import hu.boga.midiai.core.boundaries.SequenceDto;
-import hu.boga.midiai.core.boundaries.TrackDto;
-import hu.boga.midiai.core.modell.MidiTrack;
+import hu.boga.midiai.core.boundaries.dtos.SequenceDto;
+import hu.boga.midiai.core.boundaries.dtos.TrackDto;
 import hu.boga.midiai.gui.events.ChannelMappingChangeEvent;
 import hu.boga.midiai.guice.GuiceModule;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 
