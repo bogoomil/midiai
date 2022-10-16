@@ -4,4 +4,5 @@ public class TrackDto {
     public String trackId;
     public int channel;
     public int program;
+    public int noteCount;
 }

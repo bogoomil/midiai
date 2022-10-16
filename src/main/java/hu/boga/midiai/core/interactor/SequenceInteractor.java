@@ -13,6 +13,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class SequenceInteractor implements SequenceBoundaryIn {
     private final SequenceBoundaryOut boundaryOut;
@@ -89,24 +90,10 @@ public class SequenceInteractor implements SequenceBoundaryIn {
         dto.id = midiProject.getId();
         dto.channelMapping = midiProject.getChannelMapping();
 
-        dto.tracks = getTracks(midiProject);
+        dto.tracks = midiProject.getTracks().stream().map(midiTrack -> midiTrack.getId()).collect(Collectors.toList());
 
         return dto;
 
     }
-
-    private List<TrackDto> getTracks(MidiProject midiProject) {
-        List<TrackDto> retVal = new ArrayList<>();
-       midiProject.getTracks().forEach(midiTrack -> {
-           TrackDto trackDto = new TrackDto();
-           trackDto.trackId = midiTrack.getId();
-           midiTrack.getChannel().ifPresent(ch -> trackDto.channel = ch);
-           midiTrack.getProgram().ifPresent(pr -> trackDto.program = pr);
-           retVal.add(trackDto);
-       });
-
-        return retVal;
-    }
-
 
 }

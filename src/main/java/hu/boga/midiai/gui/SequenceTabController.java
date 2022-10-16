@@ -93,8 +93,6 @@ public class SequenceTabController implements SequenceBoundaryOut {
                 e.printStackTrace();
             }
         });
-//        this.channelToInstrumentMappingPanel.setProjectId(sequenceDto.id);
-//        this.channelToInstrumentMappingPanel.setChannelMapping(sequenceDto.channelMapping);
     }
 
     public void initSequence() {
@@ -105,19 +103,15 @@ public class SequenceTabController implements SequenceBoundaryOut {
         this.boundaryIn.openFile(file);
     }
 
-    private void addTrackPanel(TrackDto trackDto) throws IOException {
+    private void addTrackPanel(String trackId) throws IOException {
         FXMLLoader loader = new FXMLLoader(ChannelToInstrumentMappingPanel.class.getResource("track-editor-panel.fxml"));
         loader.setControllerFactory(GuiceModule.INJECTOR::getInstance);
         TitledPane trackEditor =  loader.load();
-        trackEditor.setText(trackDto.trackId);
-        TrackEditorPanelController panelController = loader.getController();
-        panelController.setTrackDto(trackDto);
-        accordion.getPanes().add(trackEditor);
-    }
 
-    @Subscribe
-    void handleChannelMappingChangeEvent(ChannelMappingChangeEvent event){
-        System.out.println("" + event);
+        TrackEditorPanelController trackEditorPanelController = loader.getController();
+        trackEditorPanelController.setTrackId(trackId);
+
+        accordion.getPanes().add(trackEditor);
     }
 
 }

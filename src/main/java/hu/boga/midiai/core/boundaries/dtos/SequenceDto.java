@@ -16,6 +16,6 @@ public class SequenceDto {
     public float tempo;
     public Map<Integer, Integer> channelMapping;
 
-    public List<TrackDto> tracks;
+    public List<String> tracks;
 
 }
