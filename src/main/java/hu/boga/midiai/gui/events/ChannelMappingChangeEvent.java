@@ -2,9 +2,12 @@ package hu.boga.midiai.gui.events;
 
 public class ChannelMappingChangeEvent {
 
-    int channel, program;
+    final String projectId;
+    final int channel;
+    final int program;
 
-    public ChannelMappingChangeEvent(int channel, int program) {
+    public ChannelMappingChangeEvent(String projectId, int channel, int program) {
+        this.projectId = projectId;
         this.channel = channel;
         this.program = program;
     }
@@ -12,8 +15,21 @@ public class ChannelMappingChangeEvent {
     @Override
     public String toString() {
         return "ChannelMappingChangeEvent{" +
-                "channel=" + channel +
+                "projectId='" + projectId + '\'' +
+                ", channel=" + channel +
                 ", program=" + program +
                 '}';
+    }
+
+    public String getProjectId() {
+        return projectId;
+    }
+
+    public int getChannel() {
+        return channel;
+    }
+
+    public int getProgram() {
+        return program;
     }
 }

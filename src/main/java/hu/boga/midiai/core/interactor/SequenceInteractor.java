@@ -9,6 +9,7 @@ import hu.boga.midiai.core.modell.MidiProject;
 
 import javax.inject.Inject;
 import java.io.File;
+import java.util.Optional;
 
 public class SequenceInteractor implements SequenceBoundaryIn {
     private final SequenceBoundaryOut boundaryOut;
@@ -62,6 +63,12 @@ public class SequenceInteractor implements SequenceBoundaryIn {
     @Override
     public void saveSequence(String projectId, String filePath) {
         App.getProjectById(projectId).ifPresent(midiProject -> midiProject.save(filePath));
+    }
+
+    @Override
+    public void updateChnnellMapping(String projetId, int channel, int program) {
+        Optional<MidiProject> opt = App.getProjectById(projetId);
+        opt.ifPresent(midiProject -> midiProject.getChannelMapping().put(channel, program));
     }
 
 

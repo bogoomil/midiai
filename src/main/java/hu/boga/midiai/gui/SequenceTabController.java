@@ -43,7 +43,7 @@ public class SequenceTabController implements SequenceBoundaryOut {
     @FXML
     private VBox channelsWrapper;
 
-    private String midiProjectId;
+    private String projectId;
 
     private ChannelToInstrumentMappingPanel channelToInstrumentMappingPanel;
 
@@ -59,15 +59,15 @@ public class SequenceTabController implements SequenceBoundaryOut {
 
     public void saveSequence(ActionEvent actionEvent) {
         String path = new FileChooser().showSaveDialog(null).getAbsolutePath();
-        this.boundaryIn.saveSequence(midiProjectId, path);
+        this.boundaryIn.saveSequence(projectId, path);
     }
 
     public void onPlayCurrentSec(ActionEvent actionEvent) {
-        this.boundaryIn.playLoop(midiProjectId, 960, 1920);
+        this.boundaryIn.playLoop(projectId, 960, 1920);
     }
 
     public void stopPlayback(ActionEvent actionEvent) {
-        this.boundaryIn.stopPlayBack(midiProjectId);
+        this.boundaryIn.stopPlayBack(projectId);
     }
 
     @Override
@@ -82,9 +82,15 @@ public class SequenceTabController implements SequenceBoundaryOut {
         this.ticksPerSecond.setText("ticks / sec: " + sequenceDto.ticksPerSecond + " (resolution * (tempo / 60))");
         this.tickSize.setText("tick size: " + sequenceDto.tickSize + " (1 / ticks per second)");
         this.tempo.setText("tempo: " + sequenceDto.tempo);
-        this.midiProjectId = sequenceDto.id;
-        this.channelToInstrumentMappingPanel.setChannelMapping(sequenceDto.channelMapping);
+        this.projectId = sequenceDto.id;
 
+        initChildren(sequenceDto);
+
+    }
+
+    private void initChildren(SequenceDto sequenceDto) {
+        this.channelToInstrumentMappingPanel.setProjectId(sequenceDto.id);
+        this.channelToInstrumentMappingPanel.setChannelMapping(sequenceDto.channelMapping);
     }
 
     public void initSequence() {
@@ -105,7 +111,7 @@ public class SequenceTabController implements SequenceBoundaryOut {
 
     @Subscribe
     void handleChannelMappingChangeEvent(ChannelMappingChangeEvent event){
-        System.out.println("" + event);
+        this.boundaryIn.updateChnnellMapping(event.getProjectId(), event.getChannel(), event.getProgram());
     }
 
 }

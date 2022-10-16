@@ -14,4 +14,6 @@ public interface SequenceBoundaryIn {
     void stopPlayBack(String projectId);
 
     void saveSequence(String projectId, String filePath);
+
+    void updateChnnellMapping(String projectId, int channel, int program);
 }
