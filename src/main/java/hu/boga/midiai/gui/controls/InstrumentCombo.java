@@ -1,6 +1,10 @@
 package hu.boga.midiai.gui.controls;
 
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.util.Callback;
+import javafx.util.StringConverter;
 
 import javax.sound.midi.Instrument;
 import javax.sound.midi.MidiSystem;
@@ -22,7 +26,18 @@ public class InstrumentCombo extends ComboBox<Instrument> {
 
     public InstrumentCombo() {
         super();
-        this.getItems().addAll(instruments);
+        getItems().addAll(instruments);
+        setConverter(new StringConverter<Instrument>() {
+            @Override
+            public String toString(Instrument object) {
+                return object.getName();
+            }
+
+            @Override
+            public Instrument fromString(String string) {
+                return null;
+            }
+        });
     }
 
     public static Optional<Instrument> getInstrumentByData(int instrumentsProgram) {
@@ -39,7 +54,6 @@ public class InstrumentCombo extends ComboBox<Instrument> {
     }
 
     public int getSelectedProgram(){
-
         return this.getSelectionModel().getSelectedItem().getPatch().getProgram();
     }
 }

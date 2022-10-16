@@ -8,6 +8,7 @@ import hu.boga.midiai.core.midigateway.SequenceGateway;
 import hu.boga.midiai.core.modell.App;
 import hu.boga.midiai.core.modell.MidiProject;
 import hu.boga.midiai.core.modell.MidiTrack;
+import hu.boga.midiai.core.util.AppConstants;
 
 import javax.inject.Inject;
 import javax.sound.midi.InvalidMidiDataException;
@@ -15,11 +16,9 @@ import javax.sound.midi.MidiSystem;
 import javax.sound.midi.Sequence;
 import java.io.File;
 import java.io.IOException;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class SequenceInteractor implements SequenceBoundaryIn {
-    private static final String DEFAULT_NAME = "new_midi.mid";
     private final SequenceBoundaryOut boundaryOut;
 
     @Inject
@@ -86,7 +85,7 @@ public class SequenceInteractor implements SequenceBoundaryIn {
         try {
             Sequence sequence = new Sequence(Sequence.PPQ, 8);
             MidiProject midiProject = new MidiProject(sequence);
-            midiProject.setName(DEFAULT_NAME);
+            midiProject.setName(AppConstants.DEFAULT_NAME);
             App.addProject(midiProject);
             this.boundaryOut.displaySequence(convertSequenceToDto(midiProject));
 

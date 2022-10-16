@@ -16,8 +16,8 @@ import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 
-public class SequenceTabController implements SequenceBoundaryOut {
-
+public class SequenceEditorPanelController implements SequenceBoundaryOut {
+    private static final String DEFAULT_NAME = "new_project.mid";
     private final SequenceBoundaryIn boundaryIn;
 
     public Label division;
@@ -28,25 +28,21 @@ public class SequenceTabController implements SequenceBoundaryOut {
     public Label ticksPerSecond;
     public Label tickSize;
     public Label tempo;
-    public Tab tab;
 
     @FXML
     private TextField tfFilename;
     @FXML
     private Accordion accordion;
-    @FXML
-    private VBox channelsWrapper;
 
     private String projectId;
 
     @Inject
-    public SequenceTabController(SequenceBoundaryIn boundaryInProvider) {
+    public SequenceEditorPanelController(SequenceBoundaryIn boundaryInProvider) {
         this.boundaryIn = boundaryInProvider;
         MidiAiApplication.EVENT_BUS.register(this);
     }
 
     public void initialize()  {
-//        createChannelMappingsPanel();
     }
 
     public void saveSequence(ActionEvent actionEvent) {
@@ -64,7 +60,6 @@ public class SequenceTabController implements SequenceBoundaryOut {
 
     @Override
     public void displaySequence(SequenceDto sequenceDto) {
-        this.tab.setText(sequenceDto.name);
         this.tfFilename.setText(sequenceDto.name);
         this.division.setText("division: " + sequenceDto.division + "");
         this.resolution.setText("resolution: " + sequenceDto.resolution + "");

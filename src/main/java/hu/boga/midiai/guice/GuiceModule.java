@@ -8,7 +8,7 @@ import hu.boga.midiai.core.interactor.SequenceInteractor;
 import hu.boga.midiai.core.interactor.TrackInteractor;
 import hu.boga.midiai.gui.MainController;
 import hu.boga.midiai.core.interactor.MainInteractor;
-import hu.boga.midiai.gui.SequenceTabController;
+import hu.boga.midiai.gui.SequenceEditorPanelController;
 import hu.boga.midiai.gui.TrackEditorPanelController;
 
 public class GuiceModule extends AbstractModule {
@@ -22,12 +22,10 @@ public class GuiceModule extends AbstractModule {
         bind(MainBoundaryOut.class).to(MainController.class);
 
         bind(SequenceBoundaryIn.class).to(SequenceInteractor.class);
-        bind(SequenceBoundaryOut.class).to(SequenceTabController.class);
+        bind(SequenceBoundaryOut.class).to(SequenceEditorPanelController.class);
 
         bind(TrackBoundaryIn.class).to(TrackInteractor.class);
         bind(TrackBoundaryOut.class).to(TrackEditorPanelController.class);
-
-    //    bind(SequenceGateway.class).to(SequenceGatewayImpl.class);
 
     }
 

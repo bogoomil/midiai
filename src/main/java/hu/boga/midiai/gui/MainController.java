@@ -2,12 +2,14 @@ package hu.boga.midiai.gui;
 
 import hu.boga.midiai.core.boundaries.MainBoundaryIn;
 import hu.boga.midiai.core.boundaries.MainBoundaryOut;
+import hu.boga.midiai.core.util.AppConstants;
 import hu.boga.midiai.guice.GuiceModule;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.FileChooser;
 
 import javax.inject.Inject;
@@ -47,12 +49,12 @@ public class MainController implements MainBoundaryOut {
         getSequenceTabController().initSequence();
     }
 
-    private SequenceTabController getSequenceTabController() throws IOException {
-        FXMLLoader loader = new FXMLLoader(SequenceTabController.class.getResource("sequence-editor-tab.fxml"));
+    private SequenceEditorPanelController getSequenceTabController() throws IOException {
+        FXMLLoader loader = new FXMLLoader(SequenceEditorPanelController.class.getResource("sequence-editor-panel.fxml"));
         loader.setControllerFactory(GuiceModule.INJECTOR::getInstance);
-        Tab sequenceEditorTab =  loader.load();
-        SequenceTabController sequenceTabController = loader.getController();
-        mainTab.getTabs().add(sequenceEditorTab);
-        return sequenceTabController;
+        BorderPane sequenceEditorTab =  loader.load();
+        SequenceEditorPanelController controller = loader.getController();
+        mainTab.getTabs().add(new Tab(AppConstants.DEFAULT_NAME, sequenceEditorTab));
+        return controller;
     }
 }

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="hu.boga.midiai.gui.SequenceEditorPanelController">
+<top>
+    <HBox BorderPane.alignment="CENTER">
+        <TextField fx:id="tfFilename" />
+        <Button mnemonicParsing="false" onAction="#saveSequence" text="Save" />
+        <Separator minWidth="18.0" orientation="VERTICAL" prefWidth="10.0" />
+        <Button mnemonicParsing="false" onAction="#onPlayCurrentSec" text="Play" />
+        <Button mnemonicParsing="false" onAction="#stopPlayback" text="Stop" />
+    </HBox>
+</top>
+<center>
+    <Accordion fx:id="accordion" BorderPane.alignment="CENTER">
+        <panes>
+            <TitledPane text="Properties" textFill="#028d00">
+                <VBox>
+                    <Label fx:id="tempo" />
+                    <Label fx:id="division" />
+                    <Label fx:id="resolution" />
+                    <Label fx:id="tickLength" />
+                    <Label fx:id="ticksPerMeasure" />
+                    <Label fx:id="ticksIn32nds" />
+                    <Label fx:id="ticksPerSecond" />
+                    <Label fx:id="tickSize" />
+                </VBox>
+            </TitledPane>
+        </panes>
+    </Accordion>
+</center>
+</BorderPane>

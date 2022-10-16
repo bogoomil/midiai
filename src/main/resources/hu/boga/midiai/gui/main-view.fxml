@@ -30,7 +30,6 @@
         </MenuBar>
     </top>
     <center>
-        <TabPane fx:id="mainTab" style="-fx-border-color: black; -fx-border-width: 5;" tabClosingPolicy="UNAVAILABLE"
-                 BorderPane.alignment="CENTER"/>
+        <TabPane fx:id="mainTab" style="-fx-border-color: black; -fx-border-width: 5;" tabClosingPolicy="SELECTED_TAB"/>
     </center>
 </BorderPane>
