@@ -1,5 +1,6 @@
 package hu.boga.midiai.core.boundaries;
 
+import java.util.List;
 import java.util.Map;
 
 public class SequenceDto {
@@ -14,5 +15,7 @@ public class SequenceDto {
     public float tickSize;
     public float tempo;
     public Map<Integer, Integer> channelMapping;
+
+    public List<TrackDto> tracks;
 
 }

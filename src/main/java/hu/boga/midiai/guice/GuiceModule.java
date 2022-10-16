@@ -3,16 +3,15 @@ package hu.boga.midiai.guice;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import hu.boga.midiai.core.boundaries.SequenceBoundaryIn;
-import hu.boga.midiai.core.boundaries.SequenceBoundaryOut;
+import hu.boga.midiai.core.boundaries.*;
 import hu.boga.midiai.core.interactor.SequenceInteractor;
+import hu.boga.midiai.core.interactor.TrackInteractor;
 import hu.boga.midiai.core.midigateway.SequenceGateway;
 import hu.boga.midiai.gateway.SequenceGatewayImpl;
 import hu.boga.midiai.gui.MainController;
-import hu.boga.midiai.core.boundaries.MainBoundaryIn;
-import hu.boga.midiai.core.boundaries.MainBoundaryOut;
 import hu.boga.midiai.core.interactor.MainInteractor;
 import hu.boga.midiai.gui.SequenceTabController;
+import hu.boga.midiai.gui.TrackEditorPanelController;
 
 public class GuiceModule extends AbstractModule {
 
@@ -26,6 +25,9 @@ public class GuiceModule extends AbstractModule {
 
         bind(SequenceBoundaryIn.class).to(SequenceInteractor.class);
         bind(SequenceBoundaryOut.class).to(SequenceTabController.class);
+
+        bind(TrackBoundaryIn.class).to(TrackInteractor.class);
+        bind(TrackBoundaryOut.class).to(TrackEditorPanelController.class);
 
         bind(SequenceGateway.class).to(SequenceGatewayImpl.class);
 
