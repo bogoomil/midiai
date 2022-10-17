@@ -52,9 +52,9 @@ public class MainController implements MainBoundaryOut {
     private SequenceEditorPanelController getSequenceTabController() throws IOException {
         FXMLLoader loader = new FXMLLoader(SequenceEditorPanelController.class.getResource("sequence-editor-panel.fxml"));
         loader.setControllerFactory(GuiceModule.INJECTOR::getInstance);
-        BorderPane sequenceEditorTab =  loader.load();
+        BorderPane sequenceEditorPanel =  loader.load();
         SequenceEditorPanelController controller = loader.getController();
-        mainTab.getTabs().add(new Tab(AppConstants.DEFAULT_NAME, sequenceEditorTab));
+        mainTab.getTabs().add(new Tab(AppConstants.DEFAULT_NAME, sequenceEditorPanel));
         return controller;
     }
 }

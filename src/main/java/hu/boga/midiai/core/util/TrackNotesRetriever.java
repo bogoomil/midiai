@@ -1,6 +1,7 @@
 package hu.boga.midiai.core.util;
 
 import hu.boga.midiai.core.exceptions.AimidiException;
+import hu.boga.midiai.core.modell.MidiTrack;
 import hu.boga.midiai.core.modell.Note;
 
 import javax.sound.midi.*;
@@ -8,12 +9,12 @@ import java.util.ArrayList;
 
 public class TrackNotesRetriever {
 
-    public static ArrayList<Note> getNotesFromTrack(Track track) {
+    public static ArrayList<Note> getNotesFromTrack(MidiTrack midiTrack) {
 
         ArrayList<MidiEvent> midiEvents = new ArrayList<>();
         ArrayList<Note> notes = new ArrayList<>();
 
-        Track tempTrack = cloneTrack(track);
+        Track tempTrack = cloneTrack(midiTrack.getTrack(), midiTrack.getResolution());
 
         int index = 0;
 
@@ -59,11 +60,10 @@ public class TrackNotesRetriever {
 
     }
 
-    private static Track cloneTrack(Track track) {
+    private static Track cloneTrack(Track track, int resolution) {
         Track newTrack = null;
-        int resolution = 8;
         try {
-            Sequence seq = new Sequence(Sequence.PPQ, 8);
+            Sequence seq = new Sequence(Sequence.PPQ, resolution);
             newTrack = seq.createTrack();
         } catch (Exception e) {
             e.printStackTrace();

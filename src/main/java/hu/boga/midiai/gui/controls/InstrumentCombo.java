@@ -27,17 +27,17 @@ public class InstrumentCombo extends ComboBox<Instrument> {
     public InstrumentCombo() {
         super();
         getItems().addAll(instruments);
-        setConverter(new StringConverter<Instrument>() {
-            @Override
-            public String toString(Instrument object) {
-                return object.getName();
-            }
-
-            @Override
-            public Instrument fromString(String string) {
-                return null;
-            }
-        });
+//        setConverter(new StringConverter<Instrument>() {
+//            @Override
+//            public String toString(Instrument object) {
+//                return object.getName();
+//            }
+//
+//            @Override
+//            public Instrument fromString(String string) {
+//                return null;
+//            }
+//        });
     }
 
     public static Optional<Instrument> getInstrumentByData(int instrumentsProgram) {

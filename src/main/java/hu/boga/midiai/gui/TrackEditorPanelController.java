@@ -2,6 +2,7 @@ package hu.boga.midiai.gui;
 
 import hu.boga.midiai.core.boundaries.TrackBoundaryIn;
 import hu.boga.midiai.core.boundaries.TrackBoundaryOut;
+import hu.boga.midiai.core.boundaries.dtos.NoteDto;
 import hu.boga.midiai.core.boundaries.dtos.TrackDto;
 import hu.boga.midiai.gui.controls.InstrumentCombo;
 import javafx.fxml.FXML;
@@ -13,6 +14,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcType;
 
 import javax.inject.Inject;
+import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -45,7 +48,7 @@ public class TrackEditorPanelController implements TrackBoundaryOut {
 
     public void setTrackId(String trackId){
         this.trackId = trackId;
-        trackBoundaryIn.showTrackProperties(trackId);
+        trackBoundaryIn.showTrack(trackId);
     }
 
     @Override
@@ -55,12 +58,15 @@ public class TrackEditorPanelController implements TrackBoundaryOut {
         channelCombo.getSelectionModel().select(trackDto.channel);
         instrumentCombo.selectInstrument(trackDto.program);
 
-        displayNotes();
+        displayNotes(trackDto.notes);
 
 
     }
 
-    private void displayNotes(){
+    private void displayNotes(NoteDto[] notes){
+
+
+
         GraphicsContext gc = canvas.getGraphicsContext2D();
         gc.setFill(Color.GREEN);
         gc.setStroke(Color.BLUE);
@@ -82,5 +88,14 @@ public class TrackEditorPanelController implements TrackBoundaryOut {
                 new double[]{210, 210, 240, 240}, 4);
         gc.strokePolyline(new double[]{110, 140, 110, 140},
                 new double[]{210, 210, 240, 240}, 4);
+        AtomicInteger atomicInteger = new AtomicInteger(0);
+        Arrays.stream(notes).forEach(noteDto -> {
+            int tickWidth = 20;
+            int rowHeight = 20;
+            int szorzo = atomicInteger.getAndIncrement();
+            int x = tickWidth * szorzo;
+            int y = rowHeight * szorzo;
+            gc.fillText("" + noteDto, x, y);
+        });
     }
 }

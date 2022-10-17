@@ -84,7 +84,20 @@ public class MidiTrack {
         return this.id.toString();
     }
 
-    public int getNoteCount() {
-        return TrackNotesRetriever.getNotesFromTrack(track).size();
+    public Track getTrack(){
+        return track;
     }
+
+    public int getResolution(){
+        return resolution;
+    }
+
+    public List<Note> getNotes() {
+        return TrackNotesRetriever.getNotesFromTrack(this);
+    }
+
+    public int getNoteCount() {
+        return getNotes().size();
+    }
+
 }

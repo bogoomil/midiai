@@ -4,11 +4,11 @@ package hu.boga.midiai.core.modell;
 import hu.boga.midiai.core.musictheory.enums.NoteName;
 
 public class Note {
-    int noteValue;
-    long tick;
-    long length;
-    int velocity;
-    int channel;
+    public int noteValue;
+    public long tick;
+    public long length;
+    public int velocity;
+    public int channel;
 
     public Note(int noteValue, long tick, long length, int velocity, int channel) {
         this.noteValue = noteValue;

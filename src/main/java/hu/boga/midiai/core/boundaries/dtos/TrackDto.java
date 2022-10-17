@@ -5,4 +5,6 @@ public class TrackDto {
     public int channel;
     public int program;
     public int noteCount;
+    public int resolution;
+    public NoteDto[] notes;
 }
