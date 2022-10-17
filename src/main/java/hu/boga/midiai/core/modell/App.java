@@ -8,20 +8,27 @@ import java.util.UUID;
 public class App {
     private static final List<MidiProject> MIDI_PROJECTS = new ArrayList<>();
 
-    public static Optional<MidiProject> getProjectById(String projectId){
+    public static Optional<MidiProject> getProjectById(String projectId) {
         UUID uuid = UUID.fromString(projectId);
         return MIDI_PROJECTS.stream().filter(midiProject -> midiProject.id.equals(uuid)).findFirst();
     }
 
-    public static Optional<MidiTrack> getTrackById(String trackId){
-        return MIDI_PROJECTS.stream().map(midiProject -> midiProject.getTrackById(trackId)).findFirst().get();
+    public static Optional<MidiTrack> getTrackById(String trackId) {
+        for (MidiProject midiProject : MIDI_PROJECTS) {
+            Optional<MidiTrack> midiTrackOpt = midiProject.getTrackById(trackId);
+            if (midiProject.getTrackById(trackId).isPresent()) {
+                return midiTrackOpt;
+            }
+        }
+        return Optional.empty();
+
     }
 
-    public static  void addProject(MidiProject midiProject){
+    public static void addProject(MidiProject midiProject) {
         MIDI_PROJECTS.add(midiProject);
     }
 
-    public static void removeProject(String id){
+    public static void removeProject(String id) {
         MIDI_PROJECTS.removeIf(midiProject -> midiProject.id.equals(UUID.fromString(id)));
     }
 }

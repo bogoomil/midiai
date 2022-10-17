@@ -4,7 +4,6 @@ import hu.boga.midiai.core.boundaries.SequenceBoundaryIn;
 import hu.boga.midiai.core.boundaries.SequenceBoundaryOut;
 import hu.boga.midiai.core.boundaries.dtos.SequenceDto;
 import hu.boga.midiai.core.exceptions.AimidiException;
-import hu.boga.midiai.core.midigateway.SequenceGateway;
 import hu.boga.midiai.core.modell.App;
 import hu.boga.midiai.core.modell.MidiProject;
 import hu.boga.midiai.core.modell.MidiTrack;

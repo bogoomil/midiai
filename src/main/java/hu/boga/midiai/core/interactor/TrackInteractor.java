@@ -24,6 +24,9 @@ public class TrackInteractor implements TrackBoundaryIn {
     @Override
     public void showTrack(String trackId) {
         App.getTrackById(trackId).ifPresent(midiTrack -> {
+
+            System.out.println("show track, midiTrack: " + midiTrack.getId());
+
             boundaryOut.dispayTrack(convertTrackToTrackDto(midiTrack));
         });
     }

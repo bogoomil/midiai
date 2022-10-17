@@ -13,7 +13,6 @@ module hu.boga.midiai {
     exports hu.boga.midiai.core.boundaries;
     exports hu.boga.midiai.core.boundaries.dtos;
     exports hu.boga.midiai.core.interactor;
-    exports hu.boga.midiai.core.midigateway;
     exports hu.boga.midiai.core.modell;
     exports hu.boga.midiai.core.util;
 

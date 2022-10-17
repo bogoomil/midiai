@@ -42,7 +42,7 @@ public class TrackEditorPanelController implements TrackBoundaryOut {
     public void initialize() {
         channelCombo.getItems().addAll(IntStream.rangeClosed(0, 15).boxed().collect(Collectors.toList()));
         instrumentCombo.valueProperty().addListener((observable, oldValue, newValue) -> {
-            System.out.println("observable: " + observable + " old: " + oldValue + " new: " + newValue);
+//            System.out.println("observable: " + observable + " old: " + oldValue + " new: " + newValue);
         });
     }
 
