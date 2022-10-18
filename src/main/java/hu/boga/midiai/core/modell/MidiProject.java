@@ -162,4 +162,10 @@ public class MidiProject {
         return tracks.stream().filter(midiTrack -> midiTrack.id.equals(uuid)).findFirst();
     }
 
+    public MidiTrack createNewTrack() {
+        Track track = sequence.createTrack();
+        MidiTrack midiTrack = new MidiTrack(track, getResolution());
+        tracks.add(midiTrack);
+        return midiTrack;
+    }
 }

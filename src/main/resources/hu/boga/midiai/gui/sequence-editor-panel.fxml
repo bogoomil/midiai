@@ -9,6 +9,9 @@
         <TextField fx:id="tfFilename" />
         <Button mnemonicParsing="false" onAction="#saveSequence" text="Save" />
         <Separator minWidth="18.0" orientation="VERTICAL" prefWidth="10.0" />
+        <Button mnemonicParsing="false" onAction="#onNewTrackButtonClicked" text="Track+" />
+
+        <Separator minWidth="18.0" orientation="VERTICAL" prefWidth="10.0" />
         <Button mnemonicParsing="false" onAction="#onPlayCurrentSec" text="Play" />
         <Button mnemonicParsing="false" onAction="#stopPlayback" text="Stop" />
     </HBox>

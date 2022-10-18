@@ -4,12 +4,12 @@ import hu.boga.midiai.MidiAiApplication;
 import hu.boga.midiai.core.boundaries.SequenceBoundaryIn;
 import hu.boga.midiai.core.boundaries.SequenceBoundaryOut;
 import hu.boga.midiai.core.boundaries.dtos.SequenceDto;
+import hu.boga.midiai.core.exceptions.AimidiException;
 import hu.boga.midiai.guice.GuiceModule;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
-import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 
 import javax.inject.Inject;
@@ -102,6 +102,20 @@ public class SequenceEditorPanelController implements SequenceBoundaryOut {
         trackEditorPanelController.setTrackId(trackId);
 
         accordion.getPanes().add(trackEditor);
+    }
+
+    public void onNewTrackButtonClicked(ActionEvent actionEvent) {
+        this.boundaryIn.addTrack(projectId);
+    }
+
+    @Override
+    public void addTrack(String id) {
+        try {
+            addTrackPanel(id);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new AimidiException("Adding new track failed: " + e.getMessage());
+        }
     }
 
 }

@@ -12,4 +12,6 @@ public interface SequenceBoundaryIn {
     void stopPlayBack(String projectId);
 
     void saveSequence(String projectId, String filePath);
+
+    void addTrack(String projectId);
 }

@@ -97,5 +97,8 @@ public class TrackEditorPanelController implements TrackBoundaryOut {
             int y = rowHeight * szorzo;
             gc.fillText("" + noteDto, x, y);
         });
+
+        CanvasPainter canvasPainter = new CanvasPainter(canvas);
+        canvasPainter.paintNotes(Arrays.asList(notes));
     }
 }
