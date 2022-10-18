@@ -68,6 +68,14 @@ public class SequenceInteractor implements SequenceBoundaryIn {
         });
     }
 
+    @Override
+    public void removeTrack(String trackId) {
+        App.findMidiProjectByTrackId(trackId).ifPresent(midiProject -> {
+            midiProject.removeTrackById(trackId);
+            boundaryOut.displaySequence(convertSequenceToDto(midiProject));
+        });
+
+    }
 
     private SequenceDto convertSequenceToDto(MidiProject midiProject) {
         SequenceDto dto = new SequenceDto();
@@ -85,7 +93,6 @@ public class SequenceInteractor implements SequenceBoundaryIn {
         dto.tracks = midiProject.getTracks().stream().map(MidiTrack::getId).collect(Collectors.toList());
 
         return dto;
-
     }
 
     public void initNewSequence() {

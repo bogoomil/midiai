@@ -1,10 +1,13 @@
 package hu.boga.midiai.gui;
 
+import hu.boga.midiai.MidiAiApplication;
 import hu.boga.midiai.core.boundaries.TrackBoundaryIn;
 import hu.boga.midiai.core.boundaries.TrackBoundaryOut;
 import hu.boga.midiai.core.boundaries.dtos.NoteDto;
 import hu.boga.midiai.core.boundaries.dtos.TrackDto;
 import hu.boga.midiai.gui.controls.InstrumentCombo;
+import hu.boga.midiai.gui.events.TrackDeleteEvent;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -54,7 +57,7 @@ public class TrackEditorPanelController implements TrackBoundaryOut {
     @Override
     public void dispayTrack(TrackDto trackDto) {
         trackId = trackDto.trackId;
-        titledPane.setText("ch: " + trackDto.channel + " pr:" + trackDto.program + " notes: " + trackDto.noteCount);
+        titledPane.setText("ch: " + trackDto.channel + " pr:" + trackDto.program + " notes: " + trackDto.noteCount + " (" + trackId + ")");
         channelCombo.getSelectionModel().select(trackDto.channel);
         instrumentCombo.selectInstrument(trackDto.program);
 
@@ -64,9 +67,6 @@ public class TrackEditorPanelController implements TrackBoundaryOut {
     }
 
     private void displayNotes(NoteDto[] notes){
-
-
-
         GraphicsContext gc = canvas.getGraphicsContext2D();
         gc.setFill(Color.GREEN);
         gc.setStroke(Color.BLUE);
@@ -100,5 +100,9 @@ public class TrackEditorPanelController implements TrackBoundaryOut {
 
         CanvasPainter canvasPainter = new CanvasPainter(canvas);
         canvasPainter.paintNotes(Arrays.asList(notes));
+    }
+
+    public void removeTrack(ActionEvent actionEvent) {
+        MidiAiApplication.EVENT_BUS.post(new TrackDeleteEvent(trackId));
     }
 }

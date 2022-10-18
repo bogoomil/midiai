@@ -14,4 +14,5 @@ public interface SequenceBoundaryIn {
     void saveSequence(String projectId, String filePath);
 
     void addTrack(String projectId);
+    void removeTrack(String trackId);
 }

@@ -36,6 +36,8 @@
                             <ComboBox fx:id="channelCombo" GridPane.columnIndex="1"/>
                             <Label text="Program" GridPane.rowIndex="1"/>
                             <InstrumentCombo fx:id="instrumentCombo" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                            <Button mnemonicParsing="false" text="Track-" GridPane.columnIndex="1"
+                                    GridPane.rowIndex="2" onAction="#removeTrack"/>
                         </children>
                     </GridPane>
                 </children>

@@ -1,10 +1,12 @@
 package hu.boga.midiai.gui;
 
+import com.google.common.eventbus.Subscribe;
 import hu.boga.midiai.MidiAiApplication;
 import hu.boga.midiai.core.boundaries.SequenceBoundaryIn;
 import hu.boga.midiai.core.boundaries.SequenceBoundaryOut;
 import hu.boga.midiai.core.boundaries.dtos.SequenceDto;
 import hu.boga.midiai.core.exceptions.AimidiException;
+import hu.boga.midiai.gui.events.TrackDeleteEvent;
 import hu.boga.midiai.guice.GuiceModule;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -28,6 +30,7 @@ public class SequenceEditorPanelController implements SequenceBoundaryOut {
     public Label ticksPerSecond;
     public Label tickSize;
     public Label tempo;
+    public Label projectIdLabel;
 
     @FXML
     private TextField tfFilename;
@@ -70,15 +73,17 @@ public class SequenceEditorPanelController implements SequenceBoundaryOut {
         this.tickSize.setText("tick size: " + sequenceDto.tickSize + " (1 / ticks per second)");
         this.tempo.setText("tempo: " + sequenceDto.tempo);
         this.projectId = sequenceDto.id;
+        projectIdLabel.setText(projectId);
 
         initChildren(sequenceDto);
 
     }
 
     private void initChildren(SequenceDto sequenceDto) {
-        sequenceDto.tracks.forEach(trackDto -> {
+        accordion.getPanes().remove(1, accordion.getPanes().size());
+        sequenceDto.tracks.forEach(trackId -> {
             try {
-                addTrackPanel(trackDto);
+                addTrackPanel(trackId);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -118,4 +123,8 @@ public class SequenceEditorPanelController implements SequenceBoundaryOut {
         }
     }
 
+    @Subscribe
+    private void handleTrackDeletedEvent(TrackDeleteEvent even){
+        boundaryIn.removeTrack(even.getTrackId());
+    }
 }

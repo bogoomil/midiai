@@ -31,7 +31,7 @@ public class CanvasPainter {
         canvas.setWidth(getWorkingWidth());
         canvas.setHeight(getWorkingHeight());
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-        printStat();
+//        printStat();
     }
     
     private int getMeasureWidth(){

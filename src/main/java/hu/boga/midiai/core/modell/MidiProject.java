@@ -168,4 +168,12 @@ public class MidiProject {
         tracks.add(midiTrack);
         return midiTrack;
     }
+
+    public void removeTrackById(String trackId) {
+        getTrackById(trackId).ifPresent(midiTrack -> {
+            sequence.deleteTrack(midiTrack.getTrack());
+            this.tracks.remove(midiTrack);
+        });
+        System.out.println("TRACKS SIZE: " + tracks.size());
+    }
 }
