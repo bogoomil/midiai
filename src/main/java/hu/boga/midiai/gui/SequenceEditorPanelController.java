@@ -1,12 +1,11 @@
 package hu.boga.midiai.gui;
 
 import com.google.common.eventbus.Subscribe;
-import hu.boga.midiai.MidiAiApplication;
 import hu.boga.midiai.core.boundaries.SequenceBoundaryIn;
 import hu.boga.midiai.core.boundaries.SequenceBoundaryOut;
 import hu.boga.midiai.core.boundaries.dtos.SequenceDto;
 import hu.boga.midiai.core.exceptions.AimidiException;
-import hu.boga.midiai.gui.events.TrackDeleteEvent;
+import hu.boga.midiai.gui.trackeditor.TrackEditorPanelController;
 import hu.boga.midiai.guice.GuiceModule;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

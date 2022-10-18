@@ -9,7 +9,7 @@ import hu.boga.midiai.core.interactor.TrackInteractor;
 import hu.boga.midiai.gui.MainController;
 import hu.boga.midiai.core.interactor.MainInteractor;
 import hu.boga.midiai.gui.SequenceEditorPanelController;
-import hu.boga.midiai.gui.TrackEditorPanelController;
+import hu.boga.midiai.gui.trackeditor.TrackEditorPanelController;
 
 public class GuiceModule extends AbstractModule {
 

@@ -17,11 +17,9 @@ public class App {
         for (MidiProject midiProject : MIDI_PROJECTS) {
             Optional<MidiTrack> midiTrackOpt = midiProject.getTrackById(trackId);
             if (midiProject.getTrackById(trackId).isPresent()) {
-                System.out.println("getTrackById FOUND: " + trackId);
                 return midiTrackOpt;
             }
         }
-        System.out.println("getTrackById NOT FOUND: " + trackId);
         return Optional.empty();
     }
 
@@ -35,14 +33,11 @@ public class App {
 
     public static Optional<MidiProject> findMidiProjectByTrackId(String trackId){
         for (MidiProject midiProject : MIDI_PROJECTS) {
-            System.out.println("findMidiProjectByTrackId MIDO PROJECT: " + midiProject.id);
             Optional<MidiTrack> midiTrackOpt = midiProject.getTrackById(trackId);
             if (midiProject.getTrackById(trackId).isPresent()) {
-                System.out.println("findMidiProjectByTrackId FOUND: " + trackId);
                 return Optional.of(midiProject);
             }
         }
-        System.out.println("findMidiProjectByTrackId NOT FOUND: " + trackId);
         return Optional.empty();
 
     }

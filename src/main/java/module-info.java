@@ -18,8 +18,11 @@ module hu.boga.midiai {
 
     exports hu.boga.midiai.gui;
     exports hu.boga.midiai.gui.controls;
+    exports hu.boga.midiai.gui.test;
 
     opens hu.boga.midiai to javafx.fxml;
     opens hu.boga.midiai.gui to javafx.fxml, com.google.common;
+    exports hu.boga.midiai.gui.trackeditor;
+    opens hu.boga.midiai.gui.trackeditor to com.google.common, javafx.fxml;
 
 }
