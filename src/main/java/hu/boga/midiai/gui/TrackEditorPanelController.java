@@ -35,6 +35,8 @@ public class TrackEditorPanelController implements TrackBoundaryOut {
 
     TrackBoundaryIn trackBoundaryIn;
 
+    SequenceEditorPanelController parent;
+
     String trackId;
 
     @Inject
@@ -103,6 +105,10 @@ public class TrackEditorPanelController implements TrackBoundaryOut {
     }
 
     public void removeTrack(ActionEvent actionEvent) {
-        MidiAiApplication.EVENT_BUS.post(new TrackDeleteEvent(trackId));
+        parent.onTrackDeletedEvent(trackId);
+    }
+
+    public void setParent(final SequenceEditorPanelController parent) {
+        this.parent = parent;
     }
 }

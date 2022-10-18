@@ -15,7 +15,7 @@ import static java.lang.System.exit;
 
 public class MidiAiApplication extends Application {
 
-    public static final EventBus EVENT_BUS = new EventBus();
+//    public static final EventBus EVENT_BUS = new EventBus();
 
     @Override
     public void start(Stage stage) throws IOException {

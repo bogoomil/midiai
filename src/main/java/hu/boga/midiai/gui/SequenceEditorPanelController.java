@@ -42,7 +42,6 @@ public class SequenceEditorPanelController implements SequenceBoundaryOut {
     @Inject
     public SequenceEditorPanelController(SequenceBoundaryIn boundaryInProvider) {
         this.boundaryIn = boundaryInProvider;
-        MidiAiApplication.EVENT_BUS.register(this);
     }
 
     public void initialize()  {
@@ -105,6 +104,7 @@ public class SequenceEditorPanelController implements SequenceBoundaryOut {
 
         TrackEditorPanelController trackEditorPanelController = loader.getController();
         trackEditorPanelController.setTrackId(trackId);
+        trackEditorPanelController.setParent(this);
 
         accordion.getPanes().add(trackEditor);
     }
@@ -124,7 +124,7 @@ public class SequenceEditorPanelController implements SequenceBoundaryOut {
     }
 
     @Subscribe
-    private void handleTrackDeletedEvent(TrackDeleteEvent even){
-        boundaryIn.removeTrack(even.getTrackId());
+    public void onTrackDeletedEvent(String trackId){
+        boundaryIn.removeTrack(trackId);
     }
 }
