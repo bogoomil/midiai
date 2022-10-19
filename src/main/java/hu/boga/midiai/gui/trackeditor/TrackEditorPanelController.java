@@ -3,15 +3,19 @@ package hu.boga.midiai.gui.trackeditor;
 import hu.boga.midiai.core.boundaries.TrackBoundaryIn;
 import hu.boga.midiai.core.boundaries.TrackBoundaryOut;
 import hu.boga.midiai.core.boundaries.dtos.TrackDto;
+import hu.boga.midiai.core.musictheory.Pitch;
+import hu.boga.midiai.gui.GuiConstants;
 import hu.boga.midiai.gui.SequenceEditorPanelController;
 import hu.boga.midiai.gui.controls.InstrumentCombo;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TitledPane;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 
 import javax.inject.Inject;
@@ -62,6 +66,13 @@ public class TrackEditorPanelController implements TrackBoundaryOut {
         });
         canvasPainter = new NotesPainter(graphicPane);
 
+        graphicPane.addEventHandler(MouseEvent.MOUSE_MOVED, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                System.out.println("mouse moved: " + event.getY() + "-> ptch: " + getPitchByY((int) event.getY()) + " y by pitch: " + getYByPitch(getPitchByY((int) event.getY()).getMidiCode()));
+            }
+        });
+
     }
 
     public void setTrackId(String trackId){
@@ -90,4 +101,26 @@ public class TrackEditorPanelController implements TrackBoundaryOut {
     public void setParent(final SequenceEditorPanelController parent) {
         this.parent = parent;
     }
+
+
+    private Pitch getPitchByY(int y) {
+        int pitch = (int) ((this.graphicPane.getPrefHeight() / GuiConstants.LINE_HEIGHT - 1) - (y / GuiConstants.LINE_HEIGHT));
+        return new Pitch(pitch);
+    }
+
+//    private int getTickByX(int x) {
+//        int tickWidth = getTickWidth();
+//        int tick = (x - KEYBOARD_OFFSET) / tickWidth;
+//        return tick;
+//    }
+//
+//    private int getXByTick(int tick, int tickWidth) {
+//        return tick * tickWidth + KEYBOARD_OFFSET;
+//    }
+
+    private int getYByPitch(int midiCode) {
+        return (GuiConstants.OCTAVES * 12 - 1 - midiCode) * GuiConstants.LINE_HEIGHT;
+    }
+
+
 }
