@@ -5,17 +5,21 @@ import hu.boga.midiai.core.musictheory.Pitch;
 import hu.boga.midiai.core.musictheory.enums.NoteName;
 import hu.boga.midiai.gui.GuiConstants;
 import javafx.event.EventHandler;
+import javafx.geometry.Point2D;
+import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Shape;
 import javafx.scene.text.Text;
 
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class TrackEditorPanel extends Pane {
@@ -30,10 +34,17 @@ public class TrackEditorPanel extends Pane {
         addEventHandler(MouseEvent.MOUSE_MOVED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                System.out.println("mouse moved: " + event.getY() + "-> pitch: " + getPitchByY((int) event.getY()) + " y by pitch: " + getYByPitch(getPitchByY((int) event.getY()).getMidiCode()));
-                System.out.println("tick: " + getTickByX((int) event.getX()));
+//                System.out.println("mouse moved: " + event.getY() + "-> pitch: " + getPitchByY((int) event.getY()) + " y by pitch: " + getYByPitch(getPitchByY((int) event.getY()).getMidiCode()));
+//                System.out.println("tick: " + getTickByX((int) event.getX()));
+//                getChild(new Point2D(event.getX(), event.getY())).ifPresent(node -> {
+//                    System.out.println("NODE: " + node);
+//                });
             }
         });
+    }
+
+    Optional<Node> getChild(Point2D point){
+        return this.getChildren().filtered(node -> node.contains(point)).stream().findFirst();
     }
 
 
@@ -84,6 +95,12 @@ public class TrackEditorPanel extends Pane {
         rect.setWidth(this.getTickWidth() * noteDto.lengthInTicks);
         rect.setHeight(getPitchHeight());
         rect.setStroke(Color.ALICEBLUE);
+        rect.addEventHandler(MouseEvent.MOUSE_MOVED, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                System.out.println("rect: " + rect.getParent().getParent());
+            }
+        });
         return rect;
     }
 
