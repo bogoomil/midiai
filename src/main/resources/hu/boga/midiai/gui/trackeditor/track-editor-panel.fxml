@@ -4,12 +4,13 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
+<?import hu.boga.midiai.gui.trackeditor.TrackEditorPanel?>
 <TitledPane fx:id="titledPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="hu.boga.midiai.gui.trackeditor.TrackEditorPanelController">
     <BorderPane prefHeight="200.0" prefWidth="200.0">
         <center>
             <ScrollPane prefHeight="200.0" prefWidth="200.0">
             <content>
-               <Pane fx:id="graphicPane" />
+               <TrackEditorPanel fx:id="trackEditorPanel" />
             </content>
             </ScrollPane>
         </center>

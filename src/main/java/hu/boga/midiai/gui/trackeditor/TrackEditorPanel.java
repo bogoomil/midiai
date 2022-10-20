@@ -1,10 +1,14 @@
 package hu.boga.midiai.gui.trackeditor;
 
 import hu.boga.midiai.core.boundaries.dtos.NoteDto;
+import hu.boga.midiai.core.musictheory.Pitch;
 import hu.boga.midiai.core.musictheory.enums.NoteName;
 import hu.boga.midiai.gui.GuiConstants;
+import javafx.event.EventHandler;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
@@ -14,20 +18,27 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class NotesPainter {
-    Pane graphicPane;
+public class TrackEditorPanel extends Pane {
+    private static final int KEYBOARD_OFFSET = 0;
     int measureNum = 100;
     private int resolution = 120;
     private float zoomFactor = 1f;
 
     private List<NoteDto> notes;
 
-    public NotesPainter(final Pane canvas) {
-        this.graphicPane = canvas;
+    public TrackEditorPanel(){
+        addEventHandler(MouseEvent.MOUSE_MOVED, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                System.out.println("mouse moved: " + event.getY() + "-> pitch: " + getPitchByY((int) event.getY()) + " y by pitch: " + getYByPitch(getPitchByY((int) event.getY()).getMidiCode()));
+                System.out.println("tick: " + getTickByX((int) event.getX()));
+            }
+        });
     }
 
+
     public void paintNotes() {
-        this.graphicPane.getChildren().clear();
+        this.getChildren().clear();
         initializeCanvas();
         paintVerticalLines();
         paintHorizontalLines();
@@ -49,9 +60,9 @@ public class NotesPainter {
                 Text text = new Text(noteNames.get(j) + " " + i);
                 text.setX(5);
                 text.setY(y - 5);
-                text.setStroke(Color.BLACK);
+               // text.setStroke(new Paint());
                 y += increment;
-                graphicPane.getChildren().add(text);
+                this.getChildren().add(text);
             }
         }
     }
@@ -60,7 +71,7 @@ public class NotesPainter {
         System.out.println("NOTE: " + noteDto.tick + " - " + noteDto.midiCode);
         try {
             Rectangle rect = getNoteRectangle(noteDto);
-            graphicPane.getChildren().add(rect);
+            this.getChildren().add(rect);
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
         }
@@ -69,7 +80,7 @@ public class NotesPainter {
     private Rectangle getNoteRectangle(NoteDto noteDto) {
         Rectangle rect = new Rectangle();
         rect.setX((int) (noteDto.tick * getTickWidth()));
-        rect.setY(getYByMidiCode((int) noteDto.midiCode));
+        rect.setY(getYByPitch((int) noteDto.midiCode));
         rect.setWidth(this.getTickWidth() * noteDto.lengthInTicks);
         rect.setHeight(getPitchHeight());
         rect.setStroke(Color.ALICEBLUE);
@@ -77,9 +88,9 @@ public class NotesPainter {
     }
 
     private void initializeCanvas() {
-        graphicPane.setPrefWidth(getWorkingWidth());
-        graphicPane.setPrefHeight(getWorkingHeight());
-        graphicPane.getChildren().removeAll();
+        this.setPrefWidth(getWorkingWidth());
+        this.setPrefHeight(getWorkingHeight());
+        this.getChildren().removeAll();
     }
 
     private void paintVerticalLines() {
@@ -90,31 +101,31 @@ public class NotesPainter {
             line.setStartX(x);
             line.setStartY(0);
             line.setEndX(x);
-            line.setEndY(graphicPane.getPrefHeight());
+            line.setEndY(this.getPrefHeight());
             if (counter % 32 == 0) {
                 line.setStroke(Color.RED);
             } else {
                 line.setStroke(Color.BLACK);
             }
             counter++;
-            graphicPane.getChildren().addAll(line);
+            this.getChildren().addAll(line);
         }
     }
 
     private void paintHorizontalLines() {
-        for (int y = 0; y < graphicPane.getPrefHeight(); y += getPitchHeight()) {
+        for (int y = 0; y < this.getPrefHeight(); y += getPitchHeight()) {
             Line line = new Line();
             line.setStartX(0);
             line.setStartY(y);
-            line.setEndX(graphicPane.getPrefWidth());
+            line.setEndX(this.getPrefWidth());
             line.setEndY(y);
-            graphicPane.getChildren().add(line);
+            this.getChildren().add(line);
         }
     }
 
 
     private int getPitchHeight() {
-        return (int) (graphicPane.getPrefHeight() / (GuiConstants.OCTAVES * 12));
+        return (int) (this.getPrefHeight() / (GuiConstants.OCTAVES * 12));
     }
 
     private int get32ndsWidth() {
@@ -137,10 +148,6 @@ public class NotesPainter {
         return getMeasureWidth() / (resolution * 4);
     }
 
-    private int getYByMidiCode(int midiCode) {
-        return (int) (graphicPane.getPrefHeight() - (getPitchHeight() * midiCode));
-    }
-
     public void setZoomFactor(float zoomFactor) {
         this.zoomFactor = zoomFactor;
     }
@@ -151,6 +158,25 @@ public class NotesPainter {
 
     public void setResolution(int resolution) {
         this.resolution = resolution;
+    }
+
+    private Pitch getPitchByY(int y) {
+        int pitch = (int) ((this.getPrefHeight() / GuiConstants.LINE_HEIGHT - 1) - (y / GuiConstants.LINE_HEIGHT));
+        return new Pitch(pitch);
+    }
+
+    private int getTickByX(int x) {
+        double tickWidth = getTickWidth();
+        int tick = (int) ((x - KEYBOARD_OFFSET) / tickWidth);
+        return tick;
+    }
+
+//    private int getXByTick(int tick, int tickWidth) {
+//        return tick * tickWidth + KEYBOARD_OFFSET;
+//    }
+
+    private int getYByPitch(int midiCode) {
+        return (GuiConstants.OCTAVES * 12 - 1 - midiCode) * GuiConstants.LINE_HEIGHT;
     }
 
 }

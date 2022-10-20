@@ -30,7 +30,7 @@ public class TrackEditorPanelController implements TrackBoundaryOut {
     @FXML
     public TitledPane titledPane;
     @FXML
-    public Pane graphicPane;
+    public TrackEditorPanel trackEditorPanel;
     @FXML
     public Slider zoomSlider;
     @FXML
@@ -41,7 +41,6 @@ public class TrackEditorPanelController implements TrackBoundaryOut {
     SequenceEditorPanelController parent;
 
     String trackId;
-    private NotesPainter canvasPainter;
 
     @Inject
     public TrackEditorPanelController(TrackBoundaryIn trackBoundaryIn) {
@@ -60,16 +59,8 @@ public class TrackEditorPanelController implements TrackBoundaryOut {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
                 float zoomFactor = newValue.floatValue() / 100;
-                canvasPainter.setZoomFactor(zoomFactor);
-                canvasPainter.paintNotes();
-            }
-        });
-        canvasPainter = new NotesPainter(graphicPane);
-
-        graphicPane.addEventHandler(MouseEvent.MOUSE_MOVED, new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                System.out.println("mouse moved: " + event.getY() + "-> ptch: " + getPitchByY((int) event.getY()) + " y by pitch: " + getYByPitch(getPitchByY((int) event.getY()).getMidiCode()));
+                trackEditorPanel.setZoomFactor(zoomFactor);
+                trackEditorPanel.paintNotes();
             }
         });
 
@@ -87,9 +78,9 @@ public class TrackEditorPanelController implements TrackBoundaryOut {
         channelCombo.getSelectionModel().select(trackDto.channel);
         instrumentCombo.selectInstrument(trackDto.program);
 
-        canvasPainter.setResolution(trackDto.resolution);
-        canvasPainter.setNotes(Arrays.asList(trackDto.notes));
-        canvasPainter.paintNotes();
+        trackEditorPanel.setResolution(trackDto.resolution);
+        trackEditorPanel.setNotes(Arrays.asList(trackDto.notes));
+        trackEditorPanel.paintNotes();
 
 
     }
@@ -100,26 +91,6 @@ public class TrackEditorPanelController implements TrackBoundaryOut {
 
     public void setParent(final SequenceEditorPanelController parent) {
         this.parent = parent;
-    }
-
-
-    private Pitch getPitchByY(int y) {
-        int pitch = (int) ((this.graphicPane.getPrefHeight() / GuiConstants.LINE_HEIGHT - 1) - (y / GuiConstants.LINE_HEIGHT));
-        return new Pitch(pitch);
-    }
-
-//    private int getTickByX(int x) {
-//        int tickWidth = getTickWidth();
-//        int tick = (x - KEYBOARD_OFFSET) / tickWidth;
-//        return tick;
-//    }
-//
-//    private int getXByTick(int tick, int tickWidth) {
-//        return tick * tickWidth + KEYBOARD_OFFSET;
-//    }
-
-    private int getYByPitch(int midiCode) {
-        return (GuiConstants.OCTAVES * 12 - 1 - midiCode) * GuiConstants.LINE_HEIGHT;
     }
 
 
