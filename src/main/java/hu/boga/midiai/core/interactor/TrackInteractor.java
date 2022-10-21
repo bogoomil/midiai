@@ -29,6 +29,13 @@ public class TrackInteractor implements TrackBoundaryIn {
         });
     }
 
+    @Override
+    public void updateProgramChannel(String trackId, int channel, int program) {
+        App.getTrackById(trackId).ifPresent(midiTrack -> {
+            midiTrack.updateProgramChannel(channel, program);
+        });
+    }
+
     private TrackDto convertTrackToTrackDto(MidiTrack midiTrack){
         TrackDto dto = new TrackDto();
         midiTrack.getProgram().ifPresent(pr -> dto.program = pr);

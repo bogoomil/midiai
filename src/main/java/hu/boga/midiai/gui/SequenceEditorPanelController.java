@@ -52,7 +52,8 @@ public class SequenceEditorPanelController implements SequenceBoundaryOut {
     }
 
     public void onPlayCurrentSec(ActionEvent actionEvent) {
-        this.boundaryIn.playLoop(projectId, 960, 1920);
+        boundaryIn.playSequence(projectId);
+        //this.boundaryIn.playLoop(projectId, 960, 1920);
     }
 
     public void stopPlayback(ActionEvent actionEvent) {

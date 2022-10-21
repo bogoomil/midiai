@@ -4,10 +4,7 @@ import com.google.common.base.Objects;
 import hu.boga.midiai.core.exceptions.AimidiException;
 import hu.boga.midiai.core.util.TrackNotesRetriever;
 
-import javax.sound.midi.MidiEvent;
-import javax.sound.midi.MidiMessage;
-import javax.sound.midi.ShortMessage;
-import javax.sound.midi.Track;
+import javax.sound.midi.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -99,5 +96,60 @@ public class MidiTrack {
     public int getNoteCount() {
         return getNotes().size();
     }
+
+    public void updateProgramChannel(int channel, int program) {
+        removeEventsByCommand(ShortMessage.PROGRAM_CHANGE);
+        addProgramChangeEvent(channel, program, 0);
+
+        getShortMessagesByCommand(ShortMessage.PROGRAM_CHANGE).forEach(shortMessage -> System.out.println(shortMessage.getChannel() + " - " + shortMessage.getData1()));
+
+    }
+
+    private void removeEventsByCommand(int command){
+        this.getEventsByCommand(command).forEach(midiEvent -> this.track.remove(midiEvent));
+    }
+
+    private void addProgramChangeEvent(int channel, int program, int tick) {
+        try {
+            System.out.println("channel: " + channel + ", program: " + program);
+            addShortMessage(tick, ShortMessage.PROGRAM_CHANGE, channel, program, 0);
+        } catch (InvalidMidiDataException e) {
+            e.printStackTrace();
+            throw new AimidiException("update programchange event failed");
+        }
+    }
+
+    private List<MidiEvent> getEventsByCommand(int command) {
+        List<MidiEvent> retVal = new ArrayList<>();
+        for (int i = 0; i < track.size(); i++) {
+            MidiEvent event = track.get(i);
+            if (event.getMessage() instanceof ShortMessage) {
+                ShortMessage msg = (ShortMessage) event.getMessage();
+                if (msg.getCommand() == command) {
+                    retVal.add(event);
+                }
+            }
+        }
+        return retVal;
+    }
+
+    private List<ShortMessage> getShortMessagesByCommand(int command) {
+        List<ShortMessage> retVal = new ArrayList<>();
+        getEventsByCommand(command).forEach(midiEvent -> {
+            ShortMessage msg = (ShortMessage) midiEvent.getMessage();
+            retVal.add(msg);
+        });
+        return retVal;
+    }
+
+
+    private void addShortMessage(int tick, int command, int channel, int data1, int data2) throws InvalidMidiDataException {
+        ShortMessage shortMessage = new ShortMessage();
+        shortMessage.setMessage(command, channel, data1, data2);
+        MidiEvent event = new MidiEvent(shortMessage, tick);
+        track.add(event);
+    }
+
+
 
 }
