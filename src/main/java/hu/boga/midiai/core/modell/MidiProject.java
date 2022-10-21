@@ -7,6 +7,7 @@ import javax.sound.midi.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class MidiProject {
     private final Sequence sequence;
@@ -74,7 +75,7 @@ public class MidiProject {
         return this.sequence.getResolution() * (sequencer.getTempoInBPM() / 60);
     }
 
-    public float tickSize(){
+    public float tickSize() {
         return 1 / ticksPerSecond();
     }
 
@@ -131,12 +132,28 @@ public class MidiProject {
         return this.id.toString();
     }
 
-    public float getTempo(){
-        return this.sequencer.getTempoInBPM();
+    public float getTempo() {
+        List<MidiEvent> tempoEvents = getMetaEventsByType(Constants.MIDIMESSAGE_SET_TEMPO_TYPE);
+        if (tempoEvents.size() == 0) {
+            return 0;
+        } else {
+            MidiEvent event = tempoEvents.get(0);
+            byte[] msg = event.getMessage().getMessage();
+
+            int tempo = getTempoInBPM((MetaMessage) event.getMessage());
+
+            return tempo;
+        }
     }
 
     public void setTempo(float tempo) {
-        this.sequencer.setTempoInBPM(tempo);
+//        this.sequencer.setTempoInBPM(tempo);
+        this.getMetaEventsByType(Constants.MIDIMESSAGE_SET_TEMPO_TYPE);
+        this.getTracks().forEach(track -> {
+            List<MidiEvent> tempoEvents = track.getMetaEventsByType(Constants.MIDIMESSAGE_SET_TEMPO_TYPE);
+            track.removeEvents(tempoEvents);
+        });
+        tracks.get(0).addTempoEvent(0L, (long) tempo);
     }
 
     public void setTempoFactor(float tempoFactor) {
@@ -153,11 +170,11 @@ public class MidiProject {
         }
     }
 
-    public List<MidiTrack> getTracks(){
+    public List<MidiTrack> getTracks() {
         return tracks;
     }
 
-    public Optional<MidiTrack> getTrackById(String id){
+    public Optional<MidiTrack> getTrackById(String id) {
         UUID uuid = UUID.fromString(id);
         return tracks.stream().filter(midiTrack -> midiTrack.id.equals(uuid)).findFirst();
     }
@@ -175,5 +192,21 @@ public class MidiProject {
             this.tracks.remove(midiTrack);
         });
         System.out.println("TRACKS SIZE: " + tracks.size());
+    }
+
+    public List<MidiEvent> getMetaEventsByType(int type) {
+        return tracks.stream()
+                .flatMap(midiTrack -> midiTrack.getMetaEventsByType(type).stream())
+                .collect(Collectors.toList());
+    }
+
+    public static int getTempoInBPM(MetaMessage mm) {
+        byte[] data = mm.getData();
+        if (mm.getType() != 81 || data.length != 3) {
+            throw new IllegalArgumentException("mm=" + mm);
+        }
+        int mspq = ((data[0] & 0xff) << 16) | ((data[1] & 0xff) << 8) | (data[2] & 0xff);
+        int tempo = Math.round(60000001f / mspq);
+        return tempo;
     }
 }

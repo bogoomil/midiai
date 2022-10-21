@@ -77,6 +77,13 @@ public class SequenceInteractor implements SequenceBoundaryIn {
 
     }
 
+    @Override
+    public void setTempo(String projectId, int newValue) {
+        App.getProjectById(projectId).ifPresent(midiProject -> {
+            midiProject.setTempo(newValue);
+        });
+    }
+
     private SequenceDto convertSequenceToDto(MidiProject midiProject) {
         SequenceDto dto = new SequenceDto();
         dto.ticksIn32nds = midiProject.getTicksIn32nds();

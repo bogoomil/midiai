@@ -5,6 +5,7 @@ import hu.boga.midiai.core.boundaries.SequenceBoundaryIn;
 import hu.boga.midiai.core.boundaries.SequenceBoundaryOut;
 import hu.boga.midiai.core.boundaries.dtos.SequenceDto;
 import hu.boga.midiai.core.exceptions.AimidiException;
+import hu.boga.midiai.gui.controls.TempoSlider;
 import hu.boga.midiai.gui.trackeditor.TrackEditorPanelController;
 import hu.boga.midiai.guice.GuiceModule;
 import javafx.event.ActionEvent;
@@ -28,8 +29,8 @@ public class SequenceEditorPanelController implements SequenceBoundaryOut {
     public Label ticksIn32nds;
     public Label ticksPerSecond;
     public Label tickSize;
-    public Label tempo;
     public Label projectIdLabel;
+    public TempoSlider tempoSlider;
 
     @FXML
     private TextField tfFilename;
@@ -43,7 +44,11 @@ public class SequenceEditorPanelController implements SequenceBoundaryOut {
         this.boundaryIn = boundaryInProvider;
     }
 
-    public void initialize()  {
+    public void initialize() {
+        tempoSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+                    boundaryIn.setTempo(projectId, newValue.intValue());
+                }
+        );
     }
 
     public void saveSequence(ActionEvent actionEvent) {
@@ -70,7 +75,7 @@ public class SequenceEditorPanelController implements SequenceBoundaryOut {
         this.ticksIn32nds.setText("ticks in 32nds: " + sequenceDto.ticksIn32nds + " (ticks per measure / 32)");
         this.ticksPerSecond.setText("ticks / sec: " + sequenceDto.ticksPerSecond + " (resolution * (tempo / 60))");
         this.tickSize.setText("tick size: " + sequenceDto.tickSize + " (1 / ticks per second)");
-        this.tempo.setText("tempo: " + sequenceDto.tempo);
+        this.tempoSlider.adjustValue(sequenceDto.tempo);
         this.projectId = sequenceDto.id;
         projectIdLabel.setText(projectId);
 
@@ -100,7 +105,7 @@ public class SequenceEditorPanelController implements SequenceBoundaryOut {
     private void addTrackPanel(String trackId) throws IOException {
         FXMLLoader loader = new FXMLLoader(TrackEditorPanelController.class.getResource("track-editor-panel.fxml"));
         loader.setControllerFactory(GuiceModule.INJECTOR::getInstance);
-        TitledPane trackEditor =  loader.load();
+        TitledPane trackEditor = loader.load();
 
         TrackEditorPanelController trackEditorPanelController = loader.getController();
         trackEditorPanelController.setTrackId(trackId);
@@ -124,7 +129,7 @@ public class SequenceEditorPanelController implements SequenceBoundaryOut {
     }
 
     @Subscribe
-    public void onTrackDeletedEvent(String trackId){
+    public void onTrackDeletedEvent(String trackId) {
         boundaryIn.removeTrack(trackId);
     }
 }

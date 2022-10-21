@@ -105,6 +105,10 @@ public class MidiTrack {
 
     }
 
+    public void removeEvents(List<MidiEvent> events){
+        events.forEach(this.track::remove);
+    }
+
     private void removeEventsByCommand(int command){
         this.getEventsByCommand(command).forEach(midiEvent -> this.track.remove(midiEvent));
     }
@@ -150,6 +154,33 @@ public class MidiTrack {
         track.add(event);
     }
 
+    public void addTempoEvent(long tick, long tempo) {
+        long microSecsPerQuarterNote = Constants.MICROSECONDS_IN_MINUTE / tempo;
+        MetaMessage metaMessage = new MetaMessage();
+        // create the tempo byte array
+        byte[] array = new byte[] { 0, 0, 0 };
+        for (int i = 0; i < 3; i++) {
+            int shift = (3 - 1 - i) * 8;
+            array[i] = (byte) (microSecsPerQuarterNote >> shift);
+        }
+        // now set the message
+        try {
+            metaMessage.setMessage(Constants.MIDIMESSAGE_SET_TEMPO_TYPE, array, 3);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+        track.add(new MidiEvent(metaMessage, tick));
+    }
 
-
+    public List<MidiEvent> getMetaEventsByType(int type){
+        List<MidiEvent> events = new ArrayList<>();
+        for (int i = 0; i < track.size(); i++){
+            MidiEvent event = track.get(i);
+            if(event.getMessage() instanceof MetaMessage && ((MetaMessage) event.getMessage()).getType() == type){
+                events.add(event);
+            }
+        }
+        return events;
+    }
 }
