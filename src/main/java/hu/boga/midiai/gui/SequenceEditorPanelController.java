@@ -31,6 +31,7 @@ public class SequenceEditorPanelController implements SequenceBoundaryOut {
     public Label tickSize;
     public Label projectIdLabel;
     public TempoSlider tempoSlider;
+    public Label tempoLabel;
 
     @FXML
     private TextField tfFilename;
@@ -46,6 +47,7 @@ public class SequenceEditorPanelController implements SequenceBoundaryOut {
 
     public void initialize() {
         tempoSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+                    tempoLabel.setText("Tempo: " + newValue.intValue());
                     boundaryIn.setTempo(projectId, newValue.intValue());
                 }
         );
@@ -76,6 +78,7 @@ public class SequenceEditorPanelController implements SequenceBoundaryOut {
         this.ticksPerSecond.setText("ticks / sec: " + sequenceDto.ticksPerSecond + " (resolution * (tempo / 60))");
         this.tickSize.setText("tick size: " + sequenceDto.tickSize + " (1 / ticks per second)");
         this.tempoSlider.adjustValue(sequenceDto.tempo);
+        this.tempoLabel.setText("Tempo: " + sequenceDto.tempo);
         this.projectId = sequenceDto.id;
         projectIdLabel.setText(projectId);
 
@@ -128,7 +131,6 @@ public class SequenceEditorPanelController implements SequenceBoundaryOut {
         }
     }
 
-    @Subscribe
     public void onTrackDeletedEvent(String trackId) {
         boundaryIn.removeTrack(trackId);
     }

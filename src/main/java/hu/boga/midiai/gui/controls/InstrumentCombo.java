@@ -54,6 +54,7 @@ public class InstrumentCombo extends ComboBox<Instrument> {
     }
 
     public int getSelectedProgram(){
-        return this.getSelectionModel().getSelectedItem().getPatch().getProgram();
+        Instrument instrument = this.getSelectionModel().getSelectedItem();
+        return instrument != null ? instrument.getPatch().getProgram() : 0;
     }
 }
