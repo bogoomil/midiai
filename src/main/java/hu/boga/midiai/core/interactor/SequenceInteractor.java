@@ -3,7 +3,7 @@ package hu.boga.midiai.core.interactor;
 import hu.boga.midiai.core.boundaries.SequenceBoundaryIn;
 import hu.boga.midiai.core.boundaries.SequenceBoundaryOut;
 import hu.boga.midiai.core.boundaries.dtos.SequenceDto;
-import hu.boga.midiai.core.exceptions.AimidiException;
+import hu.boga.midiai.core.exceptions.MidiAiException;
 import hu.boga.midiai.core.modell.App;
 import hu.boga.midiai.core.modell.MidiProject;
 import hu.boga.midiai.core.modell.MidiTrack;
@@ -112,7 +112,7 @@ public class SequenceInteractor implements SequenceBoundaryIn {
 
         } catch (InvalidMidiDataException e) {
             e.printStackTrace();
-            throw new AimidiException("Sequence creation failed: " + e.getMessage());
+            throw new MidiAiException("Sequence creation failed: " + e.getMessage());
         }
     }
 
@@ -125,7 +125,7 @@ public class SequenceInteractor implements SequenceBoundaryIn {
             App.addProject(midiProject);
             this.boundaryOut.displaySequence(convertSequenceToDto(midiProject));
         } catch (InvalidMidiDataException | IOException e) {
-            throw new AimidiException(e.getMessage());
+            throw new MidiAiException(e.getMessage());
         }
     }
 

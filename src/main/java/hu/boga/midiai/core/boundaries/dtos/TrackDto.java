@@ -7,4 +7,5 @@ public class TrackDto {
     public int noteCount;
     public int resolution;
     public NoteDto[] notes;
+    public String name;
 }

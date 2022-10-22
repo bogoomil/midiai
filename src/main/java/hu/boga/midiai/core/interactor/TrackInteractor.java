@@ -5,7 +5,6 @@ import hu.boga.midiai.core.boundaries.TrackBoundaryOut;
 import hu.boga.midiai.core.boundaries.dtos.NoteDto;
 import hu.boga.midiai.core.boundaries.dtos.TrackDto;
 import hu.boga.midiai.core.modell.App;
-import hu.boga.midiai.core.modell.MidiProject;
 import hu.boga.midiai.core.modell.MidiTrack;
 import hu.boga.midiai.core.modell.Note;
 
@@ -36,6 +35,14 @@ public class TrackInteractor implements TrackBoundaryIn {
         });
     }
 
+    @Override
+    public void updateTrackName(String trackId, String name) {
+        App.getTrackById(trackId).ifPresent(midiTrack -> {
+            midiTrack.updateTrackName(name);
+        });
+
+    }
+
     private TrackDto convertTrackToTrackDto(MidiTrack midiTrack){
         TrackDto dto = new TrackDto();
         midiTrack.getProgram().ifPresent(pr -> dto.program = pr);
@@ -44,6 +51,7 @@ public class TrackInteractor implements TrackBoundaryIn {
         dto.trackId = midiTrack.getId();
         dto.resolution = midiTrack.getResolution();
         dto.notes = convertNotesToNoteDtos(midiTrack.getNotes());
+        midiTrack.getTrackName().ifPresent(name -> dto.name = name);
         return dto;
     }
 

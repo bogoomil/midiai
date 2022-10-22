@@ -1,10 +1,11 @@
 package hu.boga.midiai.core.modell;
 
 import com.google.common.base.Objects;
-import hu.boga.midiai.core.exceptions.AimidiException;
-import hu.boga.midiai.core.util.TrackNotesRetriever;
+import hu.boga.midiai.core.exceptions.MidiAiException;
+import hu.boga.midiai.core.util.MidiUtil;
 
 import javax.sound.midi.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -23,24 +24,24 @@ public class MidiTrack {
         this.resolution = resolution;
     }
 
-    public Optional<Integer> getChannel(){
+    public Optional<Integer> getChannel() {
         List<MidiMessage> programChanges = getMidiMessagesByCommand(ShortMessage.PROGRAM_CHANGE);
-        if(programChanges.size() == 1){
+        if (programChanges.size() == 1) {
             ShortMessage shortMessage = (ShortMessage) programChanges.get(0);
             return Optional.of(shortMessage.getChannel());
-        } else if (programChanges.size() > 1){
-            throw new AimidiException("Multiple programchanges found in track: " + id);
+        } else if (programChanges.size() > 1) {
+            throw new MidiAiException("Multiple programchanges found in track: " + id);
         }
         return Optional.empty();
     }
 
-    public Optional<Integer> getProgram(){
+    public Optional<Integer> getProgram() {
         List<MidiMessage> programChanges = getMidiMessagesByCommand(ShortMessage.PROGRAM_CHANGE);
-        if(programChanges.size() == 1){
+        if (programChanges.size() == 1) {
             ShortMessage shortMessage = (ShortMessage) programChanges.get(0);
             return Optional.of(shortMessage.getData1());
-        } else if (programChanges.size() > 1){
-            throw new AimidiException("Multiple programchanges found in track: " + id);
+        } else if (programChanges.size() > 1) {
+            throw new MidiAiException("Multiple programchanges found in track: " + id);
         }
         return Optional.empty();
 
@@ -57,6 +58,79 @@ public class MidiTrack {
     @Override
     public int hashCode() {
         return Objects.hashCode(id);
+    }
+
+    public String getId() {
+        return this.id.toString();
+    }
+
+    public Track getTrack() {
+        return track;
+    }
+
+    public int getResolution() {
+        return resolution;
+    }
+
+    public List<Note> getNotes() {
+        return MidiUtil.getNotesFromTrack(this);
+    }
+
+    public int getNoteCount() {
+        return getNotes().size();
+    }
+
+    public void updateProgramChannel(int channel, int program) {
+        removeEventsByCommand(ShortMessage.PROGRAM_CHANGE);
+        addProgramChangeEvent(channel, program, 0);
+    }
+
+    public void removeEvents(List<MidiEvent> events) {
+        events.forEach(this.track::remove);
+    }
+
+    public void updateTempo(long tick, long tempo) {
+        List<MidiEvent> tempoEvents = getMetaEventsByType(Constants.MIDIMESSAGE_SET_TEMPO_TYPE);
+        removeEvents(tempoEvents);
+        long microSecsPerQuarterNote = Constants.MICROSECONDS_IN_MINUTE / tempo;
+        byte[] array = new byte[]{0, 0, 0};
+        for (int i = 0; i < 3; i++) {
+            int shift = (3 - 1 - i) * 8;
+            array[i] = (byte) (microSecsPerQuarterNote >> shift);
+        }
+        track.add(createMetaEvent(0, Constants.MIDIMESSAGE_SET_TEMPO_TYPE, array));
+    }
+
+    public List<MidiEvent> getMetaEventsByType(int type) {
+        List<MidiEvent> events = new ArrayList<>();
+        for (int i = 0; i < track.size(); i++) {
+            MidiEvent event = track.get(i);
+            if (event.getMessage() instanceof MetaMessage && ((MetaMessage) event.getMessage()).getType() == type) {
+                events.add(event);
+            }
+        }
+        return events;
+    }
+
+    public Optional<String> getTrackName() {
+        List<MidiEvent> trackNameEvents = getMetaEventsByType(Constants.MIDIMESSAGE_SET_NAME);
+        if (trackNameEvents.size() > 1) {
+            throw new MidiAiException("Multiple name found for track: " + id.toString());
+        } else if (trackNameEvents.size() == 1) {
+            MetaMessage metaMessage = (MetaMessage) trackNameEvents.get(0).getMessage();
+            String name = new String(metaMessage.getData());
+            return Optional.of(name);
+        }
+        return Optional.empty();
+    }
+
+    public void updateTrackName(String name) {
+        List<MidiEvent> tempoEvents = getMetaEventsByType(Constants.MIDIMESSAGE_SET_NAME);
+        removeEvents(tempoEvents);
+
+        MidiEvent event = createMetaEvent(0, Constants.MIDIMESSAGE_SET_NAME, name.getBytes(StandardCharsets.UTF_8));
+        track.add(event);
+
     }
 
     private List<MidiMessage> getMidiMessagesByCommand(int command) {
@@ -77,37 +151,31 @@ public class MidiTrack {
         return retVal;
     }
 
-    public String getId() {
-        return this.id.toString();
+    private MidiEvent createMetaEvent(long tick, int type, byte[] array) {
+        MetaMessage metaMessage = new MetaMessage();
+        try {
+            metaMessage.setMessage(type, array, array.length);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+        return new MidiEvent(metaMessage, tick);
     }
 
-    public Track getTrack(){
-        return track;
+    private List<ShortMessage> getShortMessagesByCommand(int command) {
+        List<ShortMessage> retVal = new ArrayList<>();
+        getEventsByCommand(command).forEach(midiEvent -> {
+            ShortMessage msg = (ShortMessage) midiEvent.getMessage();
+            retVal.add(msg);
+        });
+        return retVal;
     }
 
-    public int getResolution(){
-        return resolution;
-    }
-
-    public List<Note> getNotes() {
-        return TrackNotesRetriever.getNotesFromTrack(this);
-    }
-
-    public int getNoteCount() {
-        return getNotes().size();
-    }
-
-    public void updateProgramChannel(int channel, int program) {
-        removeEventsByCommand(ShortMessage.PROGRAM_CHANGE);
-        addProgramChangeEvent(channel, program, 0);
-    }
-
-    public void removeEvents(List<MidiEvent> events){
-        events.forEach(this.track::remove);
-    }
-
-    private void removeEventsByCommand(int command){
-        this.getEventsByCommand(command).forEach(midiEvent -> this.track.remove(midiEvent));
+    private void addShortMessage(int tick, int command, int channel, int data1, int data2) throws InvalidMidiDataException {
+        ShortMessage shortMessage = new ShortMessage();
+        shortMessage.setMessage(command, channel, data1, data2);
+        MidiEvent event = new MidiEvent(shortMessage, tick);
+        track.add(event);
     }
 
     private void addProgramChangeEvent(int channel, int program, int tick) {
@@ -115,7 +183,7 @@ public class MidiTrack {
             addShortMessage(tick, ShortMessage.PROGRAM_CHANGE, channel, program, 0);
         } catch (InvalidMidiDataException e) {
             e.printStackTrace();
-            throw new AimidiException("update programchange event failed");
+            throw new MidiAiException("update programchange event failed");
         }
     }
 
@@ -133,50 +201,10 @@ public class MidiTrack {
         return retVal;
     }
 
-    private List<ShortMessage> getShortMessagesByCommand(int command) {
-        List<ShortMessage> retVal = new ArrayList<>();
-        getEventsByCommand(command).forEach(midiEvent -> {
-            ShortMessage msg = (ShortMessage) midiEvent.getMessage();
-            retVal.add(msg);
-        });
-        return retVal;
+    private void removeEventsByCommand(int command) {
+        this.getEventsByCommand(command).forEach(midiEvent -> this.track.remove(midiEvent));
     }
 
 
-    private void addShortMessage(int tick, int command, int channel, int data1, int data2) throws InvalidMidiDataException {
-        ShortMessage shortMessage = new ShortMessage();
-        shortMessage.setMessage(command, channel, data1, data2);
-        MidiEvent event = new MidiEvent(shortMessage, tick);
-        track.add(event);
-    }
 
-    public void addTempoEvent(long tick, long tempo) {
-        long microSecsPerQuarterNote = Constants.MICROSECONDS_IN_MINUTE / tempo;
-        MetaMessage metaMessage = new MetaMessage();
-        // create the tempo byte array
-        byte[] array = new byte[] { 0, 0, 0 };
-        for (int i = 0; i < 3; i++) {
-            int shift = (3 - 1 - i) * 8;
-            array[i] = (byte) (microSecsPerQuarterNote >> shift);
-        }
-        // now set the message
-        try {
-            metaMessage.setMessage(Constants.MIDIMESSAGE_SET_TEMPO_TYPE, array, 3);
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
-        track.add(new MidiEvent(metaMessage, tick));
-    }
-
-    public List<MidiEvent> getMetaEventsByType(int type){
-        List<MidiEvent> events = new ArrayList<>();
-        for (int i = 0; i < track.size(); i++){
-            MidiEvent event = track.get(i);
-            if(event.getMessage() instanceof MetaMessage && ((MetaMessage) event.getMessage()).getType() == type){
-                events.add(event);
-            }
-        }
-        return events;
-    }
 }

@@ -11,10 +11,14 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Slider;
+import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
+import javafx.scene.input.InputEvent;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 
@@ -33,6 +37,8 @@ public class TrackEditorPanelController implements TrackBoundaryOut {
     public TrackEditorPanel trackEditorPanel;
     @FXML
     public Slider zoomSlider;
+    @FXML
+    public TextField trackName;
     @FXML
     ComboBox<Integer> channelCombo;
 
@@ -69,7 +75,12 @@ public class TrackEditorPanelController implements TrackBoundaryOut {
                 trackEditorPanel.paintNotes();
             }
         });
-
+        trackName.addEventHandler(KeyEvent.KEY_RELEASED, new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                trackBoundaryIn.updateTrackName(trackId, trackName.getText());
+            }
+        });
     }
 
     public void setTrackId(String trackId){
@@ -83,12 +94,11 @@ public class TrackEditorPanelController implements TrackBoundaryOut {
         titledPane.setText("ch: " + trackDto.channel + " pr:" + trackDto.program + " notes: " + trackDto.noteCount + " (" + trackId + ")");
         channelCombo.getSelectionModel().select(trackDto.channel);
         instrumentCombo.selectInstrument(trackDto.program);
+        trackName.setText(trackDto.name);
 
         trackEditorPanel.setResolution(trackDto.resolution);
         trackEditorPanel.setNotes(Arrays.asList(trackDto.notes));
         trackEditorPanel.paintNotes();
-
-
     }
 
     public void removeTrack(ActionEvent actionEvent) {

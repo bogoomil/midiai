@@ -1,10 +1,9 @@
 package hu.boga.midiai.gui;
 
-import com.google.common.eventbus.Subscribe;
 import hu.boga.midiai.core.boundaries.SequenceBoundaryIn;
 import hu.boga.midiai.core.boundaries.SequenceBoundaryOut;
 import hu.boga.midiai.core.boundaries.dtos.SequenceDto;
-import hu.boga.midiai.core.exceptions.AimidiException;
+import hu.boga.midiai.core.exceptions.MidiAiException;
 import hu.boga.midiai.gui.controls.TempoSlider;
 import hu.boga.midiai.gui.trackeditor.TrackEditorPanelController;
 import hu.boga.midiai.guice.GuiceModule;
@@ -133,7 +132,7 @@ public class SequenceEditorPanelController implements SequenceBoundaryOut {
             addTrackPanel(id);
         } catch (IOException e) {
             e.printStackTrace();
-            throw new AimidiException("Adding new track failed: " + e.getMessage());
+            throw new MidiAiException("Adding new track failed: " + e.getMessage());
         }
     }
 

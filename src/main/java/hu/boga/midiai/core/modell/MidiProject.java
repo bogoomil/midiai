@@ -1,7 +1,8 @@
 package hu.boga.midiai.core.modell;
 
 import com.google.common.base.Objects;
-import hu.boga.midiai.core.exceptions.AimidiException;
+import hu.boga.midiai.core.exceptions.MidiAiException;
+import hu.boga.midiai.core.util.MidiUtil;
 
 import javax.sound.midi.*;
 import java.io.File;
@@ -82,11 +83,10 @@ public class MidiProject {
     private void initSequencer(Sequence sequence) {
         try {
             this.sequencer = MidiSystem.getSequencer();
-//            this.sequencer.addControllerEventListener(shortMessage -> System.out.println("tick position: " + sequencer.getTickPosition()), new int[]{ShortMessage.NOTE_ON});
             this.sequencer.open();
         } catch (MidiUnavailableException e) {
             e.printStackTrace();
-            throw new AimidiException("Midi sequencer unavailable: " + e.getMessage());
+            throw new MidiAiException("Midi sequencer unavailable: " + e.getMessage());
         }
     }
 
@@ -110,7 +110,7 @@ public class MidiProject {
             this.sequencer.setSequence(sequence);
         } catch (InvalidMidiDataException e) {
             e.printStackTrace();
-            throw new AimidiException("Invalid midi exception: " + e.getMessage());
+            throw new MidiAiException("Invalid midi exception: " + e.getMessage());
         }
         this.sequencer.setTempoFactor(1f);
         this.sequencer.setTickPosition(fromTick);
@@ -137,27 +137,14 @@ public class MidiProject {
         if (tempoEvents.size() == 0) {
             return 0;
         } else {
-            MidiEvent event = tempoEvents.get(0);
-            byte[] msg = event.getMessage().getMessage();
-
-            int tempo = getTempoInBPM((MetaMessage) event.getMessage());
-
-            return tempo;
+            return MidiUtil.getTempoInBPM((MetaMessage) tempoEvents.get(0).getMessage());
         }
     }
 
     public void setTempo(float tempo) {
-//        this.sequencer.setTempoInBPM(tempo);
-        this.getMetaEventsByType(Constants.MIDIMESSAGE_SET_TEMPO_TYPE);
         this.getTracks().forEach(track -> {
-            List<MidiEvent> tempoEvents = track.getMetaEventsByType(Constants.MIDIMESSAGE_SET_TEMPO_TYPE);
-            track.removeEvents(tempoEvents);
+            track.updateTempo(0L, (long) tempo);
         });
-        tracks.get(0).addTempoEvent(0L, (long) tempo);
-    }
-
-    public void setTempoFactor(float tempoFactor) {
-        this.sequencer.setTempoFactor(tempoFactor);
     }
 
     public void save(String filePath) {
@@ -166,7 +153,7 @@ public class MidiProject {
             MidiSystem.write(sequence, 1, file);
         } catch (IOException e) {
             e.printStackTrace();
-            throw new AimidiException("Saving " + filePath + " failed");
+            throw new MidiAiException("Saving " + filePath + " failed");
         }
     }
 
@@ -197,15 +184,5 @@ public class MidiProject {
         return tracks.stream()
                 .flatMap(midiTrack -> midiTrack.getMetaEventsByType(type).stream())
                 .collect(Collectors.toList());
-    }
-
-    public static int getTempoInBPM(MetaMessage mm) {
-        byte[] data = mm.getData();
-        if (mm.getType() != 81 || data.length != 3) {
-            throw new IllegalArgumentException("mm=" + mm);
-        }
-        int mspq = ((data[0] & 0xff) << 16) | ((data[1] & 0xff) << 8) | (data[2] & 0xff);
-        int tempo = Math.round(60000001f / mspq);
-        return tempo;
     }
 }

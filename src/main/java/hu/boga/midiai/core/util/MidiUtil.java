@@ -1,13 +1,13 @@
 package hu.boga.midiai.core.util;
 
-import hu.boga.midiai.core.exceptions.AimidiException;
+import hu.boga.midiai.core.exceptions.MidiAiException;
 import hu.boga.midiai.core.modell.MidiTrack;
 import hu.boga.midiai.core.modell.Note;
 
 import javax.sound.midi.*;
 import java.util.ArrayList;
 
-public class TrackNotesRetriever {
+public class MidiUtil {
 
     public static ArrayList<Note> getNotesFromTrack(MidiTrack midiTrack) {
 
@@ -34,10 +34,10 @@ public class TrackNotesRetriever {
                 boolean removeNoteOff = tempTrack.remove(noteOff);
 
                 if (!removeNoteOn) {
-                    throw new AimidiException("INVALID MIDI DATA");
+                    throw new MidiAiException("INVALID MIDI DATA");
                 }
                 if (!removeNoteOff) {
-                    throw new AimidiException("INVALID MIDI DATA");
+                    throw new MidiAiException("INVALID MIDI DATA");
                 }
 
             }
@@ -45,7 +45,7 @@ public class TrackNotesRetriever {
             // (because we should have removed it when we found it's note
             // on event).
             else if (isNoteOffEvent(event)) {
-                throw new AimidiException("INVALID MIDI DATA");
+                throw new MidiAiException("INVALID MIDI DATA");
             }
             // since we got to something that is neither a note on or a note off,
             // we have to increase our index and look at the next note.
@@ -186,5 +186,15 @@ public class TrackNotesRetriever {
         return null;
     }
 
+
+    public static int getTempoInBPM(MetaMessage mm) {
+        byte[] data = mm.getData();
+        if (mm.getType() != 81 || data.length != 3) {
+            throw new IllegalArgumentException("mm=" + mm);
+        }
+        int mspq = ((data[0] & 0xff) << 16) | ((data[1] & 0xff) << 8) | (data[2] & 0xff);
+        int tempo = Math.round(60000001f / mspq);
+        return tempo;
+    }
 
 }

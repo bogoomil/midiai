@@ -1,7 +1,5 @@
 package hu.boga.midiai.gui;
 
-import hu.boga.midiai.core.boundaries.MainBoundaryIn;
-import hu.boga.midiai.core.boundaries.MainBoundaryOut;
 import hu.boga.midiai.core.util.AppConstants;
 import hu.boga.midiai.guice.GuiceModule;
 import javafx.event.ActionEvent;
@@ -16,17 +14,13 @@ import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 
-public class MainController implements MainBoundaryOut {
+public class MainController {
 
     @FXML
     public TabPane mainTab;
 
     @Inject
-    public MainController(MainBoundaryIn boundaryIn) {
-    }
-
-    @Override
-    public void displayProperties(String property) {
+    public MainController() {
     }
 
     public void newProject(ActionEvent actionEvent) throws IOException {

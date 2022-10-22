@@ -23,8 +23,9 @@ public class App {
         return Optional.empty();
     }
 
-    public static void addProject(MidiProject midiProject) {
+    public static String addProject(MidiProject midiProject) {
         MIDI_PROJECTS.add(midiProject);
+        return midiProject.getId();
     }
 
     public static void removeProject(String id) {
