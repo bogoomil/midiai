@@ -100,9 +100,6 @@ public class MidiTrack {
     public void updateProgramChannel(int channel, int program) {
         removeEventsByCommand(ShortMessage.PROGRAM_CHANGE);
         addProgramChangeEvent(channel, program, 0);
-
-        getShortMessagesByCommand(ShortMessage.PROGRAM_CHANGE).forEach(shortMessage -> System.out.println(shortMessage.getChannel() + " - " + shortMessage.getData1()));
-
     }
 
     public void removeEvents(List<MidiEvent> events){
@@ -115,7 +112,6 @@ public class MidiTrack {
 
     private void addProgramChangeEvent(int channel, int program, int tick) {
         try {
-            System.out.println("channel: " + channel + ", program: " + program);
             addShortMessage(tick, ShortMessage.PROGRAM_CHANGE, channel, program, 0);
         } catch (InvalidMidiDataException e) {
             e.printStackTrace();

@@ -47,10 +47,16 @@ public class SequenceEditorPanelController implements SequenceBoundaryOut {
 
     public void initialize() {
         tempoSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
-                    tempoLabel.setText("Tempo: " + newValue.intValue());
-                    boundaryIn.setTempo(projectId, newValue.intValue());
+                    initTemposSettings(newValue);
                 }
         );
+    }
+
+    private void initTemposSettings(Number newValue) {
+        tempoLabel.setText("Tempo: " + newValue.intValue());
+        if(projectId != null){
+            boundaryIn.setTempo(projectId, newValue.intValue());
+        }
     }
 
     public void saveSequence(ActionEvent actionEvent) {

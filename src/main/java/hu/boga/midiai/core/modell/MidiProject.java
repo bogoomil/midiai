@@ -191,7 +191,6 @@ public class MidiProject {
             sequence.deleteTrack(midiTrack.getTrack());
             this.tracks.remove(midiTrack);
         });
-        System.out.println("TRACKS SIZE: " + tracks.size());
     }
 
     public List<MidiEvent> getMetaEventsByType(int type) {

@@ -67,11 +67,9 @@ public class TrackEditorPanel extends Pane {
         int y = increment;
         for (int i = 0; i < GuiConstants.OCTAVES; i++) {
             for(int j = 0; j < 12; j++){
-                System.out.println("y: " + y);
                 Text text = new Text(noteNames.get(j) + " " + i);
                 text.setX(5);
                 text.setY(y - 5);
-               // text.setStroke(new Paint());
                 y += increment;
                 this.getChildren().add(text);
             }
@@ -79,12 +77,11 @@ public class TrackEditorPanel extends Pane {
     }
 
     private void paintNote(NoteDto noteDto) {
-        System.out.println("NOTE: " + noteDto.tick + " - " + noteDto.midiCode);
         try {
             Rectangle rect = getNoteRectangle(noteDto);
             this.getChildren().add(rect);
         } catch (Exception ex) {
-            System.out.println(ex.getMessage());
+            ex.printStackTrace();
         }
     }
 
