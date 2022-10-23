@@ -53,7 +53,6 @@ public class TrackInteractor implements TrackBoundaryIn {
                 boundaryOut.dispayTrack(convertTrackToTrackDto(midiTrack));
             });
         });
-
     }
 
     private TrackDto convertTrackToTrackDto(MidiTrack midiTrack) {

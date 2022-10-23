@@ -105,9 +105,9 @@ public class TrackEditorPanel extends Pane {
                 .map(noteName -> noteName.name()).collect(Collectors.toList());
         int increment = getPitchHeight();
         int y = increment;
-        for (int i = 0; i < GuiConstants.OCTAVES; i++) {
+        for (int i = 0; i <= GuiConstants.OCTAVES; i++) {
             for(int j = 0; j < 12; j++){
-                Text text = new Text(noteNames.get(j) + " " + i);
+                Text text = new Text(noteNames.get(j) + " " + (GuiConstants.OCTAVES - i));
                 text.setX(5);
                 text.setY(y - 5);
                 y += increment;
@@ -132,10 +132,11 @@ public class TrackEditorPanel extends Pane {
         rect.setWidth(this.getTickWidth() * noteDto.lengthInTicks);
         rect.setHeight(getPitchHeight());
         rect.setStroke(Color.ALICEBLUE);
-        rect.addEventHandler(MouseEvent.MOUSE_MOVED, new EventHandler<MouseEvent>() {
+        rect.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                System.out.println("rect: " + rect.getParent().getParent());
+                System.out.println("RECTANGLE MOUSE CLICK: " + rect);
+                event.consume();
             }
         });
         return rect;

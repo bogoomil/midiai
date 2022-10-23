@@ -97,11 +97,11 @@ public class MidiProject {
 
     public void play(int fromTick) {
         int toTick = (int) this.sequence.getTickLength();
-        play(fromTick, toTick, 1);
+        play(fromTick, toTick, 0);
     }
 
     public void play(int fromTick, int toTick) {
-        play(fromTick, toTick, 1);
+        play(fromTick, toTick, 0);
     }
 
     private void play(int fromTick, int toTick, int loopCount) {
