@@ -5,45 +5,42 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<TitledPane fx:id="titledPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/16"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="hu.boga.midiai.gui.trackeditor.TrackEditorPanelController">
+<TitledPane fx:id="titledPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="hu.boga.midiai.gui.trackeditor.TrackEditorPanelController">
     <BorderPane prefHeight="200.0" prefWidth="200.0">
         <center>
             <ScrollPane prefHeight="200.0" prefWidth="200.0">
                 <content>
-                    <TrackEditorPanel fx:id="trackEditorPanel"/>
+                    <TrackEditorPanel fx:id="trackEditorPanel" />
                 </content>
             </ScrollPane>
         </center>
         <left>
-            <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+            <AnchorPane prefHeight="355.0" prefWidth="267.0" BorderPane.alignment="CENTER">
                 <children>
                     <GridPane>
                         <columnConstraints>
-                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="94.0" minWidth="10.0" prefWidth="62.0"/>
-                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="143.0" minWidth="10.0" prefWidth="138.0"/>
+                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="94.0" minWidth="10.0" prefWidth="94.0" />
+                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="143.0" minWidth="10.0" prefWidth="106.0" />
                         </columnConstraints>
                         <rowConstraints>
-                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
-                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
-                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
-                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
-                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
-                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
-                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                         </rowConstraints>
                         <children>
-                            <Label text="Channel" GridPane.rowIndex="1"/>
-                            <ComboBox fx:id="channelCombo" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-                            <Label text="Program" GridPane.rowIndex="2"/>
-                            <InstrumentCombo fx:id="instrumentCombo" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-                            <Button mnemonicParsing="false" onAction="#removeTrack" text="Track-"
-                                    GridPane.columnIndex="1" GridPane.rowIndex="3"/>
-                            <Label text="zoom" GridPane.rowIndex="4"/>
-                            <Slider fx:id="zoomSlider" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
-                            <Label text="Name"/>
-                            <TextField fx:id="trackName" GridPane.columnIndex="1"/>
+                            <Label text="Channel" GridPane.rowIndex="1" />
+                            <ComboBox fx:id="channelCombo" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                            <Label text="Program" GridPane.rowIndex="2" />
+                            <InstrumentCombo fx:id="instrumentCombo" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                            <Button mnemonicParsing="false" onAction="#removeTrack" text="Track-" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                            <Label fx:id="zoomLabel" text="zoom" GridPane.rowIndex="4" />
+                            <Slider fx:id="zoomSlider" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                            <Label text="Name" />
+                            <TextField fx:id="trackName" GridPane.columnIndex="1" />
                         </children>
                     </GridPane>
                 </children>

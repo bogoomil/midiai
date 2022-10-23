@@ -3,8 +3,6 @@ package hu.boga.midiai.core.musictheory.enums;
 import java.util.Optional;
 
 public enum NoteLength {
-    // EGESZ(1), HAROMNEGYED(3), FEL(2), NEGYED(4), NYOLCAD(8), TIZENHATOD(16),
-    // HARMICKETTED(MidiEngine.TICKS_IN_MEASURE);
     NEGYSZERES(128), HAROMSZOROS(96), DUPLA(64), EGESZ(32), HAROMNEGYED(24), FEL(16), NEGYED(8), NYOLCAD(4), TIZENHATOD(2), HARMICKETTED(1);
 
     int ertek;

@@ -3,31 +3,22 @@ package hu.boga.midiai.gui.trackeditor;
 import hu.boga.midiai.core.boundaries.TrackBoundaryIn;
 import hu.boga.midiai.core.boundaries.TrackBoundaryOut;
 import hu.boga.midiai.core.boundaries.dtos.TrackDto;
-import hu.boga.midiai.core.musictheory.Pitch;
-import hu.boga.midiai.gui.GuiConstants;
 import hu.boga.midiai.gui.SequenceEditorPanelController;
 import hu.boga.midiai.gui.controls.InstrumentCombo;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.event.EventType;
 import javafx.fxml.FXML;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Slider;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TitledPane;
-import javafx.scene.input.InputEvent;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Pane;
 
 import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class TrackEditorPanelController implements TrackBoundaryOut {
+public class TrackEditorPanelController implements TrackBoundaryOut, TrackEventListener {
 
     @FXML
     public InstrumentCombo instrumentCombo;
@@ -39,6 +30,8 @@ public class TrackEditorPanelController implements TrackBoundaryOut {
     public Slider zoomSlider;
     @FXML
     public TextField trackName;
+    @FXML
+    public Label zoomLabel;
     @FXML
     ComboBox<Integer> channelCombo;
 
@@ -65,14 +58,17 @@ public class TrackEditorPanelController implements TrackBoundaryOut {
         });
 
         zoomSlider.setMin(10);
-        zoomSlider.setMax(200);
+        zoomSlider.setMax(400);
         zoomSlider.adjustValue(100);
+        zoomLabel.setText("Zoom: 100%");
         zoomSlider.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
                 float zoomFactor = newValue.floatValue() / 100;
                 trackEditorPanel.setZoomFactor(zoomFactor);
                 trackEditorPanel.paintNotes();
+                zoomLabel.setText("Zoom: " + newValue.intValue() + "%");
+
             }
         });
         trackName.addEventHandler(KeyEvent.KEY_RELEASED, new EventHandler<KeyEvent>() {
@@ -81,6 +77,8 @@ public class TrackEditorPanelController implements TrackBoundaryOut {
                 trackBoundaryIn.updateTrackName(trackId, trackName.getText());
             }
         });
+
+        trackEditorPanel.addTrackEventListener(this);
     }
 
     public void setTrackId(String trackId){
@@ -110,4 +108,8 @@ public class TrackEditorPanelController implements TrackBoundaryOut {
     }
 
 
+    @Override
+    public void onAddNoteEvent(AddNoteEvent event) {
+        trackBoundaryIn.addNote(trackId, event.getTick(), event.getPitch(), 1);
+    }
 }

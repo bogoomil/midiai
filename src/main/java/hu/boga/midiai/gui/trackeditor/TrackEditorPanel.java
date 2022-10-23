@@ -4,43 +4,83 @@ import hu.boga.midiai.core.boundaries.dtos.NoteDto;
 import hu.boga.midiai.core.musictheory.Pitch;
 import hu.boga.midiai.core.musictheory.enums.NoteName;
 import hu.boga.midiai.gui.GuiConstants;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.RadioMenuItem;
+import javafx.scene.control.ToggleGroup;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.Shape;
 import javafx.scene.text.Text;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class TrackEditorPanel extends Pane {
     private static final int KEYBOARD_OFFSET = 0;
     int measureNum = 100;
-    private int resolution = 120;
+    private int resolution;
     private float zoomFactor = 1f;
-
     private List<NoteDto> notes;
+    private ContextMenu contextMenu;
+
+    private EditorModeEnum currentMode = EditorModeEnum.ADD;
+    private List<TrackEventListener> trackEventListeners = new ArrayList<>();
 
     public TrackEditorPanel(){
-        addEventHandler(MouseEvent.MOUSE_MOVED, new EventHandler<MouseEvent>() {
+        createContextMenu();
+        addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-//                System.out.println("mouse moved: " + event.getY() + "-> pitch: " + getPitchByY((int) event.getY()) + " y by pitch: " + getYByPitch(getPitchByY((int) event.getY()).getMidiCode()));
-//                System.out.println("tick: " + getTickByX((int) event.getX()));
-//                getChild(new Point2D(event.getX(), event.getY())).ifPresent(node -> {
-//                    System.out.println("NODE: " + node);
-//                });
+                handleMouseClick(event);
             }
         });
+    }
+
+    public void addTrackEventListener(TrackEventListener trackEventListener){
+        this.trackEventListeners.add(trackEventListener);
+    }
+
+    private void createContextMenu() {
+        contextMenu = new ContextMenu();
+        RadioMenuItem item = new RadioMenuItem("Add mode");
+        ToggleGroup toggleGroup = new ToggleGroup();
+        item.setToggleGroup(toggleGroup);
+        item.setSelected(true);
+        item.selectedProperty().asObject().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                currentMode = newValue ? EditorModeEnum.ADD : EditorModeEnum.DELETE;
+            }
+        });
+        contextMenu.getItems().add(item);
+        item = new RadioMenuItem("Delete mode");
+        item.setToggleGroup(toggleGroup);
+        item.selectedProperty().asObject().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                currentMode =  newValue ? EditorModeEnum.DELETE : EditorModeEnum.ADD;
+            }
+        });
+        contextMenu.getItems().add(item);
+    }
+
+    private void handleMouseClick(MouseEvent event) {
+        System.out.println("MOUSE EVENT CLICK: " + event.getButton());
+        if(event.getButton() == MouseButton.SECONDARY){
+            contextMenu.show(this, event.getScreenX(), event.getScreenY());
+        } else if(event.getButton() == MouseButton.PRIMARY){
+            AddNoteEvent addNoteEvent = new AddNoteEvent(getTickByX((int) event.getX()), getPitchByY((int) event.getY()).getMidiCode());
+            this.trackEventListeners.forEach(trackEventListener -> trackEventListener.onAddNoteEvent(addNoteEvent));
+            System.out.println("TICK: " + getTickByX((int) event.getX()) + " :: current mode: " + currentMode.name());
+        }
     }
 
     Optional<Node> getChild(Point2D point){
@@ -191,6 +231,10 @@ public class TrackEditorPanel extends Pane {
 
     private int getYByPitch(int midiCode) {
         return (GuiConstants.OCTAVES * 12 - 1 - midiCode) * GuiConstants.LINE_HEIGHT;
+    }
+
+    enum EditorModeEnum {
+        ADD, DELETE;
     }
 
 }

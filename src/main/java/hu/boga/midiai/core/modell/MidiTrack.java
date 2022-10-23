@@ -2,6 +2,7 @@ package hu.boga.midiai.core.modell;
 
 import com.google.common.base.Objects;
 import hu.boga.midiai.core.exceptions.MidiAiException;
+import hu.boga.midiai.core.util.Constants;
 import hu.boga.midiai.core.util.MidiUtil;
 
 import javax.sound.midi.*;
@@ -90,7 +91,7 @@ public class MidiTrack {
     }
 
     public void updateTempo(long tick, long tempo) {
-        List<MidiEvent> tempoEvents = getMetaEventsByType(Constants.MIDIMESSAGE_SET_TEMPO_TYPE);
+        List<MidiEvent> tempoEvents = getMetaEventsByType(Constants.METAMESSAGE_SET_TEMPO);
         removeEvents(tempoEvents);
         long microSecsPerQuarterNote = Constants.MICROSECONDS_IN_MINUTE / tempo;
         byte[] array = new byte[]{0, 0, 0};
@@ -98,7 +99,7 @@ public class MidiTrack {
             int shift = (3 - 1 - i) * 8;
             array[i] = (byte) (microSecsPerQuarterNote >> shift);
         }
-        track.add(createMetaEvent(0, Constants.MIDIMESSAGE_SET_TEMPO_TYPE, array));
+        track.add(createMetaEvent(0, Constants.METAMESSAGE_SET_TEMPO, array));
     }
 
     public List<MidiEvent> getMetaEventsByType(int type) {
@@ -113,7 +114,7 @@ public class MidiTrack {
     }
 
     public Optional<String> getTrackName() {
-        List<MidiEvent> trackNameEvents = getMetaEventsByType(Constants.MIDIMESSAGE_SET_NAME);
+        List<MidiEvent> trackNameEvents = getMetaEventsByType(Constants.METAMESSAGE_SET_NAME);
         if (trackNameEvents.size() > 1) {
             throw new MidiAiException("Multiple name found for track: " + id.toString());
         } else if (trackNameEvents.size() == 1) {
@@ -125,10 +126,10 @@ public class MidiTrack {
     }
 
     public void updateTrackName(String name) {
-        List<MidiEvent> tempoEvents = getMetaEventsByType(Constants.MIDIMESSAGE_SET_NAME);
+        List<MidiEvent> tempoEvents = getMetaEventsByType(Constants.METAMESSAGE_SET_NAME);
         removeEvents(tempoEvents);
 
-        MidiEvent event = createMetaEvent(0, Constants.MIDIMESSAGE_SET_NAME, name.getBytes(StandardCharsets.UTF_8));
+        MidiEvent event = createMetaEvent(0, Constants.METAMESSAGE_SET_NAME, name.getBytes(StandardCharsets.UTF_8));
         track.add(event);
 
     }
@@ -206,5 +207,12 @@ public class MidiTrack {
     }
 
 
-
+    public void addNote(int tick, int pitch, int length) {
+        try {
+            addShortMessage(tick, ShortMessage.NOTE_ON, getChannel().get(), pitch, 100);
+            addShortMessage(tick + length, ShortMessage.NOTE_ON, getChannel().get(), pitch, 0);
+        } catch (InvalidMidiDataException e) {
+            throw new MidiAiException(e.getMessage());
+        }
+    }
 }

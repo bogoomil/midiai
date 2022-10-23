@@ -2,6 +2,7 @@ package hu.boga.midiai.core.modell;
 
 import com.google.common.base.Objects;
 import hu.boga.midiai.core.exceptions.MidiAiException;
+import hu.boga.midiai.core.util.Constants;
 import hu.boga.midiai.core.util.MidiUtil;
 
 import javax.sound.midi.*;
@@ -133,7 +134,7 @@ public class MidiProject {
     }
 
     public float getTempo() {
-        List<MidiEvent> tempoEvents = getMetaEventsByType(Constants.MIDIMESSAGE_SET_TEMPO_TYPE);
+        List<MidiEvent> tempoEvents = getMetaEventsByType(Constants.METAMESSAGE_SET_TEMPO);
         if (tempoEvents.size() == 0) {
             return 0;
         } else {

@@ -1,6 +1,6 @@
 package hu.boga.midiai.gui;
 
-import hu.boga.midiai.core.util.AppConstants;
+import hu.boga.midiai.core.util.Constants;
 import hu.boga.midiai.guice.GuiceModule;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -48,7 +48,7 @@ public class MainController {
         loader.setControllerFactory(GuiceModule.INJECTOR::getInstance);
         BorderPane sequenceEditorPanel =  loader.load();
         SequenceEditorPanelController controller = loader.getController();
-        mainTab.getTabs().add(new Tab(AppConstants.DEFAULT_NAME, sequenceEditorPanel));
+        mainTab.getTabs().add(new Tab(Constants.DEFAULT_NAME, sequenceEditorPanel));
         return controller;
     }
 }
