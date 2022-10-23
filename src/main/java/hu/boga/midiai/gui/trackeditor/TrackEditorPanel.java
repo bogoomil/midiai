@@ -118,27 +118,20 @@ public class TrackEditorPanel extends Pane {
 
     private void paintNote(NoteDto noteDto) {
         try {
-            Rectangle rect = getNoteRectangle(noteDto);
+            Rectangle rect = createNoteRectangle(noteDto);
             this.getChildren().add(rect);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
 
-    private Rectangle getNoteRectangle(NoteDto noteDto) {
-        Rectangle rect = new Rectangle();
+    private Rectangle createNoteRectangle(NoteDto noteDto) {
+        NoteRectangle rect = new NoteRectangle();
         rect.setX((int) (noteDto.tick * getTickWidth()));
         rect.setY(getYByPitch((int) noteDto.midiCode));
         rect.setWidth(this.getTickWidth() * noteDto.lengthInTicks);
         rect.setHeight(getPitchHeight());
-        rect.setStroke(Color.ALICEBLUE);
-        rect.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                System.out.println("RECTANGLE MOUSE CLICK: " + rect);
-                event.consume();
-            }
-        });
+        rect.setFill(Color.BLACK);
         return rect;
     }
 
