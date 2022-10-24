@@ -85,4 +85,8 @@ public class NoteRectangle extends Rectangle {
     public void setDragging(boolean b) {
         isDragging = false;
     }
+
+    public boolean isDragging() {
+        return this.isDragging;
+    }
 }

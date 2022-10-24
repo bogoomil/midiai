@@ -147,7 +147,9 @@ public class TrackEditorPanel extends Pane {
             @Override
             public void handle(MouseEvent event) {
                 trackEventListeners.forEach(trackEventListener -> {
-                    trackEventListener.onMoveNoteEvent(new MoveNoteEvent((int) noteDto.tick, (int) noteDto.midiCode, getTickByX((int) noteRectangle.getX())));
+                    if (noteRectangle.isDragging()){
+                        trackEventListener.onMoveNoteEvent(new MoveNoteEvent((int) noteDto.tick, (int) noteDto.midiCode, getTickByX((int) noteRectangle.getX())));
+                    }
                     noteRectangle.setDragging(false);
                 });
             }
