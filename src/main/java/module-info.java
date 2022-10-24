@@ -8,6 +8,7 @@ module hu.boga.midiai {
     requires com.google.common;
     requires org.controlsfx.controls;
     requires org.kordamp.ikonli.javafx;
+    requires org.slf4j;
 
     exports hu.boga.midiai;
     exports hu.boga.midiai.core.boundaries;
@@ -24,5 +25,7 @@ module hu.boga.midiai {
     opens hu.boga.midiai.gui to javafx.fxml, com.google.common;
     exports hu.boga.midiai.gui.trackeditor;
     opens hu.boga.midiai.gui.trackeditor to com.google.common, javafx.fxml;
+
+
 
 }

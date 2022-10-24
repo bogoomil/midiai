@@ -12,6 +12,8 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.util.Arrays;
@@ -19,6 +21,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class TrackEditorPanelController implements TrackBoundaryOut, TrackEventListener {
+
+    private static final Logger LOG = LoggerFactory.getLogger(TrackEditorPanelController.class);
 
     @FXML
     public InstrumentCombo instrumentCombo;
@@ -111,5 +115,11 @@ public class TrackEditorPanelController implements TrackBoundaryOut, TrackEventL
     @Override
     public void onAddNoteEvent(AddNoteEvent event) {
         trackBoundaryIn.addNote(trackId, event.getTick(), event.getPitch(), 1);
+    }
+
+    @Override
+    public void onMoveNoteEvent(MoveNoteEvent event) {
+        LOG.debug(event.tick + " :: " + event.getPitch() + " :: " + event.getNewTick());
+        trackBoundaryIn.noteMoved(trackId, event.getTick(), event.getPitch(), event.getNewTick());
     }
 }

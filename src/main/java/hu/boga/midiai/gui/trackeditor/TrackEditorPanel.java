@@ -19,11 +19,16 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class TrackEditorPanel extends Pane {
+
+    private static final Logger LOG = LoggerFactory.getLogger(TrackEditorPanel.class);
+
     private static final int KEYBOARD_OFFSET = 0;
     int measureNum = 100;
     private int resolution;
@@ -36,11 +41,15 @@ public class TrackEditorPanel extends Pane {
 
     public TrackEditorPanel(){
         createContextMenu();
-        addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+
+        addEventHandler(MouseEvent.ANY, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                handleMouseClick(event);
             }
+        });
+
+        setOnMouseClicked(event -> {
+            handleMouseClick(event);
         });
     }
 
@@ -73,13 +82,11 @@ public class TrackEditorPanel extends Pane {
     }
 
     private void handleMouseClick(MouseEvent event) {
-        System.out.println("MOUSE EVENT CLICK: " + event.getButton());
         if(event.getButton() == MouseButton.SECONDARY){
             contextMenu.show(this, event.getScreenX(), event.getScreenY());
         } else if(event.getButton() == MouseButton.PRIMARY){
             AddNoteEvent addNoteEvent = new AddNoteEvent(getTickByX((int) event.getX()), getPitchByY((int) event.getY()).getMidiCode());
             this.trackEventListeners.forEach(trackEventListener -> trackEventListener.onAddNoteEvent(addNoteEvent));
-            System.out.println("TICK: " + getTickByX((int) event.getX()) + " :: current mode: " + currentMode.name());
         }
     }
 
@@ -126,13 +133,30 @@ public class TrackEditorPanel extends Pane {
     }
 
     private Rectangle createNoteRectangle(NoteDto noteDto) {
-        NoteRectangle rect = new NoteRectangle();
-        rect.setX((int) (noteDto.tick * getTickWidth()));
-        rect.setY(getYByPitch((int) noteDto.midiCode));
-        rect.setWidth(this.getTickWidth() * noteDto.lengthInTicks);
-        rect.setHeight(getPitchHeight());
-        rect.setFill(Color.BLACK);
-        return rect;
+
+        int x = (int) (noteDto.tick * getTickWidth());
+
+        NoteRectangle noteRectangle = new NoteRectangle(x, (int) noteDto.midiCode);
+        noteRectangle.setX(x);
+        noteRectangle.setY(getYByPitch((int) noteDto.midiCode));
+        noteRectangle.setWidth(this.getTickWidth() * noteDto.lengthInTicks);
+        noteRectangle.setHeight(getPitchHeight());
+        noteRectangle.setFill(Color.BLACK);
+
+        noteRectangle.setOnMouseReleased(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                trackEventListeners.forEach(trackEventListener -> {
+                    trackEventListener.onMoveNoteEvent(new MoveNoteEvent((int) noteDto.tick, (int) noteDto.midiCode, getTickByX((int) noteRectangle.getX())));
+                    noteRectangle.setDragging(false);
+                });
+            }
+        });
+
+        trackEventListeners.forEach(trackEventListener -> {
+            noteRectangle.addTrackEventListener(trackEventListener);
+        });
+        return noteRectangle;
     }
 
     private void initializeCanvas() {

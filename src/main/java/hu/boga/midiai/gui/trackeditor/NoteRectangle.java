@@ -4,28 +4,63 @@ import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class NoteRectangle extends Rectangle {
+    private static final Logger LOG = LoggerFactory.getLogger(NoteRectangle.class);
+
     private int length;
     private boolean selected;
+    private boolean isDragging;
 
-    private double startDrag;
+    private int origX;
+    private int pitch;
 
-    public NoteRectangle() {
-        addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+    public NoteRectangle(final int origX, final int pitch) {
+        this.origX = origX;
+        this.pitch = pitch;
+        setUpEventHandlers();
+    }
+
+    private void setUpEventHandlers() {
+        addEventHandler(MouseEvent.ANY, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                setSelected(!isSelected());
-                setFill(isSelected() ? Color.RED : Color.BLACK);
+                LOG.debug("event type: " + event.getEventType());
+                switch (event.getEventType().getName()){
+                    case "MOUSE_CLICKED":{
+                        handleMouseClick();
+                        break;
+                    }
+                    case "MOUSE_DRAGGED": {
+                        handleMouseDragged(event);
+                        break;
+                    }
+                }
                 event.consume();
             }
         });
-        setOnMouseDragged(e -> {
-            if (contains(e.getX(), e.getY())) {
-                setX(e.getX() - getWidth() / 2);
+    }
+
+    private List<TrackEventListener> trackEventListeners = new ArrayList<>();
+
+
+    private void handleMouseDragged(MouseEvent e) {
+        isDragging = true;
+        if (contains(e.getX(), e.getY())) {
+            setX(e.getX() - getWidth() / 2);
 //                setY(e.getY() - 60 / 2);
-            }
-        });    }
+        }
+    }
+
+    private void handleMouseClick() {
+        setSelected(!isSelected());
+        setFill(isSelected() ? Color.RED : Color.BLACK);
+    }
 
     public int getLength() {
         return this.length;
@@ -43,5 +78,11 @@ public class NoteRectangle extends Rectangle {
         this.selected = selected;
     }
 
+    public void addTrackEventListener(TrackEventListener trackEventListener){
+        this.trackEventListeners.add(trackEventListener);
+    }
 
+    public void setDragging(boolean b) {
+        isDragging = false;
+    }
 }

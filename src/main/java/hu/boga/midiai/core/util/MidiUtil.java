@@ -172,7 +172,7 @@ public class MidiUtil {
      * Take the NOTE_ON event noteOn (which is event i in track), and
      * find the matching NOTE_OFF event.
      */
-    private static MidiEvent findMatchingNoteOff(Track track, int noteOnIndex, MidiEvent noteOn) {
+    public static MidiEvent findMatchingNoteOff(Track track, int noteOnIndex, MidiEvent noteOn) {
         assert isNoteOnEvent(noteOn);
 
         for (int i = noteOnIndex; i < track.size(); i++) {

@@ -4,6 +4,8 @@ import com.google.common.base.Objects;
 import hu.boga.midiai.core.exceptions.MidiAiException;
 import hu.boga.midiai.core.util.Constants;
 import hu.boga.midiai.core.util.MidiUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.sound.midi.*;
 import java.nio.charset.StandardCharsets;
@@ -14,6 +16,8 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class MidiTrack {
+
+    private static final Logger LOG = LoggerFactory.getLogger(MidiTrack.class);
 
     UUID id = UUID.randomUUID();
 
@@ -214,5 +218,44 @@ public class MidiTrack {
         } catch (InvalidMidiDataException e) {
             throw new MidiAiException(e.getMessage());
         }
+    }
+
+    public void moveNote(int tick, int pitch, int newTick) {
+        int index = indexOfNoteOnEvent(tick, pitch);
+        MidiEvent noteOn = track.get(index);
+        MidiEvent noteOff = MidiUtil.findMatchingNoteOff(track, index, noteOn);
+
+        long length = noteOff.getTick() - noteOn.getTick();
+
+        ShortMessage shortMessage = (ShortMessage) noteOn.getMessage();
+        try {
+            addShortMessage(newTick, ShortMessage.NOTE_ON, shortMessage.getChannel(), shortMessage.getData1(), shortMessage.getData2());
+            addShortMessage((int) (newTick + length), ShortMessage.NOTE_OFF, shortMessage.getChannel(), shortMessage.getData1(), shortMessage.getData2());
+        } catch (InvalidMidiDataException e) {
+            e.printStackTrace();
+        }
+
+        track.remove(noteOn);
+        track.remove(noteOff);
+
+        LOG.debug("Note on: " + noteOn + ", note off: " + noteOff);
+
+
+    }
+
+    private int indexOfNoteOnEvent(int tick, int pitch){
+        int index = 0;
+        for (int i = 0; i < track.size(); i++){
+            MidiEvent event = track.get(i);
+            if(event.getTick() == tick){
+                if(event.getMessage() instanceof ShortMessage){
+                    ShortMessage shortMessage = (ShortMessage) event.getMessage();
+                    if(shortMessage.getCommand() == ShortMessage.NOTE_ON && shortMessage.getData1() == pitch) {
+                        index = i;
+                    }
+                }
+            }
+        }
+        return index;
     }
 }

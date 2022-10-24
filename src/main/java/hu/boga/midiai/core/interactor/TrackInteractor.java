@@ -55,6 +55,17 @@ public class TrackInteractor implements TrackBoundaryIn {
         });
     }
 
+    @Override
+    public void noteMoved(String trackId, int tick, int pitch, int newTick) {
+        App.findMidiProjectByTrackId(trackId).ifPresent(midiProject -> {
+            int ticksIn32nds = midiProject.getTicksIn32nds();
+            midiProject.getTrackById(trackId).ifPresent(midiTrack -> {
+                midiTrack.moveNote(tick, pitch, newTick);
+                boundaryOut.dispayTrack(convertTrackToTrackDto(midiTrack));
+            });
+        });
+    }
+
     private TrackDto convertTrackToTrackDto(MidiTrack midiTrack) {
         TrackDto dto = new TrackDto();
         midiTrack.getProgram().ifPresent(pr -> dto.program = pr);
