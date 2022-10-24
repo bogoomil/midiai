@@ -122,4 +122,10 @@ public class TrackEditorPanelController implements TrackBoundaryOut, TrackEventL
         LOG.debug(event.tick + " :: " + event.getPitch() + " :: " + event.getNewTick());
         trackBoundaryIn.noteMoved(trackId, event.getTick(), event.getPitch(), event.getNewTick());
     }
+
+    @Override
+    public void onDeleteNoteEvent(DeleteNoteEvent event) {
+        LOG.debug(event.tick + " :: " + event.getPitch() );
+        trackBoundaryIn.deleteNote(trackId, (int) event.getTick(), (int) event.getPitch());
+    }
 }

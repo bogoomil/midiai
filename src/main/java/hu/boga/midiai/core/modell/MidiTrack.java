@@ -224,9 +224,7 @@ public class MidiTrack {
         int index = indexOfNoteOnEvent(tick, pitch);
         MidiEvent noteOn = track.get(index);
         MidiEvent noteOff = MidiUtil.findMatchingNoteOff(track, index, noteOn);
-
         long length = noteOff.getTick() - noteOn.getTick();
-
         ShortMessage shortMessage = (ShortMessage) noteOn.getMessage();
         try {
             addShortMessage(newTick, ShortMessage.NOTE_ON, shortMessage.getChannel(), shortMessage.getData1(), shortMessage.getData2());
@@ -234,13 +232,9 @@ public class MidiTrack {
         } catch (InvalidMidiDataException e) {
             e.printStackTrace();
         }
-
         track.remove(noteOn);
         track.remove(noteOff);
-
         LOG.debug("Note on: " + noteOn + ", note off: " + noteOff);
-
-
     }
 
     private int indexOfNoteOnEvent(int tick, int pitch){
@@ -257,5 +251,15 @@ public class MidiTrack {
             }
         }
         return index;
+    }
+
+    public void deleteNote(int tick, int pitch) {
+        int index = indexOfNoteOnEvent(tick, pitch);
+        MidiEvent noteOn = track.get(index);
+        MidiEvent noteOff = MidiUtil.findMatchingNoteOff(track, index, noteOn);
+        track.remove(noteOn);
+        track.remove(noteOff);
+        LOG.debug("Note on: " + noteOn + ", note off: " + noteOff);
+
     }
 }

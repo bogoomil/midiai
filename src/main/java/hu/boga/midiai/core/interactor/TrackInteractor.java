@@ -11,6 +11,7 @@ import hu.boga.midiai.core.modell.Note;
 
 import javax.inject.Inject;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class TrackInteractor implements TrackBoundaryIn {
@@ -24,24 +25,17 @@ public class TrackInteractor implements TrackBoundaryIn {
 
     @Override
     public void showTrack(String trackId) {
-        App.getTrackById(trackId).ifPresent(midiTrack -> {
-            boundaryOut.dispayTrack(convertTrackToTrackDto(midiTrack));
-        });
+        boundaryOut.dispayTrack(convertTrackToTrackDto(retreivMidiTrack(trackId)));
     }
 
     @Override
     public void updateProgramChannel(String trackId, int channel, int program) {
-        App.getTrackById(trackId).ifPresent(midiTrack -> {
-            midiTrack.updateProgramChannel(channel, program);
-        });
+        retreivMidiTrack(trackId).updateProgramChannel(channel, program);
     }
 
     @Override
     public void updateTrackName(String trackId, String name) {
-        App.getTrackById(trackId).ifPresent(midiTrack -> {
-            midiTrack.updateTrackName(name);
-        });
-
+        retreivMidiTrack(trackId).updateTrackName(name);
     }
 
     @Override
@@ -57,13 +51,17 @@ public class TrackInteractor implements TrackBoundaryIn {
 
     @Override
     public void noteMoved(String trackId, int tick, int pitch, int newTick) {
-        App.findMidiProjectByTrackId(trackId).ifPresent(midiProject -> {
-            int ticksIn32nds = midiProject.getTicksIn32nds();
-            midiProject.getTrackById(trackId).ifPresent(midiTrack -> {
-                midiTrack.moveNote(tick, pitch, newTick);
-                boundaryOut.dispayTrack(convertTrackToTrackDto(midiTrack));
-            });
-        });
+        MidiTrack midiTrack = retreivMidiTrack(trackId);
+        midiTrack.moveNote(tick, pitch, newTick);
+        boundaryOut.dispayTrack(convertTrackToTrackDto(midiTrack));
+    }
+
+    @Override
+    public void deleteNote(String trackId, int tick, int pitch) {
+        MidiTrack midiTrack = retreivMidiTrack(trackId);
+        midiTrack.deleteNote(tick, pitch);
+        boundaryOut.dispayTrack(convertTrackToTrackDto(midiTrack));
+
     }
 
     private TrackDto convertTrackToTrackDto(MidiTrack midiTrack) {
@@ -83,5 +81,9 @@ public class TrackInteractor implements TrackBoundaryIn {
                 .map(note -> new NoteDto(note.noteValue, note.tick, note.length))
                 .collect(Collectors.toList())
                 .toArray(new NoteDto[]{});
+    }
+
+    private MidiTrack retreivMidiTrack(String trackId){
+        return App.getTrackById(trackId).orElseThrow();
     }
 }

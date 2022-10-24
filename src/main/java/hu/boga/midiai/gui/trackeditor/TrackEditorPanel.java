@@ -155,6 +155,17 @@ public class TrackEditorPanel extends Pane {
             }
         });
 
+        noteRectangle.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                if(event.getClickCount() == 2){
+                    trackEventListeners.forEach(trackEventListener -> {
+                        trackEventListener.onDeleteNoteEvent(new DeleteNoteEvent(noteDto.tick, noteDto.midiCode));
+                    });
+                }
+            }
+        });
+
         trackEventListeners.forEach(trackEventListener -> {
             noteRectangle.addTrackEventListener(trackEventListener);
         });
