@@ -24,9 +24,13 @@ public class MidiTrack {
     private final Track track;
     private final int resolution;
 
-    public MidiTrack(Track track, int resolution) {
+    private MidiTrack(final Track track, int resolution) {
         this.track = track;
         this.resolution = resolution;
+    }
+
+    public static MidiTrack createMidiTrack(final Track track, int resolution) {
+        return new MidiTrack(track, resolution);
     }
 
     public Optional<Integer> getChannel() {
@@ -86,6 +90,7 @@ public class MidiTrack {
     }
 
     public void updateProgramChannel(int channel, int program) {
+        LOG.debug("channel: " + channel + ", program: " + program);
         removeEventsByCommand(ShortMessage.PROGRAM_CHANGE);
         addProgramChangeEvent(channel, program, 0);
     }

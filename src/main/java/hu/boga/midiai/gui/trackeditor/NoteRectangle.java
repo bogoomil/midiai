@@ -3,6 +3,7 @@ package hu.boga.midiai.gui.trackeditor;
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,10 +13,14 @@ import java.util.List;
 
 public class NoteRectangle extends Rectangle {
     private static final Logger LOG = LoggerFactory.getLogger(NoteRectangle.class);
-
+    public static final Color SELECTED_COLOR = Color.RED;
+    public static final Color DEFAULT_COLOR = Color.DEEPSKYBLUE;
     private int length;
     private boolean selected;
     private boolean isDragging;
+
+
+
 
     private int origX;
     private int pitch;
@@ -23,6 +28,8 @@ public class NoteRectangle extends Rectangle {
     public NoteRectangle(final int origX, final int pitch) {
         this.origX = origX;
         this.pitch = pitch;
+        this.setFill(DEFAULT_COLOR);
+
         setUpEventHandlers();
     }
 
@@ -30,7 +37,7 @@ public class NoteRectangle extends Rectangle {
         addEventHandler(MouseEvent.ANY, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                LOG.debug("event type: " + event.getEventType());
+//                LOG.debug("event type: " + event.getEventType());
                 switch (event.getEventType().getName()){
                     case "MOUSE_CLICKED":{
                         handleMouseClick();
@@ -59,7 +66,7 @@ public class NoteRectangle extends Rectangle {
 
     private void handleMouseClick() {
         setSelected(!isSelected());
-        setFill(isSelected() ? Color.RED : Color.BLACK);
+        setFill(isSelected() ? SELECTED_COLOR : DEFAULT_COLOR);
     }
 
     public int getLength() {

@@ -27,7 +27,7 @@ public class MidiProject {
     private void initTracks() {
         tracks = new ArrayList<>();
         Arrays.stream(sequence.getTracks()).forEach(track -> {
-            MidiTrack midiTrack = new MidiTrack(track, getResolution());
+            MidiTrack midiTrack = MidiTrack.createMidiTrack(track, getResolution());
             tracks.add(midiTrack);
         });
     }
@@ -169,7 +169,7 @@ public class MidiProject {
 
     public MidiTrack createNewTrack() {
         Track track = sequence.createTrack();
-        MidiTrack midiTrack = new MidiTrack(track, getResolution());
+        MidiTrack midiTrack = MidiTrack.createMidiTrack(track, getResolution());
         tracks.add(midiTrack);
         return midiTrack;
     }

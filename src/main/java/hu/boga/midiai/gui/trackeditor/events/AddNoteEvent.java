@@ -1,12 +1,14 @@
-package hu.boga.midiai.gui.trackeditor;
+package hu.boga.midiai.gui.trackeditor.events;
 
 public class AddNoteEvent {
     int tick;
     int pitch;
+    int length;
 
-    public AddNoteEvent(final int tick, final int pitch) {
+    public AddNoteEvent(final int tick, final int pitch, int length) {
         this.tick = tick;
         this.pitch = pitch;
+        this.length = length;
     }
 
     public int getTick() {
@@ -15,5 +17,9 @@ public class AddNoteEvent {
 
     public int getPitch() {
         return this.pitch;
+    }
+
+    public int getLength() {
+        return length;
     }
 }

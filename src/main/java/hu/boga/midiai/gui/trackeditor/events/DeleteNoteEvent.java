@@ -1,4 +1,4 @@
-package hu.boga.midiai.gui.trackeditor;
+package hu.boga.midiai.gui.trackeditor.events;
 
 public class DeleteNoteEvent {
     double tick;

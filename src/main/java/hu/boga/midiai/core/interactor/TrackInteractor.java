@@ -5,13 +5,11 @@ import hu.boga.midiai.core.boundaries.TrackBoundaryOut;
 import hu.boga.midiai.core.boundaries.dtos.NoteDto;
 import hu.boga.midiai.core.boundaries.dtos.TrackDto;
 import hu.boga.midiai.core.modell.App;
-import hu.boga.midiai.core.modell.MidiProject;
 import hu.boga.midiai.core.modell.MidiTrack;
 import hu.boga.midiai.core.modell.Note;
 
 import javax.inject.Inject;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class TrackInteractor implements TrackBoundaryIn {
@@ -19,7 +17,7 @@ public class TrackInteractor implements TrackBoundaryIn {
     TrackBoundaryOut boundaryOut;
 
     @Inject
-    public TrackInteractor(TrackBoundaryOut boundaryOut) {
+    public TrackInteractor(final TrackBoundaryOut boundaryOut) {
         this.boundaryOut = boundaryOut;
     }
 
@@ -83,7 +81,7 @@ public class TrackInteractor implements TrackBoundaryIn {
                 .toArray(new NoteDto[]{});
     }
 
-    private MidiTrack retreivMidiTrack(String trackId){
+    private MidiTrack retreivMidiTrack(final String trackId){
         return App.getTrackById(trackId).orElseThrow();
     }
 }

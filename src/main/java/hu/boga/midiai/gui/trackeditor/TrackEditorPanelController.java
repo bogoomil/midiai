@@ -5,6 +5,9 @@ import hu.boga.midiai.core.boundaries.TrackBoundaryOut;
 import hu.boga.midiai.core.boundaries.dtos.TrackDto;
 import hu.boga.midiai.gui.SequenceEditorPanelController;
 import hu.boga.midiai.gui.controls.InstrumentCombo;
+import hu.boga.midiai.gui.trackeditor.events.AddNoteEvent;
+import hu.boga.midiai.gui.trackeditor.events.DeleteNoteEvent;
+import hu.boga.midiai.gui.trackeditor.events.MoveNoteEvent;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -114,18 +117,18 @@ public class TrackEditorPanelController implements TrackBoundaryOut, TrackEventL
 
     @Override
     public void onAddNoteEvent(AddNoteEvent event) {
-        trackBoundaryIn.addNote(trackId, event.getTick(), event.getPitch(), 1);
+        trackBoundaryIn.addNote(trackId, event.getTick(), event.getPitch(), event.getLength());
     }
 
     @Override
     public void onMoveNoteEvent(MoveNoteEvent event) {
-        LOG.debug(event.tick + " :: " + event.getPitch() + " :: " + event.getNewTick());
+        LOG.debug(event.getTick() + " :: " + event.getPitch() + " :: " + event.getNewTick());
         trackBoundaryIn.noteMoved(trackId, event.getTick(), event.getPitch(), event.getNewTick());
     }
 
     @Override
     public void onDeleteNoteEvent(DeleteNoteEvent event) {
-        LOG.debug(event.tick + " :: " + event.getPitch() );
+        LOG.debug(event.getTick() + " :: " + event.getPitch() );
         trackBoundaryIn.deleteNote(trackId, (int) event.getTick(), (int) event.getPitch());
     }
 }
