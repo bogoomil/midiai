@@ -1,13 +1,19 @@
 package hu.boga.midiai.gui;
 
+import com.google.common.eventbus.EventBus;
 import hu.boga.midiai.core.boundaries.SequenceBoundaryIn;
 import hu.boga.midiai.core.boundaries.SequenceBoundaryOut;
 import hu.boga.midiai.core.boundaries.dtos.SequenceDto;
 import hu.boga.midiai.core.exceptions.MidiAiException;
+import hu.boga.midiai.core.musictheory.enums.NoteName;
+import hu.boga.midiai.core.musictheory.enums.Tone;
 import hu.boga.midiai.gui.controls.TempoSlider;
 import hu.boga.midiai.gui.trackeditor.TrackEditorPanelController;
+import hu.boga.midiai.gui.trackeditor.events.ModeChangedEvent;
+import hu.boga.midiai.gui.trackeditor.events.RootChangedEvent;
 import hu.boga.midiai.guice.GuiceModule;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
@@ -28,9 +34,12 @@ public class SequenceEditorPanelController implements SequenceBoundaryOut {
     public Label ticksIn32nds;
     public Label ticksPerSecond;
     public Label tickSize;
-    public Label projectIdLabel;
     public TempoSlider tempoSlider;
     public Label tempoLabel;
+
+    public final EventBus eventBus = new EventBus();
+    public Menu rootMenu;
+    public Menu modeMenu;
 
     @FXML
     private TextField tfFilename;
@@ -49,6 +58,8 @@ public class SequenceEditorPanelController implements SequenceBoundaryOut {
                     initTemposSettings(newValue);
                 }
         );
+        rootMenu.getItems().addAll(createRootMenuItems());
+        modeMenu.getItems().addAll(createToneMenuItems());
     }
 
     private void initTemposSettings(Number newValue) {
@@ -85,7 +96,6 @@ public class SequenceEditorPanelController implements SequenceBoundaryOut {
         this.tempoSlider.adjustValue(sequenceDto.tempo);
         this.tempoLabel.setText("Tempo: " + sequenceDto.tempo);
         this.projectId = sequenceDto.id;
-        projectIdLabel.setText(projectId);
 
         initChildren(sequenceDto);
 
@@ -139,4 +149,49 @@ public class SequenceEditorPanelController implements SequenceBoundaryOut {
     public void onTrackDeletedEvent(String trackId) {
         boundaryIn.removeTrack(trackId);
     }
+
+    private RadioMenuItem[] createToneMenuItems() {
+        final ToggleGroup toggleGroup = new ToggleGroup();
+        RadioMenuItem[] items = new RadioMenuItem[Tone.values().length];
+        for (int i = 0; i < Tone.values().length; i++) {
+            Tone currTone = Tone.values()[i];
+            RadioMenuItem menuItem = new RadioMenuItem(currTone.name());
+            menuItem.setToggleGroup(toggleGroup);
+            int finalI = i;
+            menuItem.addEventHandler(ActionEvent.ACTION, new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    eventBus.post(new ModeChangedEvent(currTone));
+
+                }
+            });
+            items[i] = menuItem;
+        }
+        items[0].setSelected(true);
+        return items;
+
+    }
+
+    private RadioMenuItem[] createRootMenuItems() {
+        final ToggleGroup toggleGroup = new ToggleGroup();
+        RadioMenuItem[] items = new RadioMenuItem[NoteName.values().length];
+        for (int i = 0; i < NoteName.values().length; i++) {
+            NoteName currRoot = NoteName.values()[i];
+            RadioMenuItem menuItem = new RadioMenuItem(currRoot.name());
+            menuItem.setToggleGroup(toggleGroup);
+            int finalI = i;
+            menuItem.addEventHandler(ActionEvent.ACTION, new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    eventBus.post(new RootChangedEvent(currRoot));
+                }
+            });
+            items[i] = menuItem;
+        }
+        items[0].setSelected(true);
+        return items;
+
+    }
+
+
 }

@@ -1,15 +1,14 @@
 package hu.boga.midiai.gui.trackeditor;
 
+import com.google.common.eventbus.Subscribe;
 import hu.boga.midiai.core.boundaries.dtos.NoteDto;
 import hu.boga.midiai.core.musictheory.Pitch;
+import hu.boga.midiai.core.musictheory.enums.ChordType;
 import hu.boga.midiai.core.musictheory.enums.NoteLength;
 import hu.boga.midiai.core.musictheory.enums.NoteName;
+import hu.boga.midiai.core.musictheory.enums.Tone;
 import hu.boga.midiai.gui.GuiConstants;
-import hu.boga.midiai.gui.trackeditor.events.AddNoteEvent;
-import hu.boga.midiai.gui.trackeditor.events.DeleteNoteEvent;
-import hu.boga.midiai.gui.trackeditor.events.MoveNoteEvent;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import hu.boga.midiai.gui.trackeditor.events.*;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
@@ -47,7 +46,10 @@ public class TrackEditorPanel extends Pane {
 
     private EditorModeEnum currentMode = EditorModeEnum.ADD;
     private final List<TrackEventListener> trackEventListeners = new ArrayList<>();
-    private NoteLength noteLength = NoteLength.HARMICKETTED;
+    private NoteLength currentNoteLength = NoteLength.HARMICKETTED;
+    private ChordType currentChordType = null;
+    private Tone currentTone = Tone.MAJ;
+    private NoteName currentRoot = NoteName.C;
 
     public TrackEditorPanel() {
         this.createContextMenu();
@@ -70,42 +72,64 @@ public class TrackEditorPanel extends Pane {
     private void createContextMenu() {
         RadioMenuItem[] radioMenuItems = createNoteLengthMenuItem();
 
-        Menu modeMenu = new Menu("Mode", null,
+        Menu creationMenu = new Menu("Creation", null,
                 new Menu("Length", null,
                         createNoteLengthMenuItem()
-                        ),
+                ),
                 new Menu("Chords", null,
-                        new RadioMenuItem("single note"),
-
-                        new RadioMenuItem("single note"))
-                );
-//                new MenuItem("Chords"));
-
-
+                        createChordMenuItems())
+        );
         this.contextMenu = new ContextMenu();
-
-        this.contextMenu.getItems().add(modeMenu);
+        this.contextMenu.getItems().add(creationMenu);
 
     }
 
-    private RadioMenuItem[] createNoteLengthMenuItem() {
-        final ToggleGroup toggleGroupLength = new ToggleGroup();
-        RadioMenuItem[] items = new RadioMenuItem[NoteLength.values().length];
-        for(int i = 0; i < NoteLength.values().length; i++){
-
-            NoteLength currLength = NoteLength.values()[i];
-
-            RadioMenuItem menuItem = new RadioMenuItem(currLength.name());
-            menuItem.setToggleGroup(toggleGroupLength);
+    private RadioMenuItem[] createChordMenuItems() {
+        final ToggleGroup toggleGroup = new ToggleGroup();
+        RadioMenuItem[] items = new RadioMenuItem[ChordType.values().length + 1];
+        items[0] = new RadioMenuItem("single note");
+        items[0].setToggleGroup(toggleGroup);
+        items[0].setSelected(true);
+        items[0].addEventHandler(ActionEvent.ACTION, new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                currentChordType = null;
+            }
+        });
+        for (int i = 0; i < ChordType.values().length; i++) {
+            ChordType currChordType = ChordType.values()[i];
+            RadioMenuItem menuItem = new RadioMenuItem(currChordType.name());
+            menuItem.setToggleGroup(toggleGroup);
             int finalI = i;
             menuItem.addEventHandler(ActionEvent.ACTION, new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent event) {
-                    noteLength = currLength;
+                    currentChordType = currChordType;
+                }
+            });
+            items[i + 1] = menuItem;
+        }
+        return items;
+
+    }
+
+    private RadioMenuItem[] createNoteLengthMenuItem() {
+        final ToggleGroup toggleGroup = new ToggleGroup();
+        RadioMenuItem[] items = new RadioMenuItem[NoteLength.values().length];
+        for (int i = 0; i < NoteLength.values().length; i++) {
+            NoteLength currLength = NoteLength.values()[i];
+            RadioMenuItem menuItem = new RadioMenuItem(currLength.name());
+            menuItem.setToggleGroup(toggleGroup);
+            int finalI = i;
+            menuItem.addEventHandler(ActionEvent.ACTION, new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    currentNoteLength = currLength;
                 }
             });
             items[i] = menuItem;
         }
+        items[0].setSelected(true);
         return items;
     }
 
@@ -113,7 +137,7 @@ public class TrackEditorPanel extends Pane {
         if (event.getButton() == MouseButton.SECONDARY) {
             this.contextMenu.show(this, event.getScreenX(), event.getScreenY());
         } else if (event.getButton() == MouseButton.PRIMARY) {
-            final AddNoteEvent addNoteEvent = new AddNoteEvent(this.getTickByX((int) event.getX()), this.getPitchByY((int) event.getY()).getMidiCode(), noteLength.getErtek());
+            final AddNoteEvent addNoteEvent = new AddNoteEvent(this.getTickByX((int) event.getX()), this.getPitchByY((int) event.getY()).getMidiCode(), currentNoteLength.getErtek());
             trackEventListeners.forEach(trackEventListener -> trackEventListener.onAddNoteEvent(addNoteEvent));
         }
     }
@@ -298,6 +322,18 @@ public class TrackEditorPanel extends Pane {
 
     enum EditorModeEnum {
         ADD, DELETE
+    }
+
+    @Subscribe
+    void handleRootChangedEvent(RootChangedEvent event){
+        this.currentRoot = event.getNoteName();
+        LOG.debug("current root: " + currentRoot);
+    }
+
+    @Subscribe
+    void handleModeChangedEvent(ModeChangedEvent event){
+        this.currentTone = event.getTone();
+        LOG.debug("current tone: " + currentTone);
     }
 
 }

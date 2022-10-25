@@ -112,6 +112,7 @@ public class TrackEditorPanelController implements TrackBoundaryOut, TrackEventL
 
     public void setParent(final SequenceEditorPanelController parent) {
         this.parent = parent;
+        parent.eventBus.register(trackEditorPanel);
     }
 
 
