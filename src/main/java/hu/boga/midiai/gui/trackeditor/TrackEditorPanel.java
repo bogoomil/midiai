@@ -3,6 +3,7 @@ package hu.boga.midiai.gui.trackeditor;
 import com.google.common.eventbus.Subscribe;
 import hu.boga.midiai.core.boundaries.dtos.NoteDto;
 import hu.boga.midiai.core.musictheory.Pitch;
+import hu.boga.midiai.core.musictheory.Scale;
 import hu.boga.midiai.core.musictheory.enums.ChordType;
 import hu.boga.midiai.core.musictheory.enums.NoteLength;
 import hu.boga.midiai.core.musictheory.enums.NoteName;
@@ -38,6 +39,7 @@ public class TrackEditorPanel extends Pane {
     public static final Color DEFAULT_VERTICAL_LINE_COLOR = Color.LIME;
     public static final Color DEFAULT_HORIZONTAL_LINE_COLOR = Color.LIME;
     public static final Paint TEXT_COLOR = Color.WHITE;
+    public static final Color DISABLED_COLOR = Color.GAINSBORO;
     int measureNum = 100;
     private int resolution;
     private float zoomFactor = 1f;
@@ -48,8 +50,10 @@ public class TrackEditorPanel extends Pane {
     private final List<TrackEventListener> trackEventListeners = new ArrayList<>();
     private NoteLength currentNoteLength = NoteLength.HARMICKETTED;
     private ChordType currentChordType = null;
-    private Tone currentTone = Tone.MAJ;
+    private Tone currentTone = null;
     private NoteName currentRoot = NoteName.C;
+
+    private List<Point2D> selectedPoints = new ArrayList<>(0);
 
     public TrackEditorPanel() {
         this.createContextMenu();
@@ -70,18 +74,41 @@ public class TrackEditorPanel extends Pane {
     }
 
     private void createContextMenu() {
+        this.contextMenu = new ContextMenu();
         RadioMenuItem[] radioMenuItems = createNoteLengthMenuItem();
 
         Menu creationMenu = new Menu("Creation", null,
-                new Menu("Length", null,
-                        createNoteLengthMenuItem()
-                ),
-                new Menu("Chords", null,
-                        createChordMenuItems())
+                new Menu("Length", null, createNoteLengthMenuItem()),
+                new Menu("Chords", null,createChordMenuItems())
         );
-        this.contextMenu = new ContextMenu();
+        MenuItem selectAllMenu = new MenuItem("Select all");
+        selectAllMenu.addEventHandler(ActionEvent.ACTION, event -> selectAllNotes());
+        MenuItem deSelectAllMenu = new MenuItem("Deselect all");
+        deSelectAllMenu.addEventHandler(ActionEvent.ACTION, event -> deSelectAllNotes());
+        Menu selectionMenu = new Menu("Selection", null,
+                selectAllMenu,
+                deSelectAllMenu
+        );
         this.contextMenu.getItems().add(creationMenu);
+        this.contextMenu.getItems().add(selectionMenu);
 
+    }
+
+    private void selectAllNotes() {
+        List<Point2D> allPoints = getAllNoteRectangles().stream().map(noteRectangle -> new Point2D(noteRectangle.getX(), noteRectangle.getY())).collect(Collectors.toList());
+        this.selectedPoints.addAll(allPoints);
+        paintNotes();
+    }
+
+    private void deSelectAllNotes() {
+        this.selectedPoints.clear();
+        paintNotes();
+    }
+
+    private List<NoteRectangle> getAllNoteRectangles() {
+        List<NoteRectangle> l = getChildren().stream().filter(node -> node instanceof NoteRectangle).map(node -> (NoteRectangle)node).collect(Collectors.toList());
+        LOG.debug("notes " + l);
+        return l;
     }
 
     private RadioMenuItem[] createChordMenuItems() {
@@ -142,10 +169,9 @@ public class TrackEditorPanel extends Pane {
         }
     }
 
-    Optional<Node> getChild(final Point2D point) {
-        return getChildren().filtered(node -> node.contains(point)).stream().findFirst();
+    Optional<NoteRectangle> getChildAtPoint(final Point2D point) {
+        return getAllNoteRectangles().stream().filter(node -> node.contains(point)).findFirst();
     }
-
 
     public void paintNotes() {
         getChildren().clear();
@@ -153,9 +179,52 @@ public class TrackEditorPanel extends Pane {
         this.paintVerticalLines();
         this.paintHorizontalLines();
         this.paintKeyboard();
+        this.paintDisabled();
+
         this.notes.forEach(noteDto -> {
             this.paintNote(noteDto);
         });
+    }
+
+    private void paintDisabled() {
+        if(currentTone != null){
+            List<NoteName> scale = Scale.getScale(currentRoot, currentTone);
+            for (int y = 0; y < getPrefHeight(); y += this.getPitchHeight()) {
+                paintDisabledLines(scale, y);
+            }
+        }
+    }
+
+    private void paintDisabledLines(List<NoteName> scale, int y) {
+        NoteName currentNoteName = NoteName.byCode(getPitchByY(y + 5).getMidiCode());
+        if(!scale.contains(currentNoteName)){
+            paintDisabledRectangle(y);
+        }
+        if(currentNoteName == currentRoot){
+            paintRootMarker(y);
+        }
+    }
+
+    private void paintRootMarker(int y) {
+        Line line = new Line(0, y + getPitchHeight() / 2, getPrefWidth(), y + getPitchHeight() / 2);
+        line.setStroke(Color.RED);
+        getChildren().add(line);
+    }
+
+    private void paintDisabledRectangle(int y) {
+        final Rectangle rectangle = new Rectangle();
+        rectangle.addEventHandler(MouseEvent.ANY, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                event.consume();
+            }
+        });
+        rectangle.setFill(DISABLED_COLOR);
+        rectangle.setX(0);
+        rectangle.setY(y);
+        rectangle.setWidth(getPrefWidth());
+        rectangle.setHeight(getPitchHeight());
+        getChildren().add(rectangle);
     }
 
     private void paintKeyboard() {
@@ -185,42 +254,36 @@ public class TrackEditorPanel extends Pane {
         }
     }
 
-    private Rectangle createNoteRectangle(final NoteDto noteDto) {
+    private NoteRectangle createNoteRectangle(final NoteDto noteDto) {
 
         final int x = (int) (noteDto.tick * this.getTickWidth());
-
         final NoteRectangle noteRectangle = new NoteRectangle(x, (int) noteDto.midiCode);
         noteRectangle.setX(x);
         noteRectangle.setY(this.getYByPitch((int) noteDto.midiCode));
         noteRectangle.setWidth(getTickWidth() * noteDto.lengthInTicks);
         noteRectangle.setHeight(this.getPitchHeight());
 
-        noteRectangle.setOnMouseReleased(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(final MouseEvent event) {
+        noteRectangle.setOnMouseReleased(event -> TrackEditorPanel.this.trackEventListeners.forEach(trackEventListener -> {
+            if (noteRectangle.isDragging()) {
+                trackEventListener.onMoveNoteEvent(new MoveNoteEvent((int) noteDto.tick, (int) noteDto.midiCode, TrackEditorPanel.this.getTickByX((int) noteRectangle.getX())));
+            }
+            noteRectangle.setDragging(false);
+        }));
+
+        noteRectangle.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2) {
                 TrackEditorPanel.this.trackEventListeners.forEach(trackEventListener -> {
-                    if (noteRectangle.isDragging()) {
-                        trackEventListener.onMoveNoteEvent(new MoveNoteEvent((int) noteDto.tick, (int) noteDto.midiCode, TrackEditorPanel.this.getTickByX((int) noteRectangle.getX())));
-                    }
-                    noteRectangle.setDragging(false);
+                    trackEventListener.onDeleteNoteEvent(new DeleteNoteEvent(noteDto.tick, noteDto.midiCode));
                 });
             }
         });
 
-        noteRectangle.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(final MouseEvent event) {
-                if (event.getClickCount() == 2) {
-                    TrackEditorPanel.this.trackEventListeners.forEach(trackEventListener -> {
-                        trackEventListener.onDeleteNoteEvent(new DeleteNoteEvent(noteDto.tick, noteDto.midiCode));
-                    });
-                }
-            }
-        });
+        this.trackEventListeners.forEach(trackEventListener -> noteRectangle.addTrackEventListener(trackEventListener));
 
-        this.trackEventListeners.forEach(trackEventListener -> {
-            noteRectangle.addTrackEventListener(trackEventListener);
-        });
+        if(selectedPoints.contains(new Point2D(noteRectangle.getX(), noteRectangle.getY()))){
+            noteRectangle.setSelected(true);
+        }
+
         return noteRectangle;
     }
 
@@ -328,12 +391,14 @@ public class TrackEditorPanel extends Pane {
     void handleRootChangedEvent(RootChangedEvent event){
         this.currentRoot = event.getNoteName();
         LOG.debug("current root: " + currentRoot);
+        paintNotes();
     }
 
     @Subscribe
     void handleModeChangedEvent(ModeChangedEvent event){
         this.currentTone = event.getTone();
         LOG.debug("current tone: " + currentTone);
+        paintNotes();
     }
 
 }

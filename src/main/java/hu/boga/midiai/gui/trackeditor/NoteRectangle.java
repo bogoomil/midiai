@@ -66,7 +66,6 @@ public class NoteRectangle extends Rectangle {
 
     private void handleMouseClick() {
         setSelected(!isSelected());
-        setFill(isSelected() ? SELECTED_COLOR : DEFAULT_COLOR);
     }
 
     public int getLength() {
@@ -83,6 +82,7 @@ public class NoteRectangle extends Rectangle {
 
     public void setSelected(final boolean selected) {
         this.selected = selected;
+        setFill(isSelected() ? SELECTED_COLOR : DEFAULT_COLOR);
     }
 
     public void addTrackEventListener(TrackEventListener trackEventListener){
