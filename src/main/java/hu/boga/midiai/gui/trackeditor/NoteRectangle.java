@@ -3,7 +3,6 @@ package hu.boga.midiai.gui.trackeditor;
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,17 +18,13 @@ public class NoteRectangle extends Rectangle {
     private boolean selected;
     private boolean isDragging;
 
-
-
-
-    private int origX;
+    private int tick;
     private int pitch;
 
-    public NoteRectangle(final int origX, final int pitch) {
-        this.origX = origX;
+    public NoteRectangle(final int tick, final int pitch) {
+        this.tick = tick;
         this.pitch = pitch;
         this.setFill(DEFAULT_COLOR);
-
         setUpEventHandlers();
     }
 
@@ -91,6 +86,15 @@ public class NoteRectangle extends Rectangle {
 
     public void setDragging(boolean b) {
         isDragging = false;
+    }
+
+
+    public int getTick() {
+        return this.tick;
+    }
+
+    public int getPitch() {
+        return this.pitch;
     }
 
     public boolean isDragging() {

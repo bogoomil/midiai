@@ -75,12 +75,12 @@ public class TrackEditorPanel extends Pane {
 
     private void createContextMenu() {
         this.contextMenu = new ContextMenu();
-        RadioMenuItem[] radioMenuItems = createNoteLengthMenuItem();
-
         Menu creationMenu = new Menu("Creation", null,
                 new Menu("Length", null, createNoteLengthMenuItem()),
                 new Menu("Chords", null,createChordMenuItems())
         );
+
+
         MenuItem selectAllMenu = new MenuItem("Select all");
         selectAllMenu.addEventHandler(ActionEvent.ACTION, event -> selectAllNotes());
         MenuItem deSelectAllMenu = new MenuItem("Deselect all");
@@ -89,9 +89,31 @@ public class TrackEditorPanel extends Pane {
                 selectAllMenu,
                 deSelectAllMenu
         );
+
+        MenuItem deleteMenu = new MenuItem("selected");
+        deSelectAllMenu.addEventHandler(ActionEvent.ACTION, event -> deleteSelectedNotes());
+        MenuItem deleteAllMenu = new MenuItem("all");
+        deSelectAllMenu.addEventHandler(ActionEvent.ACTION, event -> deleteAllNotes());
+        Menu deletionMenu = new Menu("Delete", null,
+                deleteMenu,
+                deleteAllMenu
+        );
         this.contextMenu.getItems().add(creationMenu);
         this.contextMenu.getItems().add(selectionMenu);
+        this.contextMenu.getItems().add(deletionMenu);
+    }
 
+    private void deleteAllNotes() {
+        selectAllNotes();
+        deleteSelectedNotes();
+    }
+
+    private void deleteSelectedNotes() {
+        getAllNoteRectangles().stream().filter(noteRectangle -> noteRectangle.isSelected()).forEach(noteRectangle -> {
+            trackEventListeners.forEach(trackEventListener -> {
+                trackEventListener.onDeleteNoteEvent(new DeleteNoteEvent(noteRectangle.getTick(), noteRectangle.getPitch()));
+            });
+        });
     }
 
     private void selectAllNotes() {
