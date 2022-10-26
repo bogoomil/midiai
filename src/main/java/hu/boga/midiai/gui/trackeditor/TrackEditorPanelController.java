@@ -6,6 +6,7 @@ import hu.boga.midiai.core.boundaries.dtos.NoteDto;
 import hu.boga.midiai.core.boundaries.dtos.TrackDto;
 import hu.boga.midiai.gui.SequenceEditorPanelController;
 import hu.boga.midiai.gui.controls.InstrumentCombo;
+import hu.boga.midiai.gui.trackeditor.events.AddChordEvent;
 import hu.boga.midiai.gui.trackeditor.events.AddNoteEvent;
 import hu.boga.midiai.gui.trackeditor.events.DeleteNoteEvent;
 import hu.boga.midiai.gui.trackeditor.events.MoveNoteEvent;
@@ -121,6 +122,11 @@ public class TrackEditorPanelController implements TrackBoundaryOut, TrackEventL
     @Override
     public void onAddNoteEvent(AddNoteEvent event) {
         trackBoundaryIn.addNote(trackId, event.getTick(), event.getPitch(), event.getLength());
+    }
+
+    @Override
+    public void onAddChordEvent(AddChordEvent event) {
+        trackBoundaryIn.addChord(trackId, event.getTick(), event.getPitch(), event.getLength(), event.getChordType());
     }
 
     @Override

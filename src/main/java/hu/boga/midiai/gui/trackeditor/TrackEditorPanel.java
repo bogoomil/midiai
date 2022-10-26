@@ -229,12 +229,17 @@ public class TrackEditorPanel extends Pane {
         if (event.getButton() == MouseButton.SECONDARY) {
             this.contextMenu.show(this, event.getScreenX(), event.getScreenY());
         } else if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
-            final AddNoteEvent addNoteEvent = new AddNoteEvent(this.getTickByX((int) event.getX()), this.getPitchByY((int) event.getY()).getMidiCode(), currentNoteLength.getErtek());
-            trackEventListeners.forEach(trackEventListener -> trackEventListener.onAddNoteEvent(addNoteEvent));
+            if(currentChordType == null){
+                final AddNoteEvent addNoteEvent = new AddNoteEvent(this.getTickByX((int) event.getX()), this.getPitchByY((int) event.getY()).getMidiCode(), currentNoteLength.getErtek());
+                trackEventListeners.forEach(trackEventListener -> trackEventListener.onAddNoteEvent(addNoteEvent));
+            } else{
+                final AddChordEvent addChordEvent = new AddChordEvent(this.getTickByX((int) event.getX()), this.getPitchByY((int) event.getY()).getMidiCode(), currentNoteLength.getErtek(), currentChordType);
+                trackEventListeners.forEach(trackEventListener -> trackEventListener.onAddChordEvent(addChordEvent));
+            }
         }
     }
 
-    Optional<NoteRectangle> getChildAtPoint(final Point2D point) {
+    private Optional<NoteRectangle> getChildAtPoint(final Point2D point) {
         return getAllNoteRectangles().stream().filter(node -> node.contains(point)).findFirst();
     }
 
@@ -463,14 +468,14 @@ public class TrackEditorPanel extends Pane {
 //    }
 
     @Subscribe
-    void handleRootChangedEvent(RootChangedEvent event) {
+    private void handleRootChangedEvent(RootChangedEvent event) {
         this.currentRoot = event.getNoteName();
         LOG.debug("current root: " + currentRoot);
         paintNotes();
     }
 
     @Subscribe
-    void handleModeChangedEvent(ModeChangedEvent event) {
+    private void handleModeChangedEvent(ModeChangedEvent event) {
         this.currentTone = event.getTone();
         LOG.debug("current tone: " + currentTone);
         paintNotes();

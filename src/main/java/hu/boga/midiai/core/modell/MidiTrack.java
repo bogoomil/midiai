@@ -2,6 +2,9 @@ package hu.boga.midiai.core.modell;
 
 import com.google.common.base.Objects;
 import hu.boga.midiai.core.exceptions.MidiAiException;
+import hu.boga.midiai.core.musictheory.Chord;
+import hu.boga.midiai.core.musictheory.Pitch;
+import hu.boga.midiai.core.musictheory.enums.ChordType;
 import hu.boga.midiai.core.util.Constants;
 import hu.boga.midiai.core.util.MidiUtil;
 import org.slf4j.Logger;
@@ -9,10 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.sound.midi.*;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class MidiTrack {
@@ -266,5 +266,12 @@ public class MidiTrack {
         track.remove(noteOff);
         LOG.debug("Note on: " + noteOn + ", note off: " + noteOff);
 
+    }
+
+    public void addChord(int tick, int pitch, int length, ChordType chordType) {
+        Chord chord = Chord.getChord(new Pitch(pitch), chordType);
+        Arrays.stream(chord.getPitches()).forEach(pitch1 -> {
+            addNote(tick, pitch1.getMidiCode(), length);
+        });
     }
 }

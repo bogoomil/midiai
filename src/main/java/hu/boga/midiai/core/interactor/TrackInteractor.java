@@ -7,6 +7,7 @@ import hu.boga.midiai.core.boundaries.dtos.TrackDto;
 import hu.boga.midiai.core.modell.App;
 import hu.boga.midiai.core.modell.MidiTrack;
 import hu.boga.midiai.core.modell.Note;
+import hu.boga.midiai.core.musictheory.enums.ChordType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,6 +48,17 @@ public class TrackInteractor implements TrackBoundaryIn {
             int ticksIn32nds = midiProject.getTicksIn32nds();
             midiProject.getTrackById(trackId).ifPresent(midiTrack -> {
                 midiTrack.addNote(tick, pitch, length * ticksIn32nds);
+                boundaryOut.dispayTrack(convertTrackToTrackDto(midiTrack));
+            });
+        });
+    }
+
+    @Override
+    public void addChord(String trackId, int tick, int pitch, int length, ChordType chordType) {
+        App.findMidiProjectByTrackId(trackId).ifPresent(midiProject -> {
+            int ticksIn32nds = midiProject.getTicksIn32nds();
+            midiProject.getTrackById(trackId).ifPresent(midiTrack -> {
+                midiTrack.addChord(tick, pitch, length * ticksIn32nds, chordType);
                 boundaryOut.dispayTrack(convertTrackToTrackDto(midiTrack));
             });
         });
