@@ -46,35 +46,51 @@ public class TrackEditorPanel extends Pane {
     private List<NoteDto> notes;
     private ContextMenu contextMenu;
 
-    private EditorModeEnum currentMode = EditorModeEnum.ADD;
     private final List<TrackEventListener> trackEventListeners = new ArrayList<>();
     private NoteLength currentNoteLength = NoteLength.HARMICKETTED;
     private ChordType currentChordType = null;
     private Tone currentTone = null;
     private NoteName currentRoot = NoteName.C;
 
+    private CursorRectangle cursor = new CursorRectangle();
+
     private List<Point2D> selectedPoints = new ArrayList<>(0);
 
     public TrackEditorPanel() {
         this.createContextMenu();
+        this.setOnMouseEntered(event -> showCursor(event));
+        this.setOnMouseMoved(event -> moveCursor(event));
+        this.setOnMouseExited(event -> hideCursor());
+        this.setOnMouseClicked(event -> this.handleMouseClick(event));
 
-        this.addEventHandler(MouseEvent.ANY, new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(final MouseEvent event) {
-            }
-        });
+        contextMenu = createContextMenu();
+    }
 
-        this.setOnMouseClicked(event -> {
-            this.handleMouseClick(event);
-        });
+    private void hideCursor() {
+        cursor.setVisible(false);
+    }
+
+    private void moveCursor(MouseEvent event) {
+        LOG.debug("MOVE CURSOR: " + event.getX() + "-" + event.getY());
+        cursor.setLayoutX(event.getX());
+        int y = getYByPitch(getPitchByY((int) event.getY()).getMidiCode());
+        cursor.setLayoutY(y);
+    }
+
+    private void showCursor(MouseEvent event) {
+        LOG.debug("SHOW CURSOR: " + event.getX() + "-" + event.getY());
+        cursor.setLayoutX(event.getX());
+        cursor.setLayoutY(event.getY() - cursor.getHeight());
+        cursor.setWidth(currentNoteLength.getErtek() * get32ndsWidth());
+        cursor.setVisible(true);
     }
 
     public void addTrackEventListener(final TrackEventListener trackEventListener) {
         trackEventListeners.add(trackEventListener);
     }
 
-    private void createContextMenu() {
-        this.contextMenu = new ContextMenu();
+    private ContextMenu createContextMenu() {
+        ContextMenu contextMenu = new ContextMenu();
         Menu creationMenu = new Menu("Creation", null,
                 new Menu("Length", null, createNoteLengthMenuItem()),
                 new Menu("Chords", null, createChordMenuItems())
@@ -101,16 +117,18 @@ public class TrackEditorPanel extends Pane {
                 deleteSelectedNotesMenu,
                 deleteAllNotesMenu
         );
-        this.contextMenu.getItems().add(creationMenu);
-        this.contextMenu.getItems().add(selectionMenu);
-        this.contextMenu.getItems().add(deletionMenu);
+        contextMenu.getItems().add(creationMenu);
+        contextMenu.getItems().add(selectionMenu);
+        contextMenu.getItems().add(deletionMenu);
+
+        return contextMenu;
     }
 
     private void invertSelection() {
         selectedPoints.clear();
         getAllNoteRectangles().forEach(noteRectangle -> {
             noteRectangle.toggleSlection();
-            if (noteRectangle.isSelected()){
+            if (noteRectangle.isSelected()) {
                 selectedPoints.add(new Point2D(noteRectangle.getX(), noteRectangle.getY()));
             }
         });
@@ -180,6 +198,7 @@ public class TrackEditorPanel extends Pane {
                 @Override
                 public void handle(ActionEvent event) {
                     currentChordType = currChordType;
+                    cursor.setChordType(currChordType);
                 }
             });
             items[i + 1] = menuItem;
@@ -196,7 +215,10 @@ public class TrackEditorPanel extends Pane {
             RadioMenuItem menuItem = new RadioMenuItem(currLength.name());
             menuItem.setToggleGroup(toggleGroup);
             int finalI = i;
-            menuItem.addEventHandler(ActionEvent.ACTION, event -> currentNoteLength = currLength);
+            menuItem.addEventHandler(ActionEvent.ACTION, event -> {
+                currentNoteLength = currLength;
+                cursor.setPrefWidth(currentNoteLength.getErtek() * get32ndsWidth());
+            });
             items[i] = menuItem;
         }
         items[0].setSelected(true);
@@ -223,6 +245,8 @@ public class TrackEditorPanel extends Pane {
         this.paintHorizontalLines();
         this.paintKeyboard();
         this.paintDisabled();
+
+        this.getChildren().add(cursor);
 
         this.notes.forEach(noteDto -> {
             this.paintNote(noteDto);
@@ -318,9 +342,9 @@ public class TrackEditorPanel extends Pane {
                 TrackEditorPanel.this.trackEventListeners.forEach(trackEventListener -> {
                     trackEventListener.onDeleteNoteEvent(new DeleteNoteEvent(noteDto.tick, noteDto.midiCode));
                 });
-            } else if(event.getClickCount() == 1){
+            } else if (event.getClickCount() == 1) {
                 noteRectangle.setSelected(!noteRectangle.isSelected());
-                if (noteRectangle.isSelected()){
+                if (noteRectangle.isSelected()) {
                     selectedPoints.add(new Point2D(noteRectangle.getX(), noteRectangle.getY()));
                 } else {
                     selectedPoints.remove(new Point2D(noteRectangle.getX(), noteRectangle.getY()));
@@ -434,9 +458,9 @@ public class TrackEditorPanel extends Pane {
         return (GuiConstants.OCTAVES * 12 - 1 - midiCode) * GuiConstants.LINE_HEIGHT;
     }
 
-    enum EditorModeEnum {
-        ADD, DELETE
-    }
+//    enum EditorModeEnum {
+//        ADD, DELETE
+//    }
 
     @Subscribe
     void handleRootChangedEvent(RootChangedEvent event) {

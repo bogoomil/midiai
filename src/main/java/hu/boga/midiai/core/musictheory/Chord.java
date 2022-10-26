@@ -57,45 +57,45 @@ public class Chord {
 
     }
 
-    public static Chord getChord(Pitch pitch, ChordType chordType) {
+    public static Chord getChord(Pitch root, ChordType chordType) {
         switch (chordType) {
         case MAJ:
-            return major(pitch);
+            return major(root);
         case MIN:
-            return minor(pitch);
+            return minor(root);
         case AUG:
-            return augmented(pitch);
+            return augmented(root);
         case DIM:
-            return diminished(pitch);
+            return diminished(root);
         case DIM7:
-            return diminished7th(pitch);
+            return diminished7th(root);
         case MAJ7B5:
-            return majorSeventhFlatF3e(pitch);
+            return majorSeventhFlatF3e(root);
         case MIN7:
-            return minorSeventh(pitch);
+            return minorSeventh(root);
         case MINMAJ7:
-            return minorMajorSeventh(pitch);
+            return minorMajorSeventh(root);
         case DOM7:
-            return dominantSeventh(pitch);
+            return dominantSeventh(root);
         case MAJ7:
-            return majorSeventh(pitch);
+            return majorSeventh(root);
         case AUG7:
-            return augmentedSeventh(pitch);
+            return augmentedSeventh(root);
         case MAJ7S5:
-            return majorSeventhSharpF3e(pitch);
+            return majorSeventhSharpF3e(root);
         case MAJ6:
-            return majorSixth(pitch);
+            return majorSixth(root);
         case MIN6:
-            return minorSixth(pitch);
+            return minorSixth(root);
         case MAJ9:
-            return majorNinth(pitch);
+            return majorNinth(root);
         case MIN9:
-            return minorNinth(pitch);
+            return minorNinth(root);
         case DOM9:
-            return dominantNinth(pitch);
+            return dominantNinth(root);
         }
 
-        throw new UnsupportedOperationException("pitch: " + pitch + ", type: " + chordType.name());
+        throw new UnsupportedOperationException("pitch: " + root + ", type: " + chordType.name());
     }
 
     // Triads
@@ -455,7 +455,7 @@ public class Chord {
 
     private Pitch[] pitches;
 
-    public Chord(String chordTypeName, Integer... midiCodes) {
+    private Chord(String chordTypeName, Integer... midiCodes) {
         Pitch[] p = new Pitch[midiCodes.length];
         for (int i = 0; i < midiCodes.length; i++) {
             p[i] = new Pitch(midiCodes[i]);

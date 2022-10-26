@@ -12,8 +12,8 @@ import java.util.List;
 
 public class NoteRectangle extends Rectangle {
     private static final Logger LOG = LoggerFactory.getLogger(NoteRectangle.class);
-    public static final Color SELECTED_COLOR = Color.RED;
-    public static final Color DEFAULT_COLOR = Color.DEEPSKYBLUE;
+    public static final Color SELECTED_COLOR = Color.color(Color.LAWNGREEN.getRed(), Color.LAWNGREEN.getGreen(), Color.LAWNGREEN.getBlue(), 0.7);;
+    public static final Color DEFAULT_COLOR = Color.color(Color.DEEPSKYBLUE.getRed(), Color.DEEPSKYBLUE.getGreen(), Color.DEEPSKYBLUE.getBlue(), 0.7);
     private int length;
     private boolean selected;
     private boolean isDragging;
@@ -32,23 +32,6 @@ public class NoteRectangle extends Rectangle {
 
         setOnMouseDragged(event -> handleMouseDragged(event));
 
-//        addEventHandler(MouseEvent.ANY, new EventHandler<MouseEvent>() {
-//            @Override
-//            public void handle(MouseEvent event) {
-////                LOG.debug("event type: " + event.getEventType());
-//                switch (event.getEventType().getName()){
-//                    case "MOUSE_CLICKED":{
-//                        handleMouseClick();
-//                        break;
-//                    }
-//                    case "MOUSE_DRAGGED": {
-//                        handleMouseDragged(event);
-//                        break;
-//                    }
-//                }
-//                event.consume();
-//            }
-//        });
     }
 
     private List<TrackEventListener> trackEventListeners = new ArrayList<>();
@@ -58,13 +41,8 @@ public class NoteRectangle extends Rectangle {
         isDragging = true;
         if (contains(e.getX(), e.getY())) {
             setX(e.getX() - getWidth() / 2);
-//                setY(e.getY() - 60 / 2);
         }
         e.consume();
-    }
-
-    private void handleMouseClick() {
-        setSelected(!isSelected());
     }
 
     public int getLength() {
