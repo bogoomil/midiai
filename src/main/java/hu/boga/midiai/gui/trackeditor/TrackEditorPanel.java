@@ -211,7 +211,7 @@ public class TrackEditorPanel extends Pane {
     private void handleMouseClick(final MouseEvent event) {
         if (event.getButton() == MouseButton.SECONDARY) {
             this.contextMenu.show(this, event.getScreenX(), event.getScreenY());
-        } else if (event.getButton() == MouseButton.PRIMARY) {
+        } else if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
             final AddNoteEvent addNoteEvent = new AddNoteEvent(this.getTickByX((int) event.getX()), this.getPitchByY((int) event.getY()).getMidiCode(), currentNoteLength.getErtek());
             trackEventListeners.forEach(trackEventListener -> trackEventListener.onAddNoteEvent(addNoteEvent));
         }
