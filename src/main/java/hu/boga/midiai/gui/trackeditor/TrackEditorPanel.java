@@ -196,12 +196,7 @@ public class TrackEditorPanel extends Pane {
             RadioMenuItem menuItem = new RadioMenuItem(currLength.name());
             menuItem.setToggleGroup(toggleGroup);
             int finalI = i;
-            menuItem.addEventHandler(ActionEvent.ACTION, new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent event) {
-                    currentNoteLength = currLength;
-                }
-            });
+            menuItem.addEventHandler(ActionEvent.ACTION, event -> currentNoteLength = currLength);
             items[i] = menuItem;
         }
         items[0].setSelected(true);
