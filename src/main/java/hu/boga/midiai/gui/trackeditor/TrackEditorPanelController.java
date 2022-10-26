@@ -2,6 +2,7 @@ package hu.boga.midiai.gui.trackeditor;
 
 import hu.boga.midiai.core.boundaries.TrackBoundaryIn;
 import hu.boga.midiai.core.boundaries.TrackBoundaryOut;
+import hu.boga.midiai.core.boundaries.dtos.NoteDto;
 import hu.boga.midiai.core.boundaries.dtos.TrackDto;
 import hu.boga.midiai.gui.SequenceEditorPanelController;
 import hu.boga.midiai.gui.controls.InstrumentCombo;
@@ -20,6 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -128,8 +130,9 @@ public class TrackEditorPanelController implements TrackBoundaryOut, TrackEventL
     }
 
     @Override
-    public void onDeleteNoteEvent(DeleteNoteEvent event) {
-        LOG.debug(event.getTick() + " :: " + event.getPitch() );
-        trackBoundaryIn.deleteNote(trackId, (int) event.getTick(), (int) event.getPitch());
+    public void onDeleteNoteEvent(DeleteNoteEvent... events) {
+        List<NoteDto> dtos = Arrays.stream(events).map(event -> new NoteDto(event.getPitch(), event.getTick(), 0)).collect(Collectors.toList());
+        trackBoundaryIn.deleteNote(trackId, dtos.toArray(NoteDto[]::new));
+
     }
 }

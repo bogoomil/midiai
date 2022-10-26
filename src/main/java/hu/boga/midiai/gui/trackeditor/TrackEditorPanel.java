@@ -77,7 +77,7 @@ public class TrackEditorPanel extends Pane {
         this.contextMenu = new ContextMenu();
         Menu creationMenu = new Menu("Creation", null,
                 new Menu("Length", null, createNoteLengthMenuItem()),
-                new Menu("Chords", null,createChordMenuItems())
+                new Menu("Chords", null, createChordMenuItems())
         );
 
 
@@ -85,35 +85,57 @@ public class TrackEditorPanel extends Pane {
         selectAllMenu.addEventHandler(ActionEvent.ACTION, event -> selectAllNotes());
         MenuItem deSelectAllMenu = new MenuItem("Deselect all");
         deSelectAllMenu.addEventHandler(ActionEvent.ACTION, event -> deSelectAllNotes());
+        MenuItem invertSelectionMenu = new MenuItem("Invert selection");
+        invertSelectionMenu.addEventHandler(ActionEvent.ACTION, event -> invertSelection());
         Menu selectionMenu = new Menu("Selection", null,
                 selectAllMenu,
-                deSelectAllMenu
+                deSelectAllMenu,
+                invertSelectionMenu
         );
 
-        MenuItem deleteMenu = new MenuItem("selected");
-        deSelectAllMenu.addEventHandler(ActionEvent.ACTION, event -> deleteSelectedNotes());
-        MenuItem deleteAllMenu = new MenuItem("all");
-        deSelectAllMenu.addEventHandler(ActionEvent.ACTION, event -> deleteAllNotes());
+        MenuItem deleteSelectedNotesMenu = new MenuItem("selected");
+        deleteSelectedNotesMenu.addEventHandler(ActionEvent.ACTION, event -> deleteSelectedNotes());
+        MenuItem deleteAllNotesMenu = new MenuItem("all");
+        deleteAllNotesMenu.addEventHandler(ActionEvent.ACTION, event -> deleteAllNotes());
         Menu deletionMenu = new Menu("Delete", null,
-                deleteMenu,
-                deleteAllMenu
+                deleteSelectedNotesMenu,
+                deleteAllNotesMenu
         );
         this.contextMenu.getItems().add(creationMenu);
         this.contextMenu.getItems().add(selectionMenu);
         this.contextMenu.getItems().add(deletionMenu);
     }
 
+    private void invertSelection() {
+        selectedPoints.clear();
+        getAllNoteRectangles().forEach(noteRectangle -> {
+            noteRectangle.toggleSlection();
+            if (noteRectangle.isSelected()){
+                selectedPoints.add(new Point2D(noteRectangle.getX(), noteRectangle.getY()));
+            }
+        });
+    }
+
     private void deleteAllNotes() {
-        selectAllNotes();
-        deleteSelectedNotes();
+        List<DeleteNoteEvent> events = getAllNoteRectangles().stream()
+                .map(noteRectangle -> new DeleteNoteEvent(noteRectangle.getTick(), noteRectangle.getPitch()))
+                .collect(Collectors.toList());
+        LOG.debug("deleting notes " + events);
+        trackEventListeners.forEach(trackEventListener -> {
+            trackEventListener.onDeleteNoteEvent(events.toArray(DeleteNoteEvent[]::new));
+        });
+        selectedPoints.clear();
     }
 
     private void deleteSelectedNotes() {
-        getAllNoteRectangles().stream().filter(noteRectangle -> noteRectangle.isSelected()).forEach(noteRectangle -> {
-            trackEventListeners.forEach(trackEventListener -> {
-                trackEventListener.onDeleteNoteEvent(new DeleteNoteEvent(noteRectangle.getTick(), noteRectangle.getPitch()));
-            });
+        List<DeleteNoteEvent> events = getSelectedNoteRectangles().stream()
+                .map(noteRectangle -> new DeleteNoteEvent(noteRectangle.getTick(), noteRectangle.getPitch()))
+                .collect(Collectors.toList());
+        LOG.debug("deleting notes " + events);
+        trackEventListeners.forEach(trackEventListener -> {
+            trackEventListener.onDeleteNoteEvent(events.toArray(DeleteNoteEvent[]::new));
         });
+        selectedPoints.clear();
     }
 
     private void selectAllNotes() {
@@ -128,9 +150,13 @@ public class TrackEditorPanel extends Pane {
     }
 
     private List<NoteRectangle> getAllNoteRectangles() {
-        List<NoteRectangle> l = getChildren().stream().filter(node -> node instanceof NoteRectangle).map(node -> (NoteRectangle)node).collect(Collectors.toList());
+        List<NoteRectangle> l = getChildren().stream().filter(node -> node instanceof NoteRectangle).map(node -> (NoteRectangle) node).collect(Collectors.toList());
         LOG.debug("notes " + l);
         return l;
+    }
+
+    private List<NoteRectangle> getSelectedNoteRectangles() {
+        return getAllNoteRectangles().stream().filter(noteRectangle -> noteRectangle.isSelected()).collect(Collectors.toList());
     }
 
     private RadioMenuItem[] createChordMenuItems() {
@@ -209,7 +235,7 @@ public class TrackEditorPanel extends Pane {
     }
 
     private void paintDisabled() {
-        if(currentTone != null){
+        if (currentTone != null) {
             List<NoteName> scale = Scale.getScale(currentRoot, currentTone);
             for (int y = 0; y < getPrefHeight(); y += this.getPitchHeight()) {
                 paintDisabledLines(scale, y);
@@ -219,10 +245,10 @@ public class TrackEditorPanel extends Pane {
 
     private void paintDisabledLines(List<NoteName> scale, int y) {
         NoteName currentNoteName = NoteName.byCode(getPitchByY(y + 5).getMidiCode());
-        if(!scale.contains(currentNoteName)){
+        if (!scale.contains(currentNoteName)) {
             paintDisabledRectangle(y);
         }
-        if(currentNoteName == currentRoot){
+        if (currentNoteName == currentRoot) {
             paintRootMarker(y);
         }
     }
@@ -297,12 +323,20 @@ public class TrackEditorPanel extends Pane {
                 TrackEditorPanel.this.trackEventListeners.forEach(trackEventListener -> {
                     trackEventListener.onDeleteNoteEvent(new DeleteNoteEvent(noteDto.tick, noteDto.midiCode));
                 });
+            } else if(event.getClickCount() == 1){
+                noteRectangle.setSelected(!noteRectangle.isSelected());
+                if (noteRectangle.isSelected()){
+                    selectedPoints.add(new Point2D(noteRectangle.getX(), noteRectangle.getY()));
+                } else {
+                    selectedPoints.remove(new Point2D(noteRectangle.getX(), noteRectangle.getY()));
+                }
+                event.consume();
             }
         });
 
         this.trackEventListeners.forEach(trackEventListener -> noteRectangle.addTrackEventListener(trackEventListener));
 
-        if(selectedPoints.contains(new Point2D(noteRectangle.getX(), noteRectangle.getY()))){
+        if (selectedPoints.contains(new Point2D(noteRectangle.getX(), noteRectangle.getY()))) {
             noteRectangle.setSelected(true);
         }
 
@@ -410,14 +444,14 @@ public class TrackEditorPanel extends Pane {
     }
 
     @Subscribe
-    void handleRootChangedEvent(RootChangedEvent event){
+    void handleRootChangedEvent(RootChangedEvent event) {
         this.currentRoot = event.getNoteName();
         LOG.debug("current root: " + currentRoot);
         paintNotes();
     }
 
     @Subscribe
-    void handleModeChangedEvent(ModeChangedEvent event){
+    void handleModeChangedEvent(ModeChangedEvent event) {
         this.currentTone = event.getTone();
         LOG.debug("current tone: " + currentTone);
         paintNotes();

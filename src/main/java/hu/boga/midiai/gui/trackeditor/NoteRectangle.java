@@ -29,23 +29,26 @@ public class NoteRectangle extends Rectangle {
     }
 
     private void setUpEventHandlers() {
-        addEventHandler(MouseEvent.ANY, new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-//                LOG.debug("event type: " + event.getEventType());
-                switch (event.getEventType().getName()){
-                    case "MOUSE_CLICKED":{
-                        handleMouseClick();
-                        break;
-                    }
-                    case "MOUSE_DRAGGED": {
-                        handleMouseDragged(event);
-                        break;
-                    }
-                }
-                event.consume();
-            }
-        });
+
+        setOnMouseDragged(event -> handleMouseDragged(event));
+
+//        addEventHandler(MouseEvent.ANY, new EventHandler<MouseEvent>() {
+//            @Override
+//            public void handle(MouseEvent event) {
+////                LOG.debug("event type: " + event.getEventType());
+//                switch (event.getEventType().getName()){
+//                    case "MOUSE_CLICKED":{
+//                        handleMouseClick();
+//                        break;
+//                    }
+//                    case "MOUSE_DRAGGED": {
+//                        handleMouseDragged(event);
+//                        break;
+//                    }
+//                }
+//                event.consume();
+//            }
+//        });
     }
 
     private List<TrackEventListener> trackEventListeners = new ArrayList<>();
@@ -57,6 +60,7 @@ public class NoteRectangle extends Rectangle {
             setX(e.getX() - getWidth() / 2);
 //                setY(e.getY() - 60 / 2);
         }
+        e.consume();
     }
 
     private void handleMouseClick() {
@@ -99,5 +103,9 @@ public class NoteRectangle extends Rectangle {
 
     public boolean isDragging() {
         return this.isDragging;
+    }
+
+    public void toggleSlection() {
+        setSelected(!isSelected());
     }
 }

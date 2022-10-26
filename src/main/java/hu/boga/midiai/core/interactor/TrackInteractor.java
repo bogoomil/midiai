@@ -7,12 +7,17 @@ import hu.boga.midiai.core.boundaries.dtos.TrackDto;
 import hu.boga.midiai.core.modell.App;
 import hu.boga.midiai.core.modell.MidiTrack;
 import hu.boga.midiai.core.modell.Note;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class TrackInteractor implements TrackBoundaryIn {
+
+    private static final Logger LOG = LoggerFactory.getLogger(TrackInteractor.class);
 
     TrackBoundaryOut boundaryOut;
 
@@ -55,9 +60,13 @@ public class TrackInteractor implements TrackBoundaryIn {
     }
 
     @Override
-    public void deleteNote(String trackId, int tick, int pitch) {
+    public void deleteNote(String trackId, NoteDto... notes) {
+        LOG.debug("deleting notes: " + Arrays.asList(notes));
         MidiTrack midiTrack = retreivMidiTrack(trackId);
-        midiTrack.deleteNote(tick, pitch);
+        Arrays.stream(notes).forEach(noteDto -> {
+            midiTrack.deleteNote((int) noteDto.tick, (int) noteDto.midiCode);
+
+        });
         boundaryOut.dispayTrack(convertTrackToTrackDto(midiTrack));
 
     }
