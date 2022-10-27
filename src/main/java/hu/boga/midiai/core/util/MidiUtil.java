@@ -3,13 +3,18 @@ package hu.boga.midiai.core.util;
 import hu.boga.midiai.core.exceptions.MidiAiException;
 import hu.boga.midiai.core.modell.MidiTrack;
 import hu.boga.midiai.core.modell.Note;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.sound.midi.*;
 import java.util.ArrayList;
 
 public class MidiUtil {
 
+    private static final Logger LOG = LoggerFactory.getLogger(MidiUtil.class);
+
     public static ArrayList<Note> getNotesFromTrack(MidiTrack midiTrack) {
+
 
         ArrayList<MidiEvent> midiEvents = new ArrayList<>();
         ArrayList<Note> notes = new ArrayList<>();
@@ -175,14 +180,16 @@ public class MidiUtil {
     public static MidiEvent findMatchingNoteOff(Track track, int noteOnIndex, MidiEvent noteOn) {
         assert isNoteOnEvent(noteOn);
 
+        LOG.debug("Track size:" + track.size());
+
         for (int i = noteOnIndex; i < track.size(); i++) {
             MidiEvent event = track.get(i);
+            LOG.debug("i: " + i + ": " + event);
             if (isNoteOffEvent(event)
                     && (getNoteValue(noteOn) == getNoteValue(event))) {
                 return event;
             }
         }
-        System.exit(1);
         return null;
     }
 
