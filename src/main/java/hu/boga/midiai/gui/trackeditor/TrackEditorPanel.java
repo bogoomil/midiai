@@ -329,7 +329,7 @@ public class TrackEditorPanel extends Pane {
     private NoteRectangle createNoteRectangle(final NoteDto noteDto) {
 
         final int x = (int) (noteDto.tick * this.getTickWidth());
-        final NoteRectangle noteRectangle = new NoteRectangle(x, (int) noteDto.midiCode);
+        final NoteRectangle noteRectangle = new NoteRectangle(x, (int) noteDto.midiCode, null);
         noteRectangle.setX(x);
         noteRectangle.setY(this.getYByPitch((int) noteDto.midiCode));
         noteRectangle.setWidth(getTickWidth() * noteDto.lengthInTicks);
@@ -455,17 +455,9 @@ public class TrackEditorPanel extends Pane {
         return tick;
     }
 
-//    private int getXByTick(int tick, int tickWidth) {
-//        return tick * tickWidth + KEYBOARD_OFFSET;
-//    }
-
     private int getYByPitch(final int midiCode) {
         return (GuiConstants.OCTAVES * 12 - 1 - midiCode) * GuiConstants.LINE_HEIGHT;
     }
-
-//    enum EditorModeEnum {
-//        ADD, DELETE
-//    }
 
     @Subscribe
     private void handleRootChangedEvent(RootChangedEvent event) {

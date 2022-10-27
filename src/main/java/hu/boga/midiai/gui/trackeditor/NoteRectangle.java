@@ -1,5 +1,6 @@
 package hu.boga.midiai.gui.trackeditor;
 
+import com.google.common.eventbus.EventBus;
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
@@ -12,7 +13,8 @@ import java.util.List;
 
 public class NoteRectangle extends Rectangle {
     private static final Logger LOG = LoggerFactory.getLogger(NoteRectangle.class);
-    public static final Color SELECTED_COLOR = Color.color(Color.LAWNGREEN.getRed(), Color.LAWNGREEN.getGreen(), Color.LAWNGREEN.getBlue(), 0.7);;
+    public static final Color SELECTED_COLOR = Color.color(Color.LAWNGREEN.getRed(), Color.LAWNGREEN.getGreen(), Color.LAWNGREEN.getBlue(), 0.7);
+    ;
     public static final Color DEFAULT_COLOR = Color.color(Color.DEEPSKYBLUE.getRed(), Color.DEEPSKYBLUE.getGreen(), Color.DEEPSKYBLUE.getBlue(), 0.7);
     private int length;
     private boolean selected;
@@ -20,16 +22,20 @@ public class NoteRectangle extends Rectangle {
 
     private int tick;
     private int pitch;
+    private EventBus eventBus;
+    private double offset;
 
-    public NoteRectangle(final int tick, final int pitch) {
+    public NoteRectangle(final int tick, final int pitch, EventBus eventBus) {
         this.tick = tick;
         this.pitch = pitch;
+        this.eventBus = eventBus;
         this.setFill(DEFAULT_COLOR);
         setUpEventHandlers();
     }
 
     private void setUpEventHandlers() {
 
+        setOnMousePressed(event -> offset = event.getX() - getX());
         setOnMouseDragged(event -> handleMouseDragged(event));
 
     }
@@ -40,7 +46,8 @@ public class NoteRectangle extends Rectangle {
     private void handleMouseDragged(MouseEvent e) {
         isDragging = true;
         if (contains(e.getX(), e.getY())) {
-            setX(e.getX() - getWidth() / 2);
+            LOG.debug("Offset: " + offset);
+            setX(e.getX() - offset);
         }
         e.consume();
     }
@@ -62,7 +69,7 @@ public class NoteRectangle extends Rectangle {
         setFill(isSelected() ? SELECTED_COLOR : DEFAULT_COLOR);
     }
 
-    public void addTrackEventListener(TrackEventListener trackEventListener){
+    public void addTrackEventListener(TrackEventListener trackEventListener) {
         this.trackEventListeners.add(trackEventListener);
     }
 
