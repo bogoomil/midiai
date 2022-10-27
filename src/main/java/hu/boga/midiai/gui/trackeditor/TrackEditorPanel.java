@@ -259,7 +259,7 @@ public class TrackEditorPanel extends Pane {
     }
 
     private void paintDisabled() {
-        if (currentTone != null) {
+        if (currentTone != null && currentRoot != null) {
             List<NoteName> scale = Scale.getScale(currentRoot, currentTone);
             for (int y = 0; y < getPrefHeight(); y += this.getPitchHeight()) {
                 paintDisabledLines(scale, y);

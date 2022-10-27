@@ -40,6 +40,7 @@ public class SequenceEditorPanelController implements SequenceBoundaryOut {
     public final EventBus eventBus = new EventBus();
     public NoteNameCombo rootCombo;
     public ModeCombo modeCombo;
+    public Button btnClearMode;
 
     @FXML
     private TextField tfFilename;
@@ -60,6 +61,14 @@ public class SequenceEditorPanelController implements SequenceBoundaryOut {
         );
         rootCombo.addEventHandler(ActionEvent.ACTION, event -> eventBus.post(new RootChangedEvent(rootCombo.getSelectedNoteName())));
         modeCombo.addEventHandler(ActionEvent.ACTION, event -> eventBus.post(new ModeChangedEvent(modeCombo.getSelectedTone())));
+
+        btnClearMode.setOnAction(event -> {
+            modeCombo.getSelectionModel().clearSelection();
+            eventBus.post(new ModeChangedEvent(null));
+
+            rootCombo.getSelectionModel().clearSelection();
+            eventBus.post(new RootChangedEvent(null));
+        });
     }
 
     private void initTemposSettings(Number newValue) {
