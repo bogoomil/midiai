@@ -239,7 +239,6 @@ public class MidiTrack {
         }
         track.remove(noteOn);
         track.remove(noteOff);
-        LOG.debug("Note on: " + noteOn + ", note off: " + noteOff);
     }
 
     private int indexOfNoteOnEvent(int tick, int pitch){

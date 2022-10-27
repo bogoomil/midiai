@@ -1,6 +1,7 @@
 package hu.boga.midiai.gui;
 
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import hu.boga.midiai.core.boundaries.SequenceBoundaryIn;
 import hu.boga.midiai.core.boundaries.SequenceBoundaryOut;
 import hu.boga.midiai.core.boundaries.dtos.SequenceDto;
@@ -8,6 +9,7 @@ import hu.boga.midiai.core.exceptions.MidiAiException;
 import hu.boga.midiai.gui.controls.ModeCombo;
 import hu.boga.midiai.gui.controls.NoteNameCombo;
 import hu.boga.midiai.gui.controls.TempoSlider;
+import hu.boga.midiai.gui.events.TrackDeleteEvent;
 import hu.boga.midiai.gui.trackeditor.TrackEditorPanelController;
 import hu.boga.midiai.gui.trackeditor.events.ModeChangedEvent;
 import hu.boga.midiai.gui.trackeditor.events.RootChangedEvent;
@@ -34,13 +36,14 @@ public class SequenceEditorPanelController implements SequenceBoundaryOut {
     public Label ticksIn32nds;
     public Label ticksPerSecond;
     public Label tickSize;
-    public TempoSlider tempoSlider;
     public Label tempoLabel;
 
-    public final EventBus eventBus = new EventBus();
+    public TempoSlider tempoSlider;
     public NoteNameCombo rootCombo;
     public ModeCombo modeCombo;
     public Button btnClearMode;
+
+    public final EventBus eventBus = new EventBus();
 
     @FXML
     private TextField tfFilename;
@@ -52,6 +55,7 @@ public class SequenceEditorPanelController implements SequenceBoundaryOut {
     @Inject
     public SequenceEditorPanelController(SequenceBoundaryIn boundaryInProvider) {
         this.boundaryIn = boundaryInProvider;
+        eventBus.register(this);
     }
 
     public void initialize() {
@@ -136,7 +140,7 @@ public class SequenceEditorPanelController implements SequenceBoundaryOut {
 
         TrackEditorPanelController trackEditorPanelController = loader.getController();
         trackEditorPanelController.setTrackId(trackId);
-        trackEditorPanelController.setParent(this);
+        trackEditorPanelController.setEventBus(eventBus);
 
         accordion.getPanes().add(trackEditor);
     }
@@ -155,8 +159,9 @@ public class SequenceEditorPanelController implements SequenceBoundaryOut {
         }
     }
 
-    public void onTrackDeletedEvent(String trackId) {
-        boundaryIn.removeTrack(trackId);
+    @Subscribe
+    public void onTrackDeletedEvent(TrackDeleteEvent event) {
+        boundaryIn.removeTrack(event.getTrackId());
     }
 
 

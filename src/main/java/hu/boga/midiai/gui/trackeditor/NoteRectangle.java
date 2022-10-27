@@ -40,13 +40,9 @@ public class NoteRectangle extends Rectangle {
 
     }
 
-    private List<TrackEventListener> trackEventListeners = new ArrayList<>();
-
-
     private void handleMouseDragged(MouseEvent e) {
         isDragging = true;
         if (contains(e.getX(), e.getY())) {
-            LOG.debug("Offset: " + offset);
             setX(e.getX() - offset);
         }
         e.consume();
@@ -67,10 +63,6 @@ public class NoteRectangle extends Rectangle {
     public void setSelected(final boolean selected) {
         this.selected = selected;
         setFill(isSelected() ? SELECTED_COLOR : DEFAULT_COLOR);
-    }
-
-    public void addTrackEventListener(TrackEventListener trackEventListener) {
-        this.trackEventListeners.add(trackEventListener);
     }
 
     public void setDragging(boolean b) {

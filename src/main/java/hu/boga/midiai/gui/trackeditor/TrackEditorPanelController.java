@@ -1,11 +1,14 @@
 package hu.boga.midiai.gui.trackeditor;
 
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import hu.boga.midiai.core.boundaries.TrackBoundaryIn;
 import hu.boga.midiai.core.boundaries.TrackBoundaryOut;
 import hu.boga.midiai.core.boundaries.dtos.NoteDto;
 import hu.boga.midiai.core.boundaries.dtos.TrackDto;
 import hu.boga.midiai.gui.SequenceEditorPanelController;
 import hu.boga.midiai.gui.controls.InstrumentCombo;
+import hu.boga.midiai.gui.events.TrackDeleteEvent;
 import hu.boga.midiai.gui.trackeditor.events.AddChordEvent;
 import hu.boga.midiai.gui.trackeditor.events.AddNoteEvent;
 import hu.boga.midiai.gui.trackeditor.events.DeleteNoteEvent;
@@ -26,7 +29,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class TrackEditorPanelController implements TrackBoundaryOut, TrackEventListener {
+public class TrackEditorPanelController implements TrackBoundaryOut {
 
     private static final Logger LOG = LoggerFactory.getLogger(TrackEditorPanelController.class);
 
@@ -47,9 +50,9 @@ public class TrackEditorPanelController implements TrackBoundaryOut, TrackEventL
 
     TrackBoundaryIn trackBoundaryIn;
 
-    SequenceEditorPanelController parent;
-
     String trackId;
+
+    private EventBus eventBus;
 
     @Inject
     public TrackEditorPanelController(TrackBoundaryIn trackBoundaryIn) {
@@ -87,8 +90,6 @@ public class TrackEditorPanelController implements TrackBoundaryOut, TrackEventL
                 trackBoundaryIn.updateTrackName(trackId, trackName.getText());
             }
         });
-
-        trackEditorPanel.addTrackEventListener(this);
     }
 
     public void setTrackId(String trackId){
@@ -110,32 +111,32 @@ public class TrackEditorPanelController implements TrackBoundaryOut, TrackEventL
     }
 
     public void removeTrack(ActionEvent actionEvent) {
-        parent.onTrackDeletedEvent(trackId);
+        eventBus.post(new TrackDeleteEvent(trackId));
     }
 
-    public void setParent(final SequenceEditorPanelController parent) {
-        this.parent = parent;
-        parent.eventBus.register(trackEditorPanel);
+    public void setEventBus(final EventBus eventBus) {
+        this.eventBus = eventBus;
+        eventBus.register(this);
+        trackEditorPanel.setEventBus(eventBus);
     }
 
 
-    @Override
+    @Subscribe
     public void onAddNoteEvent(AddNoteEvent event) {
         trackBoundaryIn.addNote(trackId, event.getTick(), event.getPitch(), event.getLength());
     }
 
-    @Override
+    @Subscribe
     public void onAddChordEvent(AddChordEvent event) {
         trackBoundaryIn.addChord(trackId, event.getTick(), event.getPitch(), event.getLength(), event.getChordType());
     }
 
-    @Override
+    @Subscribe
     public void onMoveNoteEvent(MoveNoteEvent event) {
-        LOG.debug(event.getTick() + " :: " + event.getPitch() + " :: " + event.getNewTick());
         trackBoundaryIn.noteMoved(trackId, event.getTick(), event.getPitch(), event.getNewTick());
     }
 
-    @Override
+    @Subscribe
     public void onDeleteNoteEvent(DeleteNoteEvent... events) {
         List<NoteDto> dtos = Arrays.stream(events).map(event -> new NoteDto(event.getPitch(), event.getTick(), 0)).collect(Collectors.toList());
         trackBoundaryIn.deleteNote(trackId, dtos.toArray(NoteDto[]::new));
