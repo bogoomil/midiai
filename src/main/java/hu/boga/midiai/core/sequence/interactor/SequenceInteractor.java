@@ -4,7 +4,7 @@ import hu.boga.midiai.core.sequence.boundary.SequenceBoundaryIn;
 import hu.boga.midiai.core.sequence.boundary.SequenceBoundaryOut;
 import hu.boga.midiai.core.sequence.gateway.SequenceGateway;
 import hu.boga.midiai.core.sequence.modell.SequenceModell;
-import hu.boga.midiai.core.tracks.modell.MidiTrack;
+import hu.boga.midiai.core.tracks.modell.TrackModell;
 
 import javax.inject.Inject;
 
@@ -49,8 +49,8 @@ public class SequenceInteractor implements SequenceBoundaryIn {
 
     @Override
     public void addTrack(String projectId) {
-        MidiTrack midiTrack = this.gateway.addTrack(projectId);
-        boundaryOut.addTrack(midiTrack.getId());
+        TrackModell trackModell = this.gateway.addTrack(projectId);
+        boundaryOut.addTrack(trackModell.getId());
     }
 
     @Override

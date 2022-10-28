@@ -1,8 +1,8 @@
 package hu.boga.midiai.core.util;
 
 import hu.boga.midiai.core.exceptions.MidiAiException;
-import hu.boga.midiai.core.tracks.modell.MidiTrack;
-import hu.boga.midiai.core.tracks.modell.Note;
+import hu.boga.midiai.core.tracks.modell.TrackModell;
+import hu.boga.midiai.core.tracks.modell.NoteModell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,13 +13,13 @@ public class MidiUtil {
 
     private static final Logger LOG = LoggerFactory.getLogger(MidiUtil.class);
 
-    public static ArrayList<Note> getNotesFromTrack(MidiTrack midiTrack) {
+    public static ArrayList<NoteModell> getNotesFromTrack(TrackModell trackModell) {
 
 
         ArrayList<MidiEvent> midiEvents = new ArrayList<>();
-        ArrayList<Note> notes = new ArrayList<>();
+        ArrayList<NoteModell> noteModells = new ArrayList<>();
 
-        Track tempTrack = cloneTrack(midiTrack.getTrack(), midiTrack.getResolution());
+        Track tempTrack = cloneTrack(trackModell.getTrack(), trackModell.getResolution());
 
         int index = 0;
 
@@ -33,7 +33,7 @@ public class MidiUtil {
 
                 long length = noteOff.getTick() - event.getTick();
 
-                notes.add(new Note(getNoteValue(event), event.getTick(), length, getVelocity(event), noteOnMessage.getChannel()));
+                noteModells.add(new NoteModell(getNoteValue(event), event.getTick(), length, getVelocity(event), noteOnMessage.getChannel()));
 
                 boolean removeNoteOn = tempTrack.remove(event);
                 boolean removeNoteOff = tempTrack.remove(noteOff);
@@ -61,7 +61,7 @@ public class MidiUtil {
 
         }
 
-        return notes;
+        return noteModells;
 
     }
 

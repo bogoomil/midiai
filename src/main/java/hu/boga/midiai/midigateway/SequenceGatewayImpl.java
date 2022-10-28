@@ -3,17 +3,19 @@ package hu.boga.midiai.midigateway;
 import hu.boga.midiai.core.exceptions.MidiAiException;
 import hu.boga.midiai.core.sequence.gateway.SequenceGateway;
 import hu.boga.midiai.core.sequence.modell.SequenceModell;
-import hu.boga.midiai.core.tracks.modell.MidiTrack;
+import hu.boga.midiai.core.tracks.modell.TrackModell;
 import hu.boga.midiai.core.util.Constants;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.Sequence;
+import javax.sound.midi.Sequencer;
 import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
 
 public class SequenceGatewayImpl implements SequenceGateway {
+
 
     @Override
     public SequenceModell open(String path) {
@@ -21,7 +23,7 @@ public class SequenceGatewayImpl implements SequenceGateway {
             File file = new File(path);
             Sequence sequence = MidiSystem.getSequence(file);
             SequenceModell sequenceModell = new SequenceModell(sequence);
-            sequenceModell.setName(file.getName());
+            sequenceModell.name = file.getName();
             InMemoryStore.addProject(sequenceModell);
             return sequenceModell;
         } catch (InvalidMidiDataException | IOException e) {
@@ -29,6 +31,20 @@ public class SequenceGatewayImpl implements SequenceGateway {
         }
     }
 
+    @Override
+    public SequenceModell create() {
+        try {
+            Sequence sequence = new Sequence(Sequence.PPQ, Constants.DEFAULT_RESOLUTION);
+            SequenceModell sequenceModell = new SequenceModell(sequence);
+            sequenceModell.name = Constants.DEFAULT_NAME;
+            InMemoryStore.addProject(sequenceModell);
+
+            return sequenceModell;
+
+        } catch (InvalidMidiDataException e) {
+            throw new MidiAiException("Sequence creation failed: " + e.getMessage());
+        }
+    }
     @Override
     public void play(String id) {
         InMemoryStore.getProjectById(id).ifPresent(SequenceModell::play);
@@ -45,8 +61,8 @@ public class SequenceGatewayImpl implements SequenceGateway {
     }
 
     @Override
-    public MidiTrack addTrack(String projectId) {
-        MidiTrack midiTrack = null;
+    public TrackModell addTrack(String projectId) {
+        TrackModell trackModell = null;
         Optional<SequenceModell> projectModellOpt = InMemoryStore.getProjectById(projectId);
         if(projectModellOpt.isPresent()){
             return projectModellOpt.get().createNewTrack();
@@ -71,18 +87,4 @@ public class SequenceGatewayImpl implements SequenceGateway {
         });
     }
 
-    @Override
-    public SequenceModell create() {
-        try {
-            Sequence sequence = new Sequence(Sequence.PPQ, Constants.DEFAULT_RESOLUTION);
-            SequenceModell sequenceModell = new SequenceModell(sequence);
-            sequenceModell.setName(Constants.DEFAULT_NAME);
-            InMemoryStore.addProject(sequenceModell);
-
-            return sequenceModell;
-
-        } catch (InvalidMidiDataException e) {
-            throw new MidiAiException("Sequence creation failed: " + e.getMessage());
-        }
-    }
 }

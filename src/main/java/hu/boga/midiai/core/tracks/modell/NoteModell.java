@@ -3,14 +3,14 @@ package hu.boga.midiai.core.tracks.modell;
 
 import hu.boga.midiai.core.musictheory.enums.NoteName;
 
-public class Note {
+public class NoteModell {
     public int noteValue;
     public long tick;
     public long length;
     public int velocity;
     public int channel;
 
-    public Note(int noteValue, long tick, long length, int velocity, int channel) {
+    public NoteModell(int noteValue, long tick, long length, int velocity, int channel) {
         this.noteValue = noteValue;
         this.tick = tick;
         this.length = length;

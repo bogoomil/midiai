@@ -5,7 +5,7 @@ import hu.boga.midiai.core.tracks.boundary.TrackDto;
 import hu.boga.midiai.midigateway.InMemoryStore;
 import hu.boga.midiai.core.sequence.modell.SequenceModell;
 import hu.boga.midiai.core.tracks.interactor.TrackInteractor;
-import hu.boga.midiai.core.tracks.modell.MidiTrack;
+import hu.boga.midiai.core.tracks.modell.TrackModell;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class TrackInteractorTest {
 
     private TrackInteractor trackInteractor;
-    private MidiTrack track;
+    private TrackModell track;
     private ArgumentCaptor<TrackDto> trackDtoArgumentCaptor = ArgumentCaptor.forClass(TrackDto.class);
     private TrackBoundaryOut boundaryOut;
     private String projectId;
@@ -37,8 +37,8 @@ class TrackInteractorTest {
 
     @Test
     void showTrack() {
-        MidiTrack midiTrack = sequenceModell.getTracks().get(0);
-        trackInteractor.showTrack(midiTrack.getId());
+        TrackModell trackModell = sequenceModell.getTracks().get(0);
+        trackInteractor.showTrack(trackModell.getId());
         Mockito.verify(boundaryOut).dispayTrack(trackDtoArgumentCaptor.capture());
         assertNotNull(trackDtoArgumentCaptor.getValue());
         assertEquals(0, trackDtoArgumentCaptor.getValue().channel);

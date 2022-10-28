@@ -15,22 +15,22 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class MidiTrack {
+public class TrackModell {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MidiTrack.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TrackModell.class);
 
     UUID id = UUID.randomUUID();
 
     private final Track track;
     private final int resolution;
 
-    private MidiTrack(final Track track, int resolution) {
+    private TrackModell(final Track track, int resolution) {
         this.track = track;
         this.resolution = resolution;
     }
 
-    public static MidiTrack createMidiTrack(final Track track, int resolution) {
-        return new MidiTrack(track, resolution);
+    public static TrackModell createMidiTrack(final Track track, int resolution) {
+        return new TrackModell(track, resolution);
     }
 
     public Optional<Integer> getChannel() {
@@ -60,8 +60,8 @@ public class MidiTrack {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        MidiTrack midiTrack = (MidiTrack) o;
-        return Objects.equal(id, midiTrack.id);
+        TrackModell trackModell = (TrackModell) o;
+        return Objects.equal(id, trackModell.id);
     }
 
     @Override
@@ -81,7 +81,7 @@ public class MidiTrack {
         return resolution;
     }
 
-    public List<Note> getNotes() {
+    public List<NoteModell> getNotes() {
         return MidiUtil.getNotesFromTrack(this);
     }
 

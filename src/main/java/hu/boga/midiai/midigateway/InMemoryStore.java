@@ -1,7 +1,7 @@
 package hu.boga.midiai.midigateway;
 
 import hu.boga.midiai.core.sequence.modell.SequenceModell;
-import hu.boga.midiai.core.tracks.modell.MidiTrack;
+import hu.boga.midiai.core.tracks.modell.TrackModell;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,9 +26,9 @@ public class InMemoryStore {
 //        return MIDI_PROJECTS.stream().filter(midiProject -> midiProject.getId().equals(uuid)).findFirst();
     }
 
-    public static Optional<MidiTrack> getTrackById(String trackId) {
+    public static Optional<TrackModell> getTrackById(String trackId) {
         for (SequenceModell sequenceModell : MIDI_PROJECTS) {
-            Optional<MidiTrack> midiTrackOpt = sequenceModell.getTrackById(trackId);
+            Optional<TrackModell> midiTrackOpt = sequenceModell.getTrackById(trackId);
             if (sequenceModell.getTrackById(trackId).isPresent()) {
                 return midiTrackOpt;
             }
@@ -47,7 +47,7 @@ public class InMemoryStore {
 
     public static Optional<SequenceModell> findMidiProjectByTrackId(String trackId){
         for (SequenceModell sequenceModell : MIDI_PROJECTS) {
-            Optional<MidiTrack> midiTrackOpt = sequenceModell.getTrackById(trackId);
+            Optional<TrackModell> midiTrackOpt = sequenceModell.getTrackById(trackId);
             if (sequenceModell.getTrackById(trackId).isPresent()) {
                 return Optional.of(sequenceModell);
             }

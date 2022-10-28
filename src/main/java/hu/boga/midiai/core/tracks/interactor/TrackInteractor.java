@@ -5,8 +5,8 @@ import hu.boga.midiai.core.tracks.boundary.TrackBoundaryOut;
 import hu.boga.midiai.core.tracks.boundary.NoteDto;
 import hu.boga.midiai.core.tracks.boundary.TrackDto;
 import hu.boga.midiai.midigateway.InMemoryStore;
-import hu.boga.midiai.core.tracks.modell.MidiTrack;
-import hu.boga.midiai.core.tracks.modell.Note;
+import hu.boga.midiai.core.tracks.modell.TrackModell;
+import hu.boga.midiai.core.tracks.modell.NoteModell;
 import hu.boga.midiai.core.musictheory.enums.ChordType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,43 +66,43 @@ public class TrackInteractor implements TrackBoundaryIn {
 
     @Override
     public void noteMoved(String trackId, int tick, int pitch, int newTick) {
-        MidiTrack midiTrack = retreivMidiTrack(trackId);
-        midiTrack.moveNote(tick, pitch, newTick);
-        boundaryOut.dispayTrack(convertTrackToTrackDto(midiTrack));
+        TrackModell trackModell = retreivMidiTrack(trackId);
+        trackModell.moveNote(tick, pitch, newTick);
+        boundaryOut.dispayTrack(convertTrackToTrackDto(trackModell));
     }
 
     @Override
     public void deleteNote(String trackId, NoteDto... notes) {
         LOG.debug("deleting notes: " + Arrays.asList(notes));
-        MidiTrack midiTrack = retreivMidiTrack(trackId);
+        TrackModell trackModell = retreivMidiTrack(trackId);
         Arrays.stream(notes).forEach(noteDto -> {
-            midiTrack.deleteNote((int) noteDto.tick, (int) noteDto.midiCode);
+            trackModell.deleteNote((int) noteDto.tick, (int) noteDto.midiCode);
 
         });
-        boundaryOut.dispayTrack(convertTrackToTrackDto(midiTrack));
+        boundaryOut.dispayTrack(convertTrackToTrackDto(trackModell));
 
     }
 
-    private TrackDto convertTrackToTrackDto(MidiTrack midiTrack) {
+    private TrackDto convertTrackToTrackDto(TrackModell trackModell) {
         TrackDto dto = new TrackDto();
-        midiTrack.getProgram().ifPresent(pr -> dto.program = pr);
-        midiTrack.getChannel().ifPresent(ch -> dto.channel = ch);
-        dto.noteCount = midiTrack.getNoteCount();
-        dto.trackId = midiTrack.getId();
-        dto.resolution = midiTrack.getResolution();
-        dto.notes = convertNotesToNoteDtos(midiTrack.getNotes());
-        midiTrack.getTrackName().ifPresent(name -> dto.name = name);
+        trackModell.getProgram().ifPresent(pr -> dto.program = pr);
+        trackModell.getChannel().ifPresent(ch -> dto.channel = ch);
+        dto.noteCount = trackModell.getNoteCount();
+        dto.trackId = trackModell.getId();
+        dto.resolution = trackModell.getResolution();
+        dto.notes = convertNotesToNoteDtos(trackModell.getNotes());
+        trackModell.getTrackName().ifPresent(name -> dto.name = name);
         return dto;
     }
 
-    private NoteDto[] convertNotesToNoteDtos(List<Note> notes) {
-        return notes.stream()
-                .map(note -> new NoteDto(note.noteValue, note.tick, note.length))
+    private NoteDto[] convertNotesToNoteDtos(List<NoteModell> noteModells) {
+        return noteModells.stream()
+                .map(noteModell -> new NoteDto(noteModell.noteValue, noteModell.tick, noteModell.length))
                 .collect(Collectors.toList())
                 .toArray(new NoteDto[]{});
     }
 
-    private MidiTrack retreivMidiTrack(final String trackId){
+    private TrackModell retreivMidiTrack(final String trackId){
         return InMemoryStore.getTrackById(trackId).orElseThrow();
     }
 }

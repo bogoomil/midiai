@@ -2,7 +2,7 @@ package hu.boga.midiai.core.sequence.interactor;
 
 import hu.boga.midiai.core.sequence.boundary.SequenceDto;
 import hu.boga.midiai.core.sequence.modell.SequenceModell;
-import hu.boga.midiai.core.tracks.modell.MidiTrack;
+import hu.boga.midiai.core.tracks.modell.TrackModell;
 
 import java.util.stream.Collectors;
 
@@ -23,10 +23,10 @@ public class ModellToDtoConverter {
         dto.ticksPerSecond = sequenceModell.ticksPerSecond();
         dto.tickSize = sequenceModell.tickSize();
         dto.tempo = sequenceModell.getTempo();
-        dto.name = sequenceModell.getName();
+        dto.name = sequenceModell.name;
         dto.id = sequenceModell.getId();
 
-        dto.tracks = sequenceModell.getTracks().stream().map(MidiTrack::getId).collect(Collectors.toList());
+        dto.tracks = sequenceModell.getTracks().stream().map(TrackModell::getId).collect(Collectors.toList());
 
         return dto;
 

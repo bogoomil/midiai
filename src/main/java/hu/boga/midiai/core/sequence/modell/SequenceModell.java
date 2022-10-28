@@ -2,7 +2,7 @@ package hu.boga.midiai.core.sequence.modell;
 
 import com.google.common.base.Objects;
 import hu.boga.midiai.core.exceptions.MidiAiException;
-import hu.boga.midiai.core.tracks.modell.MidiTrack;
+import hu.boga.midiai.core.tracks.modell.TrackModell;
 import hu.boga.midiai.core.util.Constants;
 import hu.boga.midiai.core.util.MidiUtil;
 
@@ -16,8 +16,8 @@ public class SequenceModell {
     private final Sequence sequence;
     private Sequencer sequencer;
     UUID id = UUID.randomUUID();
-    String name;
-    private List<MidiTrack> tracks;
+    public String name;
+    public List<TrackModell> tracks;
 
     public SequenceModell(Sequence sequence) {
         this.sequence = sequence;
@@ -28,8 +28,8 @@ public class SequenceModell {
     private void initTracks() {
         tracks = new ArrayList<>();
         Arrays.stream(sequence.getTracks()).forEach(track -> {
-            MidiTrack midiTrack = MidiTrack.createMidiTrack(track, getResolution());
-            tracks.add(midiTrack);
+            TrackModell trackModell = TrackModell.createMidiTrack(track, getResolution());
+            tracks.add(trackModell);
         });
     }
 
@@ -44,14 +44,6 @@ public class SequenceModell {
     @Override
     public int hashCode() {
         return Objects.hashCode(id);
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public int getResolution() {
@@ -159,19 +151,19 @@ public class SequenceModell {
         }
     }
 
-    public List<MidiTrack> getTracks() {
+    public List<TrackModell> getTracks() {
         return tracks;
     }
 
-    public Optional<MidiTrack> getTrackById(String id) {
+    public Optional<TrackModell> getTrackById(String id) {
         return tracks.stream().filter(midiTrack -> midiTrack.getId().toString().equals(id)).findFirst();
     }
 
-    public MidiTrack createNewTrack() {
+    public TrackModell createNewTrack() {
         Track track = sequence.createTrack();
-        MidiTrack midiTrack = MidiTrack.createMidiTrack(track, getResolution());
-        tracks.add(midiTrack);
-        return midiTrack;
+        TrackModell trackModell = TrackModell.createMidiTrack(track, getResolution());
+        tracks.add(trackModell);
+        return trackModell;
     }
 
     public void removeTrackById(String trackId) {
