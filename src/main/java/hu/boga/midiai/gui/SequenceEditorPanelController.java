@@ -2,9 +2,9 @@ package hu.boga.midiai.gui;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import hu.boga.midiai.core.boundaries.SequenceBoundaryIn;
-import hu.boga.midiai.core.boundaries.SequenceBoundaryOut;
-import hu.boga.midiai.core.boundaries.dtos.SequenceDto;
+import hu.boga.midiai.core.sequence.boundary.SequenceBoundaryIn;
+import hu.boga.midiai.core.sequence.boundary.SequenceBoundaryOut;
+import hu.boga.midiai.core.sequence.boundary.SequenceDto;
 import hu.boga.midiai.core.exceptions.MidiAiException;
 import hu.boga.midiai.gui.controls.ModeCombo;
 import hu.boga.midiai.gui.controls.NoteNameCombo;
@@ -15,7 +15,6 @@ import hu.boga.midiai.gui.trackeditor.events.ModeChangedEvent;
 import hu.boga.midiai.gui.trackeditor.events.RootChangedEvent;
 import hu.boga.midiai.guice.GuiceModule;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
@@ -84,16 +83,16 @@ public class SequenceEditorPanelController implements SequenceBoundaryOut {
 
     public void saveSequence(ActionEvent actionEvent) {
         String path = new FileChooser().showSaveDialog(null).getAbsolutePath();
-        this.boundaryIn.saveSequence(projectId, path);
+        this.boundaryIn.save(projectId, path);
     }
 
     public void onPlayCurrentSec(ActionEvent actionEvent) {
-        boundaryIn.playSequence(projectId);
+        boundaryIn.play(projectId);
         //this.boundaryIn.playLoop(projectId, 960, 1920);
     }
 
     public void stopPlayback(ActionEvent actionEvent) {
-        this.boundaryIn.stopPlayBack(projectId);
+        this.boundaryIn.stop(projectId);
     }
 
     @Override
@@ -126,11 +125,11 @@ public class SequenceEditorPanelController implements SequenceBoundaryOut {
     }
 
     public void initSequence() {
-        this.boundaryIn.initNewSequence();
+        this.boundaryIn.create();
     }
 
     public void initSequence(File file) {
-        this.boundaryIn.openFile(file);
+        this.boundaryIn.open(file.getAbsolutePath());
     }
 
     private void addTrackPanel(String trackId) throws IOException {

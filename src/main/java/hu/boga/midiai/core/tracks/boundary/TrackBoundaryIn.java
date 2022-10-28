@@ -1,6 +1,5 @@
-package hu.boga.midiai.core.boundaries;
+package hu.boga.midiai.core.tracks.boundary;
 
-import hu.boga.midiai.core.boundaries.dtos.NoteDto;
 import hu.boga.midiai.core.musictheory.enums.ChordType;
 
 public interface TrackBoundaryIn {

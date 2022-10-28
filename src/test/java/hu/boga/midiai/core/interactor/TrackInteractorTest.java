@@ -1,10 +1,11 @@
 package hu.boga.midiai.core.interactor;
 
-import hu.boga.midiai.core.boundaries.TrackBoundaryOut;
-import hu.boga.midiai.core.boundaries.dtos.TrackDto;
-import hu.boga.midiai.core.modell.App;
-import hu.boga.midiai.core.modell.MidiProject;
-import hu.boga.midiai.core.modell.MidiTrack;
+import hu.boga.midiai.core.tracks.boundary.TrackBoundaryOut;
+import hu.boga.midiai.core.tracks.boundary.TrackDto;
+import hu.boga.midiai.midigateway.InMemoryStore;
+import hu.boga.midiai.core.sequence.modell.ProjectModell;
+import hu.boga.midiai.core.tracks.interactor.TrackInteractor;
+import hu.boga.midiai.core.tracks.modell.MidiTrack;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -25,7 +26,7 @@ class TrackInteractorTest {
     private ArgumentCaptor<TrackDto> trackDtoArgumentCaptor = ArgumentCaptor.forClass(TrackDto.class);
     private TrackBoundaryOut boundaryOut;
     private String projectId;
-    private MidiProject midiProject;
+    private ProjectModell projectModell;
 
     @BeforeEach
     void setUp() throws InvalidMidiDataException {
@@ -36,7 +37,7 @@ class TrackInteractorTest {
 
     @Test
     void showTrack() {
-        MidiTrack midiTrack = midiProject.getTracks().get(0);
+        MidiTrack midiTrack = projectModell.getTracks().get(0);
         trackInteractor.showTrack(midiTrack.getId());
         Mockito.verify(boundaryOut).dispayTrack(trackDtoArgumentCaptor.capture());
         assertNotNull(trackDtoArgumentCaptor.getValue());
@@ -53,10 +54,10 @@ class TrackInteractorTest {
 
         Track track = sequence.createTrack();
 
-        midiProject = new MidiProject(sequence);
+        projectModell = new ProjectModell(sequence);
 
-        midiProject.getTracks().forEach(midiTrack -> midiTrack.updateProgramChannel(0, 0));
-        projectId = midiProject.getId();
-        App.addProject(midiProject);
+        projectModell.getTracks().forEach(midiTrack -> midiTrack.updateProgramChannel(0, 0));
+        projectId = projectModell.getId();
+        InMemoryStore.addProject(projectModell);
     }
 }

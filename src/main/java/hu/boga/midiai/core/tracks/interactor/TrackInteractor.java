@@ -1,12 +1,12 @@
-package hu.boga.midiai.core.interactor;
+package hu.boga.midiai.core.tracks.interactor;
 
-import hu.boga.midiai.core.boundaries.TrackBoundaryIn;
-import hu.boga.midiai.core.boundaries.TrackBoundaryOut;
-import hu.boga.midiai.core.boundaries.dtos.NoteDto;
-import hu.boga.midiai.core.boundaries.dtos.TrackDto;
-import hu.boga.midiai.core.modell.App;
-import hu.boga.midiai.core.modell.MidiTrack;
-import hu.boga.midiai.core.modell.Note;
+import hu.boga.midiai.core.tracks.boundary.TrackBoundaryIn;
+import hu.boga.midiai.core.tracks.boundary.TrackBoundaryOut;
+import hu.boga.midiai.core.tracks.boundary.NoteDto;
+import hu.boga.midiai.core.tracks.boundary.TrackDto;
+import hu.boga.midiai.midigateway.InMemoryStore;
+import hu.boga.midiai.core.tracks.modell.MidiTrack;
+import hu.boga.midiai.core.tracks.modell.Note;
 import hu.boga.midiai.core.musictheory.enums.ChordType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +44,7 @@ public class TrackInteractor implements TrackBoundaryIn {
 
     @Override
     public void addNote(String trackId, int tick, int pitch, int length) {
-        App.findMidiProjectByTrackId(trackId).ifPresent(midiProject -> {
+        InMemoryStore.findMidiProjectByTrackId(trackId).ifPresent(midiProject -> {
             int ticksIn32nds = midiProject.getTicksIn32nds();
             midiProject.getTrackById(trackId).ifPresent(midiTrack -> {
                 midiTrack.addNote(tick, pitch, length * ticksIn32nds);
@@ -55,7 +55,7 @@ public class TrackInteractor implements TrackBoundaryIn {
 
     @Override
     public void addChord(String trackId, int tick, int pitch, int length, ChordType chordType) {
-        App.findMidiProjectByTrackId(trackId).ifPresent(midiProject -> {
+        InMemoryStore.findMidiProjectByTrackId(trackId).ifPresent(midiProject -> {
             int ticksIn32nds = midiProject.getTicksIn32nds();
             midiProject.getTrackById(trackId).ifPresent(midiTrack -> {
                 midiTrack.addChord(tick, pitch, length * ticksIn32nds, chordType);
@@ -103,6 +103,6 @@ public class TrackInteractor implements TrackBoundaryIn {
     }
 
     private MidiTrack retreivMidiTrack(final String trackId){
-        return App.getTrackById(trackId).orElseThrow();
+        return InMemoryStore.getTrackById(trackId).orElseThrow();
     }
 }

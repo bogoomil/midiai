@@ -1,4 +1,4 @@
-package hu.boga.midiai.core.modell;
+package hu.boga.midiai.core.tracks.modell;
 
 import com.google.common.base.Objects;
 import hu.boga.midiai.core.exceptions.MidiAiException;
@@ -274,4 +274,6 @@ public class MidiTrack {
             addNote(tick, pitch1.getMidiCode(), length);
         });
     }
+
+
 }

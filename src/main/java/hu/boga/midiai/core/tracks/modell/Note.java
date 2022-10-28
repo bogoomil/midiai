@@ -1,4 +1,4 @@
-package hu.boga.midiai.core.modell;
+package hu.boga.midiai.core.tracks.modell;
 
 
 import hu.boga.midiai.core.musictheory.enums.NoteName;

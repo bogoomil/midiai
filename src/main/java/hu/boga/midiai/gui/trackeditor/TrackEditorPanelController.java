@@ -2,11 +2,10 @@ package hu.boga.midiai.gui.trackeditor;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import hu.boga.midiai.core.boundaries.TrackBoundaryIn;
-import hu.boga.midiai.core.boundaries.TrackBoundaryOut;
-import hu.boga.midiai.core.boundaries.dtos.NoteDto;
-import hu.boga.midiai.core.boundaries.dtos.TrackDto;
-import hu.boga.midiai.gui.SequenceEditorPanelController;
+import hu.boga.midiai.core.tracks.boundary.TrackBoundaryIn;
+import hu.boga.midiai.core.tracks.boundary.TrackBoundaryOut;
+import hu.boga.midiai.core.tracks.boundary.NoteDto;
+import hu.boga.midiai.core.tracks.boundary.TrackDto;
 import hu.boga.midiai.gui.controls.InstrumentCombo;
 import hu.boga.midiai.gui.events.TrackDeleteEvent;
 import hu.boga.midiai.gui.trackeditor.events.AddChordEvent;

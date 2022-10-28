@@ -2,7 +2,7 @@ package hu.boga.midiai.gui.trackeditor;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import hu.boga.midiai.core.boundaries.dtos.NoteDto;
+import hu.boga.midiai.core.tracks.boundary.NoteDto;
 import hu.boga.midiai.core.musictheory.Pitch;
 import hu.boga.midiai.core.musictheory.Scale;
 import hu.boga.midiai.core.musictheory.enums.ChordType;
@@ -14,7 +14,6 @@ import hu.boga.midiai.gui.trackeditor.events.*;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;

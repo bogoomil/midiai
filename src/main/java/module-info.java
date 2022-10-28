@@ -11,11 +11,15 @@ module hu.boga.midiai {
     requires org.slf4j;
 
     exports hu.boga.midiai;
-    exports hu.boga.midiai.core.boundaries;
-    exports hu.boga.midiai.core.boundaries.dtos;
-    exports hu.boga.midiai.core.interactor;
-    exports hu.boga.midiai.core.modell;
+    exports hu.boga.midiai.core.sequence.interactor;
+    exports hu.boga.midiai.core.sequence.modell;
+    exports hu.boga.midiai.core.sequence.boundary;
+    exports hu.boga.midiai.core.tracks.interactor;
+    exports hu.boga.midiai.core.tracks.modell;
+    exports hu.boga.midiai.core.tracks.boundary;
     exports hu.boga.midiai.core.util;
+
+    exports hu.boga.midiai.midigateway;
 
     exports hu.boga.midiai.gui;
     exports hu.boga.midiai.gui.controls;

@@ -1,6 +1,4 @@
-package hu.boga.midiai.core.boundaries;
-
-import hu.boga.midiai.core.boundaries.dtos.SequenceDto;
+package hu.boga.midiai.core.sequence.boundary;
 
 public interface SequenceBoundaryOut {
     void displaySequence(SequenceDto sequenceDto);

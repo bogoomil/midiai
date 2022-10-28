@@ -1,4 +1,4 @@
-package hu.boga.midiai.core.boundaries.dtos;
+package hu.boga.midiai.core.tracks.boundary;
 
 public class NoteDto {
     public double midiCode;

@@ -1,8 +1,8 @@
 package hu.boga.midiai.core.util;
 
 import hu.boga.midiai.core.exceptions.MidiAiException;
-import hu.boga.midiai.core.modell.MidiTrack;
-import hu.boga.midiai.core.modell.Note;
+import hu.boga.midiai.core.tracks.modell.MidiTrack;
+import hu.boga.midiai.core.tracks.modell.Note;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

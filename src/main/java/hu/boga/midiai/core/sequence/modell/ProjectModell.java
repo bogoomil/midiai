@@ -1,7 +1,8 @@
-package hu.boga.midiai.core.modell;
+package hu.boga.midiai.core.sequence.modell;
 
 import com.google.common.base.Objects;
 import hu.boga.midiai.core.exceptions.MidiAiException;
+import hu.boga.midiai.core.tracks.modell.MidiTrack;
 import hu.boga.midiai.core.util.Constants;
 import hu.boga.midiai.core.util.MidiUtil;
 
@@ -11,14 +12,14 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class MidiProject {
+public class ProjectModell {
     private final Sequence sequence;
     private Sequencer sequencer;
     UUID id = UUID.randomUUID();
     String name;
     private List<MidiTrack> tracks;
 
-    public MidiProject(Sequence sequence) {
+    public ProjectModell(Sequence sequence) {
         this.sequence = sequence;
         initSequencer(sequence);
         initTracks();
@@ -36,7 +37,7 @@ public class MidiProject {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        MidiProject that = (MidiProject) o;
+        ProjectModell that = (ProjectModell) o;
         return Objects.equal(id, that.id);
     }
 
@@ -163,8 +164,7 @@ public class MidiProject {
     }
 
     public Optional<MidiTrack> getTrackById(String id) {
-        UUID uuid = UUID.fromString(id);
-        return tracks.stream().filter(midiTrack -> midiTrack.id.equals(uuid)).findFirst();
+        return tracks.stream().filter(midiTrack -> midiTrack.getId().toString().equals(id)).findFirst();
     }
 
     public MidiTrack createNewTrack() {
