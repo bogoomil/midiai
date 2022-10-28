@@ -3,7 +3,7 @@ package hu.boga.midiai.core.sequence.interactor;
 import hu.boga.midiai.core.sequence.boundary.SequenceBoundaryIn;
 import hu.boga.midiai.core.sequence.boundary.SequenceBoundaryOut;
 import hu.boga.midiai.core.sequence.gateway.SequenceGateway;
-import hu.boga.midiai.core.sequence.modell.ProjectModell;
+import hu.boga.midiai.core.sequence.modell.SequenceModell;
 import hu.boga.midiai.core.tracks.modell.MidiTrack;
 
 import javax.inject.Inject;
@@ -55,7 +55,7 @@ public class SequenceInteractor implements SequenceBoundaryIn {
 
     @Override
     public void removeTrack(String trackId) {
-        ProjectModell modell = this.gateway.deleteTrack(trackId);
+        SequenceModell modell = this.gateway.deleteTrack(trackId);
         boundaryOut.displaySequence(new ModellToDtoConverter(modell).convert());
     }
 
@@ -66,13 +66,13 @@ public class SequenceInteractor implements SequenceBoundaryIn {
 
     @Override
     public void create() {
-        ProjectModell modell = this.gateway.create();
+        SequenceModell modell = this.gateway.create();
         this.boundaryOut.displaySequence(new ModellToDtoConverter(modell).convert());
     }
 
     @Override
     public void open(String path) {
-        ProjectModell modell = this.gateway.open(path);
+        SequenceModell modell = this.gateway.open(path);
         this.boundaryOut.displaySequence(new ModellToDtoConverter(modell).convert());
     }
 }

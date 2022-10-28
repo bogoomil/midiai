@@ -12,14 +12,14 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class ProjectModell {
+public class SequenceModell {
     private final Sequence sequence;
     private Sequencer sequencer;
     UUID id = UUID.randomUUID();
     String name;
     private List<MidiTrack> tracks;
 
-    public ProjectModell(Sequence sequence) {
+    public SequenceModell(Sequence sequence) {
         this.sequence = sequence;
         initSequencer(sequence);
         initTracks();
@@ -37,7 +37,7 @@ public class ProjectModell {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ProjectModell that = (ProjectModell) o;
+        SequenceModell that = (SequenceModell) o;
         return Objects.equal(id, that.id);
     }
 

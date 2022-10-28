@@ -1,33 +1,32 @@
 package hu.boga.midiai.core.sequence.interactor;
 
 import hu.boga.midiai.core.sequence.boundary.SequenceDto;
-import hu.boga.midiai.core.sequence.
-        modell.ProjectModell;
+import hu.boga.midiai.core.sequence.modell.SequenceModell;
 import hu.boga.midiai.core.tracks.modell.MidiTrack;
 
 import java.util.stream.Collectors;
 
 public class ModellToDtoConverter {
-    ProjectModell projectModell;
+    SequenceModell sequenceModell;
 
-    public ModellToDtoConverter(final ProjectModell modell) {
-        this.projectModell = modell;
+    public ModellToDtoConverter(final SequenceModell modell) {
+        this.sequenceModell = modell;
     }
 
     public SequenceDto convert(){
         SequenceDto dto = new SequenceDto();
-        dto.ticksIn32nds = projectModell.getTicksIn32nds();
-        dto.ticksPerMeasure = projectModell.getTicksPerMeasure();
-        dto.tickLength = projectModell.getTickLength();
-        dto.resolution = projectModell.getResolution();
-        dto.division = projectModell.getDivision();
-        dto.ticksPerSecond = projectModell.ticksPerSecond();
-        dto.tickSize = projectModell.tickSize();
-        dto.tempo = projectModell.getTempo();
-        dto.name = projectModell.getName();
-        dto.id = projectModell.getId();
+        dto.ticksIn32nds = sequenceModell.getTicksIn32nds();
+        dto.ticksPerMeasure = sequenceModell.getTicksPerMeasure();
+        dto.tickLength = sequenceModell.getTickLength();
+        dto.resolution = sequenceModell.getResolution();
+        dto.division = sequenceModell.getDivision();
+        dto.ticksPerSecond = sequenceModell.ticksPerSecond();
+        dto.tickSize = sequenceModell.tickSize();
+        dto.tempo = sequenceModell.getTempo();
+        dto.name = sequenceModell.getName();
+        dto.id = sequenceModell.getId();
 
-        dto.tracks = projectModell.getTracks().stream().map(MidiTrack::getId).collect(Collectors.toList());
+        dto.tracks = sequenceModell.getTracks().stream().map(MidiTrack::getId).collect(Collectors.toList());
 
         return dto;
 

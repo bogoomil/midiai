@@ -3,7 +3,7 @@ package hu.boga.midiai.core.interactor;
 import hu.boga.midiai.core.tracks.boundary.TrackBoundaryOut;
 import hu.boga.midiai.core.tracks.boundary.TrackDto;
 import hu.boga.midiai.midigateway.InMemoryStore;
-import hu.boga.midiai.core.sequence.modell.ProjectModell;
+import hu.boga.midiai.core.sequence.modell.SequenceModell;
 import hu.boga.midiai.core.tracks.interactor.TrackInteractor;
 import hu.boga.midiai.core.tracks.modell.MidiTrack;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,7 +26,7 @@ class TrackInteractorTest {
     private ArgumentCaptor<TrackDto> trackDtoArgumentCaptor = ArgumentCaptor.forClass(TrackDto.class);
     private TrackBoundaryOut boundaryOut;
     private String projectId;
-    private ProjectModell projectModell;
+    private SequenceModell sequenceModell;
 
     @BeforeEach
     void setUp() throws InvalidMidiDataException {
@@ -37,7 +37,7 @@ class TrackInteractorTest {
 
     @Test
     void showTrack() {
-        MidiTrack midiTrack = projectModell.getTracks().get(0);
+        MidiTrack midiTrack = sequenceModell.getTracks().get(0);
         trackInteractor.showTrack(midiTrack.getId());
         Mockito.verify(boundaryOut).dispayTrack(trackDtoArgumentCaptor.capture());
         assertNotNull(trackDtoArgumentCaptor.getValue());
@@ -54,10 +54,10 @@ class TrackInteractorTest {
 
         Track track = sequence.createTrack();
 
-        projectModell = new ProjectModell(sequence);
+        sequenceModell = new SequenceModell(sequence);
 
-        projectModell.getTracks().forEach(midiTrack -> midiTrack.updateProgramChannel(0, 0));
-        projectId = projectModell.getId();
-        InMemoryStore.addProject(projectModell);
+        sequenceModell.getTracks().forEach(midiTrack -> midiTrack.updateProgramChannel(0, 0));
+        projectId = sequenceModell.getId();
+        InMemoryStore.addProject(sequenceModell);
     }
 }
