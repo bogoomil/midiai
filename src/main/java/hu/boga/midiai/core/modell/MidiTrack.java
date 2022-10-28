@@ -254,6 +254,7 @@ public class MidiTrack {
                 }
             }
         }
+        LOG.debug("index of noteOn: " + index);
         return index;
     }
 
