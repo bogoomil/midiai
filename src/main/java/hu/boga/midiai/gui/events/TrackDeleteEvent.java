@@ -1,13 +1,14 @@
 package hu.boga.midiai.gui.events;
 
 public class TrackDeleteEvent {
-    String trackId;
+    int index;
 
-    public TrackDeleteEvent(final String trackId) {
-        this.trackId = trackId;
+    public TrackDeleteEvent(final int index) {
+        this.index = index;
     }
 
-    public String getTrackId(){
-        return trackId;
+    public int getIndex() {
+        return this.index;
     }
+
 }

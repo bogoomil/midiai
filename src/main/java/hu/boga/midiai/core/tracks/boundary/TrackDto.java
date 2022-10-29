@@ -1,7 +1,7 @@
 package hu.boga.midiai.core.tracks.boundary;
 
 public class TrackDto {
-    public String trackId;
+    public int trackIndex;
     public int channel;
     public int program;
     public int noteCount;

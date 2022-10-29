@@ -1,21 +1,14 @@
 package hu.boga.midiai.core.sequence.modell;
 
 import com.google.common.base.Objects;
-import hu.boga.midiai.core.exceptions.MidiAiException;
 import hu.boga.midiai.core.tracks.modell.TrackModell;
-import hu.boga.midiai.core.util.Constants;
-import hu.boga.midiai.core.util.MidiUtil;
 
-import javax.sound.midi.*;
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Arrays;
 
 public class SequenceModell {
     private  final String id;
     public String name;
-    public List<TrackModell> tracks;
+    public TrackModell[] tracks;
     public int resolution;
     public float division;
     public long tickLength;
@@ -55,40 +48,24 @@ public class SequenceModell {
         return 1 / ticksPerSecond();
     }
 
-//
-
-    public String getId() {
-        return this.id.toString();
-    }
-
-
     public void setTempo(float tempo) {
         this.tempo = tempo;
-        //        this.getTracks().forEach(track -> {
-//            track.updateTempo(0L, (long) tempo);
-//        });
     }
 
-    public List<TrackModell> getTracks() {
-        return tracks;
+    public String getId() {
+        return this.id;
     }
 
-    public Optional<TrackModell> getTrackById(String id) {
-        return tracks.stream().filter(midiTrack -> midiTrack.getId().toString().equals(id)).findFirst();
+    @Override
+    public String toString() {
+        return "SequenceModell{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", tracks=" + Arrays.toString(tracks) +
+                ", resolution=" + resolution +
+                ", division=" + division +
+                ", tickLength=" + tickLength +
+                ", tempo=" + tempo +
+                '}';
     }
-
-    public TrackModell createNewTrack() {
-        Track track = sequence.createTrack();
-        TrackModell trackModell = TrackModell.createMidiTrack(track, getResolution());
-        tracks.add(trackModell);
-        return trackModell;
-    }
-
-    public void removeTrackById(String trackId) {
-        getTrackById(trackId).ifPresent(midiTrack -> {
-            sequence.deleteTrack(midiTrack.getTrack());
-            this.tracks.remove(midiTrack);
-        });
-    }
-
 }

@@ -10,7 +10,7 @@ public interface SequenceBoundaryIn {
     void stop(String projectId);
 
     void addTrack(String projectId);
-    void removeTrack(String trackId);
+    void removeTrack(String seqId, int trackIndex);
 
     void setTempo(String projectId, int newValue);
 }

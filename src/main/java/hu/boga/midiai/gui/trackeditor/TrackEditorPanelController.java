@@ -49,7 +49,7 @@ public class TrackEditorPanelController implements TrackBoundaryOut {
 
     TrackBoundaryIn trackBoundaryIn;
 
-    String trackId;
+    int trackIndex;
 
     private EventBus eventBus;
 
@@ -61,13 +61,13 @@ public class TrackEditorPanelController implements TrackBoundaryOut {
     public void initialize() {
         channelCombo.getItems().addAll(IntStream.rangeClosed(0, 15).boxed().collect(Collectors.toList()));
 
-        channelCombo.valueProperty().addListener((observable, oldValue, newValue) -> {
-            trackBoundaryIn.updateProgramChannel(trackId, channelCombo.getSelectionModel().getSelectedIndex(), instrumentCombo.getSelectedProgram());
-        });
-
-        instrumentCombo.valueProperty().addListener((observable, oldValue, newValue) -> {
-            trackBoundaryIn.updateProgramChannel(trackId, channelCombo.getSelectionModel().getSelectedIndex(), instrumentCombo.getSelectedProgram());
-        });
+//        channelCombo.valueProperty().addListener((observable, oldValue, newValue) -> {
+//            trackBoundaryIn.updateProgramChannel(trackIndex, channelCombo.getSelectionModel().getSelectedIndex(), instrumentCombo.getSelectedProgram());
+//        });
+//
+//        instrumentCombo.valueProperty().addListener((observable, oldValue, newValue) -> {
+//            trackBoundaryIn.updateProgramChannel(trackIndex, channelCombo.getSelectionModel().getSelectedIndex(), instrumentCombo.getSelectedProgram());
+//        });
 
         zoomSlider.setMin(10);
         zoomSlider.setMax(400);
@@ -83,23 +83,23 @@ public class TrackEditorPanelController implements TrackBoundaryOut {
 
             }
         });
-        trackName.addEventHandler(KeyEvent.KEY_RELEASED, new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent event) {
-                trackBoundaryIn.updateTrackName(trackId, trackName.getText());
-            }
-        });
+//        trackName.addEventHandler(KeyEvent.KEY_RELEASED, new EventHandler<KeyEvent>() {
+//            @Override
+//            public void handle(KeyEvent event) {
+//                trackBoundaryIn.updateTrackName(trackIndex, trackName.getText());
+//            }
+//        });
     }
 
-    public void setTrackId(String trackId){
-        this.trackId = trackId;
-        trackBoundaryIn.showTrack(trackId);
+    public void setTrackIndex(String seqId, int trackIndex){
+        this.trackIndex = trackIndex;
+        trackBoundaryIn.showTrack(seqId, this.trackIndex);
     }
 
     @Override
     public void dispayTrack(TrackDto trackDto) {
-        trackId = trackDto.trackId;
-        titledPane.setText("ch: " + trackDto.channel + " pr:" + trackDto.program + " notes: " + trackDto.noteCount + " (" + trackId + ")");
+        trackIndex = trackDto.trackIndex;
+        titledPane.setText("ch: " + trackDto.channel + " pr:" + trackDto.program + " notes: " + trackDto.noteCount + " (" + trackIndex + ")");
         channelCombo.getSelectionModel().select(trackDto.channel);
         instrumentCombo.selectInstrument(trackDto.program);
         trackName.setText(trackDto.name);
@@ -110,7 +110,7 @@ public class TrackEditorPanelController implements TrackBoundaryOut {
     }
 
     public void removeTrack(ActionEvent actionEvent) {
-        eventBus.post(new TrackDeleteEvent(trackId));
+        eventBus.post(new TrackDeleteEvent(trackIndex));
     }
 
     public void setEventBus(final EventBus eventBus) {
@@ -120,25 +120,25 @@ public class TrackEditorPanelController implements TrackBoundaryOut {
     }
 
 
-    @Subscribe
-    public void onAddNoteEvent(AddNoteEvent event) {
-        trackBoundaryIn.addNote(trackId, event.getTick(), event.getPitch(), event.getLength());
-    }
-
-    @Subscribe
-    public void onAddChordEvent(AddChordEvent event) {
-        trackBoundaryIn.addChord(trackId, event.getTick(), event.getPitch(), event.getLength(), event.getChordType());
-    }
-
-    @Subscribe
-    public void onMoveNoteEvent(MoveNoteEvent event) {
-        trackBoundaryIn.noteMoved(trackId, event.getTick(), event.getPitch(), event.getNewTick());
-    }
-
-    @Subscribe
-    public void onDeleteNoteEvent(DeleteNoteEvent... events) {
-        List<NoteDto> dtos = Arrays.stream(events).map(event -> new NoteDto(event.getPitch(), event.getTick(), 0)).collect(Collectors.toList());
-        trackBoundaryIn.deleteNote(trackId, dtos.toArray(NoteDto[]::new));
-
-    }
+//    @Subscribe
+//    public void onAddNoteEvent(AddNoteEvent event) {
+//        trackBoundaryIn.addNote(trackIndex, event.getTick(), event.getPitch(), event.getLength());
+//    }
+//
+//    @Subscribe
+//    public void onAddChordEvent(AddChordEvent event) {
+//        trackBoundaryIn.addChord(trackIndex, event.getTick(), event.getPitch(), event.getLength(), event.getChordType());
+//    }
+//
+//    @Subscribe
+//    public void onMoveNoteEvent(MoveNoteEvent event) {
+//        trackBoundaryIn.noteMoved(trackIndex, event.getTick(), event.getPitch(), event.getNewTick());
+//    }
+//
+//    @Subscribe
+//    public void onDeleteNoteEvent(DeleteNoteEvent... events) {
+//        List<NoteDto> dtos = Arrays.stream(events).map(event -> new NoteDto(event.getPitch(), event.getTick(), 0)).collect(Collectors.toList());
+//        trackBoundaryIn.deleteNote(trackIndex, dtos.toArray(NoteDto[]::new));
+//
+//    }
 }

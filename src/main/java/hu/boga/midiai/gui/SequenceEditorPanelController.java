@@ -49,7 +49,7 @@ public class SequenceEditorPanelController implements SequenceBoundaryOut {
     @FXML
     private Accordion accordion;
 
-    private String projectId;
+    private String sequenceId;
 
     @Inject
     public SequenceEditorPanelController(SequenceBoundaryIn boundaryInProvider) {
@@ -76,23 +76,23 @@ public class SequenceEditorPanelController implements SequenceBoundaryOut {
 
     private void initTemposSettings(Number newValue) {
         tempoLabel.setText("Tempo: " + newValue.intValue());
-        if(projectId != null){
-            boundaryIn.setTempo(projectId, newValue.intValue());
+        if(sequenceId != null){
+            boundaryIn.setTempo(sequenceId, newValue.intValue());
         }
     }
 
     public void saveSequence(ActionEvent actionEvent) {
         String path = new FileChooser().showSaveDialog(null).getAbsolutePath();
-        this.boundaryIn.save(projectId, path);
+        this.boundaryIn.save(sequenceId, path);
     }
 
     public void onPlayCurrentSec(ActionEvent actionEvent) {
-        boundaryIn.play(projectId);
+        boundaryIn.play(sequenceId);
         //this.boundaryIn.playLoop(projectId, 960, 1920);
     }
 
     public void stopPlayback(ActionEvent actionEvent) {
-        this.boundaryIn.stop(projectId);
+        this.boundaryIn.stop(sequenceId);
     }
 
     @Override
@@ -107,7 +107,7 @@ public class SequenceEditorPanelController implements SequenceBoundaryOut {
         this.tickSize.setText("tick size: " + sequenceDto.tickSize + " (1 / ticks per second)");
         this.tempoSlider.adjustValue(sequenceDto.tempo);
         this.tempoLabel.setText("Tempo: " + sequenceDto.tempo);
-        this.projectId = sequenceDto.id;
+        this.sequenceId = sequenceDto.id;
 
         initChildren(sequenceDto);
 
@@ -115,13 +115,13 @@ public class SequenceEditorPanelController implements SequenceBoundaryOut {
 
     private void initChildren(SequenceDto sequenceDto) {
         accordion.getPanes().remove(1, accordion.getPanes().size());
-        sequenceDto.tracks.forEach(trackId -> {
+        for(int i = 0; i < sequenceDto.trackCount; i++) {
             try {
-                addTrackPanel(trackId);
+                addTrackPanel(i);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        });
+        }
     }
 
     public void initSequence() {
@@ -132,26 +132,26 @@ public class SequenceEditorPanelController implements SequenceBoundaryOut {
         this.boundaryIn.open(file.getAbsolutePath());
     }
 
-    private void addTrackPanel(String trackId) throws IOException {
+    private void addTrackPanel(int trackIndex) throws IOException {
         FXMLLoader loader = new FXMLLoader(TrackEditorPanelController.class.getResource("track-editor-panel.fxml"));
         loader.setControllerFactory(GuiceModule.INJECTOR::getInstance);
         TitledPane trackEditor = loader.load();
 
         TrackEditorPanelController trackEditorPanelController = loader.getController();
-        trackEditorPanelController.setTrackId(trackId);
+        trackEditorPanelController.setTrackIndex(sequenceId, trackIndex);
         trackEditorPanelController.setEventBus(eventBus);
 
         accordion.getPanes().add(trackEditor);
     }
 
     public void onNewTrackButtonClicked(ActionEvent actionEvent) {
-        this.boundaryIn.addTrack(projectId);
+        this.boundaryIn.addTrack(sequenceId);
     }
 
     @Override
-    public void addTrack(String id) {
+    public void addTrack(int index) {
         try {
-            addTrackPanel(id);
+            addTrackPanel(index);
         } catch (IOException e) {
             e.printStackTrace();
             throw new MidiAiException("Adding new track failed: " + e.getMessage());
@@ -160,7 +160,7 @@ public class SequenceEditorPanelController implements SequenceBoundaryOut {
 
     @Subscribe
     public void onTrackDeletedEvent(TrackDeleteEvent event) {
-        boundaryIn.removeTrack(event.getTrackId());
+        boundaryIn.removeTrack(sequenceId, event.getIndex());
     }
 
 

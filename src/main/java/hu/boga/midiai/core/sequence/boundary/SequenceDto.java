@@ -14,8 +14,7 @@ public class SequenceDto {
     public float ticksPerSecond;
     public float tickSize;
     public float tempo;
-    public Map<Integer, Integer> channelMapping;
 
-    public List<String> tracks;
+    public int trackCount;
 
 }

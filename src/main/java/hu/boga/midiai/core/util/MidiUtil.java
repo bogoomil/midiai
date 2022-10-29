@@ -13,13 +13,13 @@ public class MidiUtil {
 
     private static final Logger LOG = LoggerFactory.getLogger(MidiUtil.class);
 
-    public static ArrayList<NoteModell> getNotesFromTrack(TrackModell trackModell) {
+    public static ArrayList<NoteModell> getNotesFromTrack(Track track, int resolution) {
 
 
         ArrayList<MidiEvent> midiEvents = new ArrayList<>();
         ArrayList<NoteModell> noteModells = new ArrayList<>();
 
-        Track tempTrack = cloneTrack(trackModell.getTrack(), trackModell.getResolution());
+        Track tempTrack = cloneTrack(track, resolution);
 
         int index = 0;
 
@@ -60,7 +60,6 @@ public class MidiUtil {
             }
 
         }
-
         return noteModells;
 
     }
@@ -192,16 +191,4 @@ public class MidiUtil {
         }
         return null;
     }
-
-
-    public static int getTempoInBPM(MetaMessage mm) {
-        byte[] data = mm.getData();
-        if (mm.getType() != 81 || data.length != 3) {
-            throw new IllegalArgumentException("mm=" + mm);
-        }
-        int mspq = ((data[0] & 0xff) << 16) | ((data[1] & 0xff) << 8) | (data[2] & 0xff);
-        int tempo = Math.round(60000001f / mspq);
-        return tempo;
-    }
-
 }

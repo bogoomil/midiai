@@ -49,19 +49,19 @@ public class SequenceInteractor implements SequenceBoundaryIn {
 
     @Override
     public void addTrack(String projectId) {
-        TrackModell trackModell = this.gateway.addTrack(projectId);
-        boundaryOut.addTrack(trackModell.getId());
-    }
-
-    @Override
-    public void removeTrack(String trackId) {
-        SequenceModell modell = this.gateway.deleteTrack(trackId);
+        SequenceModell modell = this.gateway.addTrack(projectId);
         boundaryOut.displaySequence(new ModellToDtoConverter(modell).convert());
     }
 
     @Override
-    public void setTempo(String projectId, int tempo) {
-        this.gateway.setTempo(projectId, tempo);
+    public void removeTrack(String seqId, int trackIndex) {
+        SequenceModell modell = this.gateway.deleteTrack(seqId, trackIndex);
+        boundaryOut.displaySequence(new ModellToDtoConverter(modell).convert());
+    }
+
+    @Override
+    public void setTempo(String sequenceId, int tempo) {
+        this.gateway.setTempo(sequenceId, tempo);
     }
 
     @Override

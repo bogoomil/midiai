@@ -6,14 +6,10 @@ import hu.boga.midiai.core.sequence.modell.SequenceModell;
 import hu.boga.midiai.core.tracks.modell.TrackModell;
 import hu.boga.midiai.core.util.Constants;
 
-import javax.sound.midi.InvalidMidiDataException;
-import javax.sound.midi.MidiSystem;
-import javax.sound.midi.Sequence;
-import javax.sound.midi.Sequencer;
+import javax.sound.midi.*;
 import java.io.File;
 import java.io.IOException;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 public class SequenceGatewayImpl implements SequenceGateway {
 
@@ -22,10 +18,13 @@ public class SequenceGatewayImpl implements SequenceGateway {
     public SequenceModell open(String path) {
         try {
             File file = new File(path);
+            String id =  UUID.randomUUID().toString();
             Sequence sequence = MidiSystem.getSequence(file);
-            SequenceModell sequenceModell = new SequenceModell(sequence);
+            InMemoryStore.SEQUENCES.put(id, sequence);
+
+            SequenceModell sequenceModell = new SequenceToModellConverter(sequence, id).convert();
             sequenceModell.name = file.getName();
-            InMemoryStore.addProject(sequenceModell);
+
             return sequenceModell;
         } catch (InvalidMidiDataException | IOException e) {
             throw new MidiAiException(e.getMessage());
@@ -43,10 +42,10 @@ public class SequenceGatewayImpl implements SequenceGateway {
         try {
             String id = UUID.randomUUID().toString();
             Sequence sequence = new Sequence(Sequence.PPQ, Constants.DEFAULT_RESOLUTION);
-            SequenceModell sequenceModell = new SequenceModell(id);
+            sequence.createTrack();
             InMemoryStore.SEQUENCES.put(id, sequence);
 
-            return sequenceModell;
+            return new SequenceToModellConverter(sequence, id).convert();
 
         } catch (InvalidMidiDataException e) {
             throw new MidiAiException("Sequence creation failed: " + e.getMessage());
@@ -88,36 +87,40 @@ public class SequenceGatewayImpl implements SequenceGateway {
     }
 
     @Override
-    public TrackModell addTrack(String projectId) {
-        TrackModell trackModell = null;
-        Optional<SequenceModell> projectModellOpt = InMemoryStore.getProjectById(projectId);
-        if(projectModellOpt.isPresent()){
-            return projectModellOpt.get().createNewTrack();
-        }
-        throw new MidiAiException("Track creation failed");
+    public SequenceModell addTrack(String sequenceId) {
+        Sequence sequence = InMemoryStore.SEQUENCES.get(sequenceId);
+        sequence.createTrack();
+        return new SequenceToModellConverter(sequence, sequenceId).convert();
     }
 
     @Override
-    public SequenceModell deleteTrack(String trackId) {
-        Optional<SequenceModell> modell = InMemoryStore.findMidiProjectByTrackId(trackId);
-        if (modell.isPresent()){
-            modell.get().removeTrackById(trackId);
-            return modell.get();
-        }
-        throw new MidiAiException("Track deletion failed");
+    public SequenceModell deleteTrack(String seqId, int trackIndex) {
+        Sequence sequence = InMemoryStore.SEQUENCES.get(seqId);
+        sequence.deleteTrack(sequence.getTracks()[trackIndex]);
+        return new SequenceToModellConverter(sequence, seqId).convert();
     }
 
     @Override
     public void setTempo(String projectId, int tempo) {
-        InMemoryStore.getProjectById(projectId).ifPresent(projectModell -> {
-
-
-
-            projectModell.setTempo(tempo);
+        Sequence sequence = InMemoryStore.SEQUENCES.get(projectId);
+        Arrays.stream(sequence.getTracks()).forEach(track -> {
+            updateTempo(track, tempo);
         });
     }
 
-    //    public void play() {
+    public void updateTempo(Track track, final long tempo) {
+        final List<MidiEvent> tempoEvents = MidiUtils.getMetaEventsByType(track, Constants.METAMESSAGE_SET_TEMPO);
+        tempoEvents.forEach(track::remove);
+        final long microSecsPerQuarterNote = Constants.MICROSECONDS_IN_MINUTE / tempo;
+        final byte[] array = {0, 0, 0};
+        for (int i = 0; i < 3; i++) {
+            final int shift = (3 - 1 - i) * 8;
+            array[i] = (byte) (microSecsPerQuarterNote >> shift);
+        }
+        track.add(MidiUtils.createMetaEvent(0, Constants.METAMESSAGE_SET_TEMPO, array));
+    }
+
+//    public void play() {
 //        play(0);
 //    }
 //

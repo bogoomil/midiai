@@ -25,9 +25,7 @@ public class ModellToDtoConverter {
         dto.tempo = sequenceModell.tempo;
         dto.name = sequenceModell.name;
         dto.id = sequenceModell.getId();
-
-        dto.tracks = sequenceModell.getTracks().stream().map(TrackModell::getId).collect(Collectors.toList());
-
+        dto.trackCount = sequenceModell.tracks.length;
         return dto;
 
     }
