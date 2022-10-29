@@ -13,6 +13,7 @@ import javax.sound.midi.Sequencer;
 import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
+import java.util.UUID;
 
 public class SequenceGatewayImpl implements SequenceGateway {
 
@@ -32,12 +33,18 @@ public class SequenceGatewayImpl implements SequenceGateway {
     }
 
     @Override
+    public SequenceModell find(String id) {
+        Sequence sequence = InMemoryStore.SEQUENCES.get(id);
+        return new SequenceToModellConverter(sequence, id).convert();
+    }
+
+    @Override
     public SequenceModell create() {
         try {
+            String id = UUID.randomUUID().toString();
             Sequence sequence = new Sequence(Sequence.PPQ, Constants.DEFAULT_RESOLUTION);
-            SequenceModell sequenceModell = new SequenceModell(sequence);
-            sequenceModell.name = Constants.DEFAULT_NAME;
-            InMemoryStore.addProject(sequenceModell);
+            SequenceModell sequenceModell = new SequenceModell(id);
+            InMemoryStore.SEQUENCES.put(id, sequence);
 
             return sequenceModell;
 
@@ -47,17 +54,37 @@ public class SequenceGatewayImpl implements SequenceGateway {
     }
     @Override
     public void play(String id) {
-        InMemoryStore.getProjectById(id).ifPresent(SequenceModell::play);
+        Sequencer sequencer = InMemoryStore.SEQUENCER;
+
+        sequencer.stop();
+        sequencer.setLoopCount(0);
+        try {
+            sequencer.setSequence(InMemoryStore.SEQUENCES.get(id));
+        } catch (InvalidMidiDataException e) {
+            e.printStackTrace();
+            throw new MidiAiException("Invalid midi exception: " + e.getMessage());
+        }
+        sequencer.setTempoFactor(1f);
+        sequencer.setTickPosition(0);
+//        sequencer.setLoopStartPoint(fromTick);
+//        sequencer.setLoopEndPoint(toTick);
+        sequencer.start();
     }
 
     @Override
     public void stop(String id) {
-        InMemoryStore.getProjectById(id).ifPresent(SequenceModell::stop);
+        InMemoryStore.SEQUENCER.stop();
     }
 
     @Override
     public void save(String projectId, String filePath) {
-        InMemoryStore.getProjectById(projectId).ifPresent(projectModell -> projectModell.save(filePath));
+        File file = new File(filePath);
+        try {
+            MidiSystem.write(InMemoryStore.SEQUENCES.get(projectId), 1, file);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new MidiAiException("Saving " + filePath + " failed");
+        }
     }
 
     @Override
@@ -83,8 +110,36 @@ public class SequenceGatewayImpl implements SequenceGateway {
     @Override
     public void setTempo(String projectId, int tempo) {
         InMemoryStore.getProjectById(projectId).ifPresent(projectModell -> {
+
+
+
             projectModell.setTempo(tempo);
         });
     }
+
+    //    public void play() {
+//        play(0);
+//    }
+//
+//    public void play(int fromTick) {
+//        int toTick = (int) this.sequence.getTickLength();
+//        play(fromTick, toTick, 0);
+//    }
+//
+//    public void play(int fromTick, int toTick) {
+//        play(fromTick, toTick, 0);
+//    }
+//
+//    private void play(int fromTick, int toTick, int loopCount) {
+//    }
+//
+//
+//    public void playLoop(int fromTick, int toTick) {
+//        play(fromTick, toTick, Sequencer.LOOP_CONTINUOUSLY);
+//    }
+//
+//    public void stop() {
+//        this.sequencer.stop();
+//    }
 
 }

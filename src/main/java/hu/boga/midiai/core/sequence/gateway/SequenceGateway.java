@@ -7,6 +7,7 @@ public interface SequenceGateway {
 
     SequenceModell create();
     SequenceModell open(String path);
+    SequenceModell find(String id);
 
     void play(String id);
     void stop(String id);

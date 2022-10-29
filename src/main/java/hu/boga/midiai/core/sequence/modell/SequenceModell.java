@@ -13,24 +13,17 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class SequenceModell {
-    private final Sequence sequence;
-    private Sequencer sequencer;
-    UUID id = UUID.randomUUID();
+    private  final String id;
     public String name;
     public List<TrackModell> tracks;
+    public int resolution;
+    public float division;
+    public long tickLength;
+    public float tempo;
 
-    public SequenceModell(Sequence sequence) {
-        this.sequence = sequence;
-        initSequencer(sequence);
-        initTracks();
-    }
 
-    private void initTracks() {
-        tracks = new ArrayList<>();
-        Arrays.stream(sequence.getTracks()).forEach(track -> {
-            TrackModell trackModell = TrackModell.createMidiTrack(track, getResolution());
-            tracks.add(trackModell);
-        });
+    public SequenceModell(final String id) {
+        this.id = id;
     }
 
     @Override
@@ -46,20 +39,8 @@ public class SequenceModell {
         return Objects.hashCode(id);
     }
 
-    public int getResolution() {
-        return this.sequence.getResolution();
-    }
-
-    public float getDivision() {
-        return this.sequence.getDivisionType();
-    }
-
-    public long getTickLength() {
-        return this.sequence.getTickLength();
-    }
-
     public int getTicksPerMeasure() {
-        return 4 * sequence.getResolution();
+        return 4 * resolution;
     }
 
     public int getTicksIn32nds() {
@@ -67,88 +48,25 @@ public class SequenceModell {
     }
 
     public float ticksPerSecond() {
-        return this.sequence.getResolution() * (sequencer.getTempoInBPM() / 60);
+        return resolution * (tempo / 60);
     }
 
     public float tickSize() {
         return 1 / ticksPerSecond();
     }
 
-    private void initSequencer(Sequence sequence) {
-        try {
-            this.sequencer = MidiSystem.getSequencer();
-            this.sequencer.open();
-        } catch (MidiUnavailableException e) {
-            e.printStackTrace();
-            throw new MidiAiException("Midi sequencer unavailable: " + e.getMessage());
-        }
-    }
-
-    public void play() {
-        play(0);
-    }
-
-    public void play(int fromTick) {
-        int toTick = (int) this.sequence.getTickLength();
-        play(fromTick, toTick, 0);
-    }
-
-    public void play(int fromTick, int toTick) {
-        play(fromTick, toTick, 0);
-    }
-
-    private void play(int fromTick, int toTick, int loopCount) {
-        this.sequencer.stop();
-        this.sequencer.setLoopCount(loopCount);
-        try {
-            this.sequencer.setSequence(sequence);
-        } catch (InvalidMidiDataException e) {
-            e.printStackTrace();
-            throw new MidiAiException("Invalid midi exception: " + e.getMessage());
-        }
-        this.sequencer.setTempoFactor(1f);
-        this.sequencer.setTickPosition(fromTick);
-        this.sequencer.setLoopStartPoint(fromTick);
-        this.sequencer.setLoopEndPoint(toTick);
-        this.sequencer.start();
-    }
-
-
-    public void playLoop(int fromTick, int toTick) {
-        play(fromTick, toTick, Sequencer.LOOP_CONTINUOUSLY);
-    }
-
-    public void stop() {
-        this.sequencer.stop();
-    }
+//
 
     public String getId() {
         return this.id.toString();
     }
 
-    public float getTempo() {
-        List<MidiEvent> tempoEvents = getMetaEventsByType(Constants.METAMESSAGE_SET_TEMPO);
-        if (tempoEvents.size() == 0) {
-            return 0;
-        } else {
-            return MidiUtil.getTempoInBPM((MetaMessage) tempoEvents.get(0).getMessage());
-        }
-    }
 
     public void setTempo(float tempo) {
-        this.getTracks().forEach(track -> {
-            track.updateTempo(0L, (long) tempo);
-        });
-    }
-
-    public void save(String filePath) {
-        File file = new File(filePath);
-        try {
-            MidiSystem.write(sequence, 1, file);
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new MidiAiException("Saving " + filePath + " failed");
-        }
+        this.tempo = tempo;
+        //        this.getTracks().forEach(track -> {
+//            track.updateTempo(0L, (long) tempo);
+//        });
     }
 
     public List<TrackModell> getTracks() {
@@ -173,9 +91,4 @@ public class SequenceModell {
         });
     }
 
-    public List<MidiEvent> getMetaEventsByType(int type) {
-        return tracks.stream()
-                .flatMap(midiTrack -> midiTrack.getMetaEventsByType(type).stream())
-                .collect(Collectors.toList());
-    }
 }

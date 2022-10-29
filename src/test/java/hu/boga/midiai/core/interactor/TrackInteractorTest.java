@@ -50,14 +50,14 @@ class TrackInteractorTest {
     }
 
     private void buildTestContext() throws InvalidMidiDataException {
-        Sequence sequence = new Sequence(0f, 8);
-
-        Track track = sequence.createTrack();
-
-        sequenceModell = new SequenceModell(sequence);
-
-        sequenceModell.getTracks().forEach(midiTrack -> midiTrack.updateProgramChannel(0, 0));
-        projectId = sequenceModell.getId();
-        InMemoryStore.addProject(sequenceModell);
+//        Sequence sequence = new Sequence(0f, 8);
+//
+//        Track track = sequence.createTrack();
+//
+//        sequenceModell = new SequenceModell(sequence);
+//
+//        sequenceModell.getTracks().forEach(midiTrack -> midiTrack.updateProgramChannel(0, 0));
+//        projectId = sequenceModell.getId();
+//        InMemoryStore.addProject(sequenceModell);
     }
 }

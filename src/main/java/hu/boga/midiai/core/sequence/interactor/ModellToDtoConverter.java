@@ -17,12 +17,12 @@ public class ModellToDtoConverter {
         SequenceDto dto = new SequenceDto();
         dto.ticksIn32nds = sequenceModell.getTicksIn32nds();
         dto.ticksPerMeasure = sequenceModell.getTicksPerMeasure();
-        dto.tickLength = sequenceModell.getTickLength();
-        dto.resolution = sequenceModell.getResolution();
-        dto.division = sequenceModell.getDivision();
+        dto.tickLength = sequenceModell.tickLength;
+        dto.resolution = sequenceModell.resolution;
+        dto.division = sequenceModell.division;
         dto.ticksPerSecond = sequenceModell.ticksPerSecond();
         dto.tickSize = sequenceModell.tickSize();
-        dto.tempo = sequenceModell.getTempo();
+        dto.tempo = sequenceModell.tempo;
         dto.name = sequenceModell.name;
         dto.id = sequenceModell.getId();
 
