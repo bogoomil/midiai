@@ -12,6 +12,7 @@ import hu.boga.midiai.gui.controls.TempoSlider;
 import hu.boga.midiai.gui.events.TrackDeleteEvent;
 import hu.boga.midiai.gui.trackeditor.TrackEditorPanelController;
 import hu.boga.midiai.gui.trackeditor.events.ModeChangedEvent;
+import hu.boga.midiai.gui.trackeditor.events.ProgramChangedEvent;
 import hu.boga.midiai.gui.trackeditor.events.RootChangedEvent;
 import hu.boga.midiai.guice.GuiceModule;
 import javafx.event.ActionEvent;
@@ -19,6 +20,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -26,6 +29,7 @@ import java.io.IOException;
 
 public class SequenceEditorPanelController implements SequenceBoundaryOut {
     private static final String DEFAULT_NAME = "new_project.mid";
+    private static final Logger LOG = LoggerFactory.getLogger(SequenceEditorPanelController.class);
     private final SequenceBoundaryIn boundaryIn;
 
     public Label division;
@@ -82,6 +86,7 @@ public class SequenceEditorPanelController implements SequenceBoundaryOut {
     }
 
     public void saveSequence(ActionEvent actionEvent) {
+        LOG.debug("Saving sequence: " + sequenceId);
         String path = new FileChooser().showSaveDialog(null).getAbsolutePath();
         this.boundaryIn.save(sequenceId, path);
     }
@@ -161,6 +166,12 @@ public class SequenceEditorPanelController implements SequenceBoundaryOut {
     @Subscribe
     public void onTrackDeletedEvent(TrackDeleteEvent event) {
         boundaryIn.removeTrack(sequenceId, event.getIndex());
+    }
+
+    @Subscribe
+    public void onProgramChangedEvent(ProgramChangedEvent even){
+        LOG.debug("programchanged event: " + even);
+        boundaryIn.updateTrackProgram(sequenceId, even.getTrackIndex(), even.getProgram(), even.getChannel());
     }
 
 

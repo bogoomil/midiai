@@ -69,10 +69,6 @@ public class SequenceToModellConverter extends MidiUtils{
         return trackModells;
     }
 
-//    public void updateProgramChannel(final int channel, final int program) {
-//        this.removeEventsByCommand(ShortMessage.PROGRAM_CHANGE);
-//        this.addProgramChangeEvent(channel, program, 0);
-//    }
 
 //    public void removeEvents(final List<MidiEvent> events) {
 //        events.forEach(track::remove);
@@ -103,34 +99,6 @@ public class SequenceToModellConverter extends MidiUtils{
 //        final MidiEvent event = new MidiEvent(shortMessage, tick);
 //        this.track.add(event);
 //    }
-//
-//    private void addProgramChangeEvent(final int channel, final int program, final int tick) {
-//        try {
-//            this.addShortMessage(tick, ShortMessage.PROGRAM_CHANGE, channel, program, 0);
-//        } catch (final InvalidMidiDataException e) {
-//            e.printStackTrace();
-//            throw new MidiAiException("update programchange event failed");
-//        }
-//    }
-//
-//    private List<MidiEvent> getEventsByCommand(final int command) {
-//        final List<MidiEvent> retVal = new ArrayList<>();
-//        for (int i = 0; i < this.track.size(); i++) {
-//            final MidiEvent event = this.track.get(i);
-//            if (event.getMessage() instanceof ShortMessage) {
-//                final ShortMessage msg = (ShortMessage) event.getMessage();
-//                if (msg.getCommand() == command) {
-//                    retVal.add(event);
-//                }
-//            }
-//        }
-//        return retVal;
-//    }
-//
-//    private void removeEventsByCommand(final int command) {
-//        getEventsByCommand(command).forEach(midiEvent -> track.remove(midiEvent));
-//    }
-//
 //
 //    public void addNote(final int tick, final int pitch, final int length) {
 //        try {

@@ -1,8 +1,6 @@
 package hu.boga.midiai.midigateway;
 
-import javax.sound.midi.MetaMessage;
-import javax.sound.midi.MidiEvent;
-import javax.sound.midi.Track;
+import javax.sound.midi.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +35,31 @@ public class MidiUtils {
             System.exit(1);
         }
         return new MidiEvent(metaMessage, tick);
+    }
+
+    public static MidiEvent addShortMessage(final int tick, final int command, final int channel, final int data1, final int data2) throws InvalidMidiDataException {
+        final ShortMessage shortMessage = new ShortMessage();
+        shortMessage.setMessage(command, channel, data1, data2);
+        final MidiEvent event = new MidiEvent(shortMessage, tick);
+        return event;
+    }
+
+    public static List<MidiEvent> getEventsByCommand(Track track , final int command) {
+        final List<MidiEvent> retVal = new ArrayList<>();
+        for (int i = 0; i < track.size(); i++) {
+            final MidiEvent event = track.get(i);
+            if (event.getMessage() instanceof ShortMessage) {
+                final ShortMessage msg = (ShortMessage) event.getMessage();
+                if (msg.getCommand() == command) {
+                    retVal.add(event);
+                }
+            }
+        }
+        return retVal;
+    }
+
+    public static void removeEventsByCommand(Track track, final int command) {
+        getEventsByCommand(track, command).forEach(midiEvent -> track.remove(midiEvent));
     }
 
 

@@ -13,4 +13,5 @@ public interface SequenceBoundaryIn {
     void removeTrack(String seqId, int trackIndex);
 
     void setTempo(String projectId, int newValue);
+    void updateTrackProgram(String sequenceId, int trackIndex, int program, int channel);
 }

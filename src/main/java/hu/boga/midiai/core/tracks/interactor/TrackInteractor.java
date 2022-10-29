@@ -5,15 +5,12 @@ import hu.boga.midiai.core.tracks.boundary.TrackBoundaryOut;
 import hu.boga.midiai.core.tracks.boundary.NoteDto;
 import hu.boga.midiai.core.tracks.boundary.TrackDto;
 import hu.boga.midiai.core.tracks.gateway.TrackGateway;
-import hu.boga.midiai.midigateway.InMemoryStore;
 import hu.boga.midiai.core.tracks.modell.TrackModell;
 import hu.boga.midiai.core.tracks.modell.NoteModell;
-import hu.boga.midiai.core.musictheory.enums.ChordType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,6 +31,15 @@ public class TrackInteractor implements TrackBoundaryIn {
     public void showTrack(String sequenceId, int trackIndex) {
         TrackModell trackModell = gateway.getTrackModell(sequenceId, trackIndex);
         boundaryOut.dispayTrack(convertTrackToTrackDto(trackModell));
+    }
+
+    @Override
+    public void updateProgramChannel(String sequenceId, int trackIndex, int channel, int program) {
+        TrackModell trackModell = gateway.getTrackModell(sequenceId, trackIndex);
+        trackModell.program = program;
+        trackModell.channel = channel;
+
+
     }
 
 //    @Override

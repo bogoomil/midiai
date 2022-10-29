@@ -18,7 +18,7 @@ public class SequenceGatewayImpl implements SequenceGateway {
     public SequenceModell open(String path) {
         try {
             File file = new File(path);
-            String id =  UUID.randomUUID().toString();
+            String id = UUID.randomUUID().toString();
             Sequence sequence = MidiSystem.getSequence(file);
             InMemoryStore.SEQUENCES.put(id, sequence);
 
@@ -51,6 +51,7 @@ public class SequenceGatewayImpl implements SequenceGateway {
             throw new MidiAiException("Sequence creation failed: " + e.getMessage());
         }
     }
+
     @Override
     public void play(String id) {
         Sequencer sequencer = InMemoryStore.SEQUENCER;
@@ -107,8 +108,7 @@ public class SequenceGatewayImpl implements SequenceGateway {
             updateTempo(track, tempo);
         });
     }
-
-    public void updateTempo(Track track, final long tempo) {
+    private void updateTempo(Track track, final long tempo) {
         final List<MidiEvent> tempoEvents = MidiUtils.getMetaEventsByType(track, Constants.METAMESSAGE_SET_TEMPO);
         tempoEvents.forEach(track::remove);
         final long microSecsPerQuarterNote = Constants.MICROSECONDS_IN_MINUTE / tempo;
@@ -118,6 +118,29 @@ public class SequenceGatewayImpl implements SequenceGateway {
             array[i] = (byte) (microSecsPerQuarterNote >> shift);
         }
         track.add(MidiUtils.createMetaEvent(0, Constants.METAMESSAGE_SET_TEMPO, array));
+    }
+
+    @Override
+    public void updateTrackProgram(String sequenceId, int trackIndex, int program, int channel) {
+        Sequence sequence = InMemoryStore.SEQUENCES.get(sequenceId);
+        Track track1 = sequence.getTracks()[trackIndex];
+        updateProgramChannel(track1, channel, program);
+    }
+
+
+    private void updateProgramChannel(Track track, final int channel, final int program) {
+        MidiUtils.removeEventsByCommand(track, ShortMessage.PROGRAM_CHANGE);
+        this.addProgramChangeEvent(track, channel, program, 0);
+    }
+
+    private void addProgramChangeEvent(Track track, final int channel, final int program, final int tick) {
+        try {
+            MidiEvent midiEvent = MidiUtils.addShortMessage(tick, ShortMessage.PROGRAM_CHANGE, channel, program, 0);
+            track.add(midiEvent);
+        } catch (final InvalidMidiDataException e) {
+            e.printStackTrace();
+            throw new MidiAiException("update programchange event failed");
+        }
     }
 
 //    public void play() {

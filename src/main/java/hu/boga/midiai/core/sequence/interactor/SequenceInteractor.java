@@ -61,7 +61,14 @@ public class SequenceInteractor implements SequenceBoundaryIn {
 
     @Override
     public void setTempo(String sequenceId, int tempo) {
+        SequenceModell sequenceModell = gateway.find(sequenceId);
+        sequenceModell.tempo = tempo;
         this.gateway.setTempo(sequenceId, tempo);
+    }
+
+    @Override
+    public void updateTrackProgram(String sequenceId, int trackIndex, int program, int channel) {
+        gateway.updateTrackProgram(sequenceId, trackIndex, program, channel);
     }
 
     @Override

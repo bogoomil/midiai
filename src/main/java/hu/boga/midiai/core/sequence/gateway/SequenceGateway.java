@@ -10,11 +10,11 @@ public interface SequenceGateway {
 
     void play(String id);
     void stop(String id);
-    void save(String projectId, String filePath);
+    void save(String sequenceId, String filePath);
 
-    SequenceModell addTrack(String projectId);
+    SequenceModell addTrack(String sequenceId);
     SequenceModell deleteTrack(String seqId, int trackIndex);
 
-    void setTempo(String projectId, int tempo);
-
+    void setTempo(String sequenceId, int tempo);
+    void updateTrackProgram(String sequenceId, int trackIndex, int program, int channel);
 }

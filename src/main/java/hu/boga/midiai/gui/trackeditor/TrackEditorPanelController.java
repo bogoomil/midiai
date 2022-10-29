@@ -8,10 +8,7 @@ import hu.boga.midiai.core.tracks.boundary.NoteDto;
 import hu.boga.midiai.core.tracks.boundary.TrackDto;
 import hu.boga.midiai.gui.controls.InstrumentCombo;
 import hu.boga.midiai.gui.events.TrackDeleteEvent;
-import hu.boga.midiai.gui.trackeditor.events.AddChordEvent;
-import hu.boga.midiai.gui.trackeditor.events.AddNoteEvent;
-import hu.boga.midiai.gui.trackeditor.events.DeleteNoteEvent;
-import hu.boga.midiai.gui.trackeditor.events.MoveNoteEvent;
+import hu.boga.midiai.gui.trackeditor.events.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -61,13 +58,17 @@ public class TrackEditorPanelController implements TrackBoundaryOut {
     public void initialize() {
         channelCombo.getItems().addAll(IntStream.rangeClosed(0, 15).boxed().collect(Collectors.toList()));
 
-//        channelCombo.valueProperty().addListener((observable, oldValue, newValue) -> {
-//            trackBoundaryIn.updateProgramChannel(trackIndex, channelCombo.getSelectionModel().getSelectedIndex(), instrumentCombo.getSelectedProgram());
-//        });
-//
-//        instrumentCombo.valueProperty().addListener((observable, oldValue, newValue) -> {
-//            trackBoundaryIn.updateProgramChannel(trackIndex, channelCombo.getSelectionModel().getSelectedIndex(), instrumentCombo.getSelectedProgram());
-//        });
+        channelCombo.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if(eventBus != null){
+                eventBus.post(new ProgramChangedEvent(trackIndex, instrumentCombo.getSelectedProgram(), channelCombo.getSelectionModel().getSelectedIndex()));
+            }
+        });
+
+        instrumentCombo.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if(eventBus != null){
+                eventBus.post(new ProgramChangedEvent(trackIndex, instrumentCombo.getSelectedProgram(), channelCombo.getSelectionModel().getSelectedIndex()));
+            }
+        });
 
         zoomSlider.setMin(10);
         zoomSlider.setMax(400);
